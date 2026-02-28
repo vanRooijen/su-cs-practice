@@ -30,6 +30,9 @@
             <a href={path} data-open-in-new-window="true">Open in new window</a>
           </li>
         {/each}
+        <li>
+          <a href="/reader/help" aria-current={activePath === '/reader/help' ? 'page' : undefined}>Help</a>
+        </li>
       </ul>
     </aside>
   {/if}

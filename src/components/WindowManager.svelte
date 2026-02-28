@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import { APP_REGISTRY } from '../lib/window/appRegistry.js';
   import { navigateTo, openInNewWindow, route } from '../lib/navigation/historyRouter.js';
   import { windowManager } from '../lib/window/windowManagerStore.js';
@@ -19,6 +19,13 @@
   ];
 
   let workspaceElement;
+  let contextMenuElement;
+  let contextMenu = {
+    open: false,
+    x: 0,
+    y: 0,
+    linkPath: null,
+  };
 
   $: sidebarWindowIds = [...$windowManager.windowOrder].reverse();
 
@@ -28,6 +35,125 @@
 
   function openPathInNewWindow(path) {
     openInNewWindow(path);
+  }
+
+  function closeContextMenu() {
+    if (!contextMenu.open) {
+      return;
+    }
+
+    contextMenu = {
+      ...contextMenu,
+      open: false,
+    };
+  }
+
+  function getInternalPathFromTarget(target) {
+    if (!(target instanceof Element)) {
+      return null;
+    }
+
+    const anchor = target.closest('a[href]');
+    if (!anchor) {
+      return null;
+    }
+
+    const url = new URL(anchor.href, window.location.href);
+    if (url.origin !== window.location.origin) {
+      return null;
+    }
+
+    return url.pathname;
+  }
+
+  function clampContextMenuPosition() {
+    if (!contextMenu.open || !contextMenuElement) {
+      return;
+    }
+
+    const menuRect = contextMenuElement.getBoundingClientRect();
+    const margin = 4;
+
+    let x = contextMenu.x;
+    let y = contextMenu.y;
+
+    if (x + menuRect.width > window.innerWidth - margin) {
+      x = Math.max(margin, window.innerWidth - menuRect.width - margin);
+    }
+
+    if (y + menuRect.height > window.innerHeight - margin) {
+      y = Math.max(margin, window.innerHeight - menuRect.height - margin);
+    }
+
+    if (x === contextMenu.x && y === contextMenu.y) {
+      return;
+    }
+
+    contextMenu = {
+      ...contextMenu,
+      x,
+      y,
+    };
+  }
+
+  async function openContextMenu(event) {
+    event.preventDefault();
+
+    contextMenu = {
+      open: true,
+      x: event.clientX,
+      y: event.clientY,
+      linkPath: getInternalPathFromTarget(event.target),
+    };
+
+    await tick();
+    clampContextMenuPosition();
+  }
+
+  function onGlobalClick(event) {
+    if (!contextMenu.open) {
+      return;
+    }
+
+    const target = event.target instanceof Element ? event.target : null;
+    if (target?.closest('.site-context-menu')) {
+      return;
+    }
+
+    closeContextMenu();
+  }
+
+  function onGlobalKeydown(event) {
+    if (event.key === 'Escape') {
+      closeContextMenu();
+    }
+  }
+
+  function onGlobalResize() {
+    clampContextMenuPosition();
+  }
+
+  function openHelpPage() {
+    openPath('/reader/help');
+    closeContextMenu();
+  }
+
+  function openContextLink() {
+    if (!contextMenu.linkPath) {
+      return;
+    }
+
+    openPath(contextMenu.linkPath);
+    closeContextMenu();
+  }
+
+  function openContextLinkInNewWindow() {
+    if (!contextMenu.linkPath) {
+      return;
+    }
+
+    openPathInNewWindow(contextMenu.linkPath);
+    closeContextMenu();
   }
 
   function focusWindowAndSyncUrl(windowId) {
@@ -124,7 +250,7 @@
   });
 </script>
 
-<div class="os-layout">
+<div class="os-layout" role="application" aria-label="Desktop workspace" on:contextmenu={openContextMenu}>
   <header class="topbar">
     <div class="site-block" aria-hidden="true"></div>
 
@@ -225,7 +351,29 @@
       </div>
     </section>
   </div>
+
+  {#if contextMenu.open}
+    <div
+      class="site-context-menu"
+      role="menu"
+      aria-label="Site context menu"
+      bind:this={contextMenuElement}
+      style={`left:${contextMenu.x}px;top:${contextMenu.y}px;`}
+    >
+      {#if contextMenu.linkPath}
+        <button type="button" role="menuitem" on:click={openContextLink}>Open Link</button>
+        <button type="button" role="menuitem" on:click={openContextLinkInNewWindow}>
+          Open Link in New Window
+        </button>
+        <hr />
+      {/if}
+
+      <button type="button" role="menuitem" on:click={openHelpPage}>Help</button>
+    </div>
+  {/if}
 </div>
+
+<svelte:window on:click={onGlobalClick} on:keydown={onGlobalKeydown} on:resize={onGlobalResize} />
 
 <style>
   .os-layout {
@@ -343,6 +491,32 @@
   .window-canvas {
     z-index: 1;
     pointer-events: none;
+  }
+
+  .site-context-menu {
+    position: fixed;
+    z-index: 50;
+    border: 1px solid;
+    background: white;
+    padding: 0.2rem;
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .site-context-menu button {
+    border: 1px solid transparent;
+    background: white;
+    text-align: left;
+    padding: 0.3rem 0.35rem;
+  }
+
+  .site-context-menu hr {
+    width: 100%;
+    border: 0;
+    border-top: 1px solid;
+    margin: 0.15rem 0;
   }
 
   @media (max-width: 860px) {

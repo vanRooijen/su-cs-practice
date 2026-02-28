@@ -57,6 +57,14 @@ export const CONTENT_ARTIFACTS = {
     "excerpt": "Collection of published department stories and updates.",
     "html": "<h2>Articles</h2>\n<ul>\n<li><a href=\"/reader/articles/hackathon-2026\">2026 SUDS Div and Conquer Web Development Hackathon</a></li>\n</ul>\n"
   },
+  "reader.help": {
+    "key": "reader.help",
+    "appId": "reader",
+    "subroute": "help",
+    "title": "Help",
+    "excerpt": "Quick help for navigating this site.",
+    "html": "<h2>Help</h2>\n<p>This website works like a small desktop.</p>\n<ul>\n<li>The URL decides which app and page is active.</li>\n<li>Apps stay open until you close their window.</li>\n<li>Sidebar entries represent open windows.</li>\n<li>Right-click anywhere and choose <strong>Help</strong> to return to this page.</li>\n</ul>\n<p>Lorem ipsum style tip: keep exploring by opening pages in new windows and switching focus from the sidebar.</p>\n"
+  },
   "reader.index": {
     "key": "reader.index",
     "appId": "reader",
