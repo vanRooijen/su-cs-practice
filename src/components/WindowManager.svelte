@@ -161,12 +161,17 @@
       <div class="desktop-layer">
         <h2>Desktop</h2>
 
-        <ul>
+        <ul class="desktop-icons">
           {#each desktopShortcuts as shortcut}
             <li>
-              <button type="button" on:click={() => openPath(shortcut.path)}>{shortcut.label}</button>
-              <button type="button" on:click={() => openPathInNewWindow(shortcut.path)}>
-                Open in new window
+              <button
+                type="button"
+                class="desktop-icon"
+                on:click={() => openPath(shortcut.path)}
+                title={shortcut.path}
+              >
+                <span class="desktop-icon-block" aria-hidden="true"></span>
+                <span class="desktop-icon-label">{shortcut.label}</span>
               </button>
             </li>
           {/each}
@@ -278,17 +283,49 @@
     padding: 0.5rem;
   }
 
-  .desktop-layer ul {
+  .desktop-icons {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 88px);
+    grid-auto-rows: min-content;
+    gap: 0.75rem;
     margin: 0;
-    padding-left: 1rem;
+    padding: 0.25rem;
+    list-style: none;
   }
 
-  .desktop-layer li {
-    margin-bottom: 0.45rem;
+  .desktop-icons li {
+    margin: 0;
+    padding: 0;
+  }
+
+  .desktop-icon {
+    width: 88px;
+    border: 1px solid transparent;
+    background: transparent;
+    padding: 0.3rem 0.2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+  }
+
+  .desktop-icon-block {
+    width: 40px;
+    height: 40px;
+    border: 1px solid;
+    display: block;
+  }
+
+  .desktop-icon-label {
+    text-align: center;
+    font-size: 0.8rem;
+    line-height: 1.2;
   }
 
   .window-canvas {
     z-index: 1;
+    pointer-events: none;
   }
 
   @media (max-width: 860px) {
