@@ -112,6 +112,81 @@ function clampPositionToWorkspace(workspaceRect, bounds, x, y) {
   };
 }
 
+function computeResizedBounds(workspaceRect, startBounds, edge, deltaX, deltaY) {
+  const minWidth = Math.min(MIN_WINDOW_WIDTH, workspaceRect.width);
+  const minHeight = Math.min(MIN_WINDOW_HEIGHT, workspaceRect.height);
+
+  let left = startBounds.x;
+  let top = startBounds.y;
+  let right = startBounds.x + startBounds.width;
+  let bottom = startBounds.y + startBounds.height;
+
+  if (edge.includes('e')) {
+    right += deltaX;
+  }
+
+  if (edge.includes('w')) {
+    left += deltaX;
+  }
+
+  if (edge.includes('s')) {
+    bottom += deltaY;
+  }
+
+  if (edge.includes('n')) {
+    top += deltaY;
+  }
+
+  if (edge.includes('w')) {
+    left = Math.min(left, right - minWidth);
+  }
+
+  if (edge.includes('e')) {
+    right = Math.max(right, left + minWidth);
+  }
+
+  if (edge.includes('n')) {
+    top = Math.min(top, bottom - minHeight);
+  }
+
+  if (edge.includes('s')) {
+    bottom = Math.max(bottom, top + minHeight);
+  }
+
+  left = clamp(left, 0, workspaceRect.width);
+  right = clamp(right, 0, workspaceRect.width);
+  top = clamp(top, 0, workspaceRect.height);
+  bottom = clamp(bottom, 0, workspaceRect.height);
+
+  if (right - left < minWidth) {
+    if (edge.includes('w')) {
+      left = right - minWidth;
+    } else {
+      right = left + minWidth;
+    }
+  }
+
+  if (bottom - top < minHeight) {
+    if (edge.includes('n')) {
+      top = bottom - minHeight;
+    } else {
+      bottom = top + minHeight;
+    }
+  }
+
+  left = clamp(left, 0, workspaceRect.width - minWidth);
+  right = clamp(right, minWidth, workspaceRect.width);
+  top = clamp(top, 0, workspaceRect.height - minHeight);
+  bottom = clamp(bottom, minHeight, workspaceRect.height);
+
+  return {
+    x: Math.round(left),
+    y: Math.round(top),
+    width: Math.round(right - left),
+    height: Math.round(bottom - top),
+  };
+}
+
 function moveToFront(state, windowId) {
   state.windowOrder = [...state.windowOrder.filter((id) => id !== windowId), windowId];
 }
@@ -424,6 +499,44 @@ function createWindowManagerStore() {
     });
   }
 
+  function resizeWindow(windowId, payload) {
+    store.update((state) => {
+      const target = state.windows[windowId];
+
+      if (!target || target.isMaximized) {
+        return state;
+      }
+
+      const edge = payload?.edge ?? '';
+      const startBounds = payload?.startBounds ?? target.bounds;
+      const deltaX = payload?.deltaX ?? 0;
+      const deltaY = payload?.deltaY ?? 0;
+
+      if (!edge) {
+        return state;
+      }
+
+      const nextBounds = computeResizedBounds(state.workspaceRect, startBounds, edge, deltaX, deltaY);
+
+      if (
+        nextBounds.x === target.bounds.x &&
+        nextBounds.y === target.bounds.y &&
+        nextBounds.width === target.bounds.width &&
+        nextBounds.height === target.bounds.height
+      ) {
+        return state;
+      }
+
+      const next = cloneState(state);
+      next.windows[windowId] = {
+        ...target,
+        bounds: nextBounds,
+      };
+
+      return next;
+    });
+  }
+
   function closeWindow(windowId, activePath = null) {
     let suggestedPath = null;
 
@@ -490,6 +603,7 @@ function createWindowManagerStore() {
     toggleMaximize,
     toggleSidebar,
     moveWindow,
+    resizeWindow,
     closeWindow,
     getDefaultPathForApp,
     getSnapshot,

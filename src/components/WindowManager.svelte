@@ -78,6 +78,15 @@
     windowManager.moveWindow(windowId, { x, y });
   }
 
+  function handleResize(windowId, edge, deltaX, deltaY, startBounds) {
+    windowManager.resizeWindow(windowId, {
+      edge,
+      deltaX,
+      deltaY,
+      startBounds,
+    });
+  }
+
   function handleClose(windowId) {
     const suggestedPath = windowManager.closeWindow(windowId, $route.path);
 
@@ -192,6 +201,14 @@
             on:maximize={(event) => handleMaximize(event.detail.windowId)}
             on:toggleSidebar={(event) => handleToggleSidebar(event.detail.windowId)}
             on:move={(event) => handleMove(event.detail.windowId, event.detail.x, event.detail.y)}
+            on:resize={(event) =>
+              handleResize(
+                event.detail.windowId,
+                event.detail.edge,
+                event.detail.deltaX,
+                event.detail.deltaY,
+                event.detail.startBounds,
+              )}
             on:close={(event) => handleClose(event.detail.windowId)}
           >
             <svelte:component

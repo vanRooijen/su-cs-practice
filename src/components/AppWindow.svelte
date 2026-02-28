@@ -6,7 +6,7 @@
   export let zIndex = 1;
 
   const dispatch = createEventDispatcher();
-  let dragState = null;
+  let interactionState = null;
 
   function requestFocus() {
     dispatch('focus', { windowId: windowState.windowId });
@@ -43,7 +43,8 @@
     }
 
     requestFocus();
-    dragState = {
+    interactionState = {
+      kind: 'drag',
       pointerId: event.pointerId,
       startPointerX: event.clientX,
       startPointerY: event.clientY,
@@ -54,31 +55,62 @@
     event.preventDefault();
   }
 
-  function handlePointerMove(event) {
-    if (!dragState || event.pointerId !== dragState.pointerId) {
+  function startResize(event, edge) {
+    if (event.button !== 0 || windowState.isMaximized) {
       return;
     }
 
-    const deltaX = event.clientX - dragState.startPointerX;
-    const deltaY = event.clientY - dragState.startPointerY;
+    event.stopPropagation();
+    requestFocus();
 
-    dispatch('move', {
+    interactionState = {
+      kind: 'resize',
+      edge,
+      pointerId: event.pointerId,
+      startPointerX: event.clientX,
+      startPointerY: event.clientY,
+      startBounds: { ...windowState.bounds },
+    };
+
+    event.preventDefault();
+  }
+
+  function handlePointerMove(event) {
+    if (!interactionState || event.pointerId !== interactionState.pointerId) {
+      return;
+    }
+
+    const deltaX = event.clientX - interactionState.startPointerX;
+    const deltaY = event.clientY - interactionState.startPointerY;
+
+    if (interactionState.kind === 'drag') {
+      dispatch('move', {
+        windowId: windowState.windowId,
+        x: interactionState.startWindowX + deltaX,
+        y: interactionState.startWindowY + deltaY,
+      });
+      return;
+    }
+
+    dispatch('resize', {
       windowId: windowState.windowId,
-      x: dragState.startWindowX + deltaX,
-      y: dragState.startWindowY + deltaY,
+      edge: interactionState.edge,
+      deltaX,
+      deltaY,
+      startBounds: interactionState.startBounds,
     });
   }
 
   function finishDrag(event) {
-    if (!dragState) {
+    if (!interactionState) {
       return;
     }
 
-    if (typeof event.pointerId === 'number' && event.pointerId !== dragState.pointerId) {
+    if (typeof event.pointerId === 'number' && event.pointerId !== interactionState.pointerId) {
       return;
     }
 
-    dragState = null;
+    interactionState = null;
   }
 
   $: bounds = windowState.bounds;
@@ -88,7 +120,7 @@
 
 <section
   class="app-window"
-  on:mousedown={requestFocus}
+  on:click={requestFocus}
   data-focused={isFocused}
   aria-hidden={windowState.isMinimized}
   style={`z-index:${zIndex};left:${bounds.x}px;top:${bounds.y}px;width:${bounds.width}px;height:${bounds.height}px;visibility:${visibility};pointer-events:${pointerEvents};`}
@@ -113,6 +145,65 @@
   <div class="window-body">
     <slot />
   </div>
+
+  {#if !windowState.isMaximized}
+    <button
+      type="button"
+      class="resize-handle resize-handle-n"
+      aria-label="Resize north"
+      tabindex="-1"
+      on:pointerdown={(event) => startResize(event, 'n')}
+    ></button>
+    <button
+      type="button"
+      class="resize-handle resize-handle-s"
+      aria-label="Resize south"
+      tabindex="-1"
+      on:pointerdown={(event) => startResize(event, 's')}
+    ></button>
+    <button
+      type="button"
+      class="resize-handle resize-handle-e"
+      aria-label="Resize east"
+      tabindex="-1"
+      on:pointerdown={(event) => startResize(event, 'e')}
+    ></button>
+    <button
+      type="button"
+      class="resize-handle resize-handle-w"
+      aria-label="Resize west"
+      tabindex="-1"
+      on:pointerdown={(event) => startResize(event, 'w')}
+    ></button>
+    <button
+      type="button"
+      class="resize-handle resize-handle-ne"
+      aria-label="Resize northeast"
+      tabindex="-1"
+      on:pointerdown={(event) => startResize(event, 'ne')}
+    ></button>
+    <button
+      type="button"
+      class="resize-handle resize-handle-nw"
+      aria-label="Resize northwest"
+      tabindex="-1"
+      on:pointerdown={(event) => startResize(event, 'nw')}
+    ></button>
+    <button
+      type="button"
+      class="resize-handle resize-handle-se"
+      aria-label="Resize southeast"
+      tabindex="-1"
+      on:pointerdown={(event) => startResize(event, 'se')}
+    ></button>
+    <button
+      type="button"
+      class="resize-handle resize-handle-sw"
+      aria-label="Resize southwest"
+      tabindex="-1"
+      on:pointerdown={(event) => startResize(event, 'sw')}
+    ></button>
+  {/if}
 </section>
 
 <svelte:window on:pointermove={handlePointerMove} on:pointerup={finishDrag} on:pointercancel={finishDrag} />
@@ -137,6 +228,7 @@
     padding: 0.25rem;
     cursor: move;
     user-select: none;
+    touch-action: none;
   }
 
   .window-header-left {
@@ -161,5 +253,79 @@
     flex: 1;
     min-height: 0;
     overflow: hidden;
+  }
+
+  .resize-handle {
+    position: absolute;
+    border: none;
+    background: transparent;
+    margin: 0;
+    padding: 0;
+    z-index: 2;
+    touch-action: none;
+  }
+
+  .resize-handle-n {
+    top: -4px;
+    left: 8px;
+    right: 8px;
+    height: 8px;
+    cursor: ns-resize;
+  }
+
+  .resize-handle-s {
+    bottom: -4px;
+    left: 8px;
+    right: 8px;
+    height: 8px;
+    cursor: ns-resize;
+  }
+
+  .resize-handle-e {
+    right: -4px;
+    top: 8px;
+    bottom: 8px;
+    width: 8px;
+    cursor: ew-resize;
+  }
+
+  .resize-handle-w {
+    left: -4px;
+    top: 8px;
+    bottom: 8px;
+    width: 8px;
+    cursor: ew-resize;
+  }
+
+  .resize-handle-ne {
+    top: -5px;
+    right: -5px;
+    width: 12px;
+    height: 12px;
+    cursor: nesw-resize;
+  }
+
+  .resize-handle-nw {
+    top: -5px;
+    left: -5px;
+    width: 12px;
+    height: 12px;
+    cursor: nwse-resize;
+  }
+
+  .resize-handle-se {
+    bottom: -5px;
+    right: -5px;
+    width: 12px;
+    height: 12px;
+    cursor: nwse-resize;
+  }
+
+  .resize-handle-sw {
+    bottom: -5px;
+    left: -5px;
+    width: 12px;
+    height: 12px;
+    cursor: nesw-resize;
   }
 </style>
