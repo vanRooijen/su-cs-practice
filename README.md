@@ -1,0 +1,57 @@
+# SU CS Practice - OS Style SPA
+
+Static SPA using:
+
+- Vite + Svelte (no SvelteKit)
+- Manual History API routing
+- WindowManager root with persistent window instances
+- Svelte stores
+- Scoped CSS (minimal structural styles only)
+
+## Run
+
+```bash
+npm install
+npm run dev
+```
+
+## Build
+
+```bash
+npm run build
+npm run preview
+```
+
+## URL and Window Behavior
+
+- Route format: `/{appId}/{subroute...}`
+- Layer 1 selects app, layer 2 is subroute/content identity.
+- Normal navigation focuses a matching window by `(appId, fullPath)`.
+- Forced duplicates are supported via explicit "Open in new window" actions.
+- Back/Forward focuses/restores target identity and does not close windows.
+
+## Main UI Containers
+
+- Topbar
+- Sidebar (one entry per open window instance)
+- Workspace
+  - Desktop layer
+  - Window canvas layer
+
+## Content Pipeline
+
+Markdown content is authored separately and compiled before `dev/build`:
+
+- Source: `content/**/*.md`
+- Builder: `scripts/build-content.mjs`
+- Generated artifacts: `src/generated/content-artifacts.js`
+
+## Core Files
+
+- `src/lib/navigation/historyRouter.js`
+- `src/lib/window/windowManagerStore.js`
+- `src/components/WindowManager.svelte`
+- `src/components/AppWindow.svelte`
+- `src/apps/HomeApp.svelte`
+- `src/apps/PeopleApp.svelte`
+- `src/apps/ReaderApp.svelte`

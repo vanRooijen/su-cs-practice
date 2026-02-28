@@ -1,0 +1,20 @@
+{
+  "name": "su-cs-practice",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "content:build": "node scripts/build-content.mjs",
+    "predev": "npm run content:build",
+    "prebuild": "npm run content:build"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^6.2.1",
+    "marked": "^17.0.3",
+    "svelte": "^5.45.2",
+    "vite": "^7.3.1"
+  }
+}
