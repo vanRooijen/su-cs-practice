@@ -3,6 +3,7 @@ import { APP_REGISTRY, DEFAULT_APP_ID } from './appRegistry.js';
 
 const MIN_WINDOW_WIDTH = 420;
 const MIN_WINDOW_HEIGHT = 280;
+const MAX_WINDOW_HISTORY_ENTRIES = 10;
 
 function cloneBounds(bounds) {
   return {
@@ -187,6 +188,60 @@ function computeResizedBounds(workspaceRect, startBounds, edge, deltaX, deltaY) 
   };
 }
 
+function createHistoryEntry(route) {
+  return {
+    path: route.path,
+    subroute: route.subroute,
+    routeKey: route.routeKey,
+  };
+}
+
+function createWindowHistory(route) {
+  return {
+    entries: [createHistoryEntry(route)],
+    index: 0,
+  };
+}
+
+function pushWindowHistory(history, route) {
+  const currentEntry = history.entries[history.index];
+  if (currentEntry?.path === route.path) {
+    return history;
+  }
+
+  const backEntry = history.entries[history.index - 1];
+  if (backEntry?.path === route.path) {
+    return {
+      ...history,
+      index: history.index - 1,
+    };
+  }
+
+  const forwardEntry = history.entries[history.index + 1];
+  if (forwardEntry?.path === route.path) {
+    return {
+      ...history,
+      index: history.index + 1,
+    };
+  }
+
+  const nextEntries = [...history.entries.slice(0, history.index + 1), createHistoryEntry(route)];
+
+  const overflowCount = Math.max(0, nextEntries.length - MAX_WINDOW_HISTORY_ENTRIES);
+  const trimmedEntries = overflowCount > 0 ? nextEntries.slice(overflowCount) : nextEntries;
+
+  return {
+    entries: trimmedEntries,
+    index: trimmedEntries.length - 1,
+  };
+}
+
+function canStepWindowHistory(windowState, direction) {
+  const delta = direction === 'back' ? -1 : 1;
+  const nextIndex = windowState.history.index + delta;
+  return nextIndex >= 0 && nextIndex < windowState.history.entries.length;
+}
+
 function moveToFront(state, windowId) {
   state.windowOrder = [...state.windowOrder.filter((id) => id !== windowId), windowId];
 }
@@ -268,11 +323,13 @@ function createWindowFromRoute(state, route) {
     routeKey: route.routeKey,
     routeLabel: toLastSegmentLabel(route.path),
     hasSidebar: Boolean(appConfig?.hasSidebar),
+    showWindowHistoryNavigation: Boolean(appConfig?.enableWindowHistoryNavigation),
     isSidebarCollapsed: false,
     isMinimized: false,
     isMaximized: false,
     bounds,
     restoreBounds: cloneBounds(bounds),
+    history: createWindowHistory(route),
     createdAt: Date.now(),
     lastFocusedAt: Date.now(),
   };
@@ -302,12 +359,14 @@ function createWindowManagerStore() {
         targetWindowId = createWindowFromRoute(next, route);
       } else {
         const target = next.windows[targetWindowId];
+        const nextHistory = pushWindowHistory(target.history, route);
         next.windows[targetWindowId] = {
           ...target,
           path: route.path,
           subroute: route.subroute,
           routeKey: route.routeKey,
           routeLabel: toLastSegmentLabel(route.path),
+          history: nextHistory,
         };
       }
 
@@ -554,6 +613,46 @@ function createWindowManagerStore() {
     });
   }
 
+  function stepWindowHistory(windowId, direction) {
+    let targetPath = null;
+
+    store.update((state) => {
+      const target = state.windows[windowId];
+
+      if (!target?.history || !canStepWindowHistory(target, direction)) {
+        return state;
+      }
+
+      const delta = direction === 'back' ? -1 : 1;
+      const nextIndex = target.history.index + delta;
+      const historyEntry = target.history.entries[nextIndex];
+
+      if (!historyEntry) {
+        return state;
+      }
+
+      const next = cloneState(state);
+      next.windows[windowId] = {
+        ...target,
+        path: historyEntry.path,
+        subroute: historyEntry.subroute,
+        routeKey: historyEntry.routeKey,
+        routeLabel: toLastSegmentLabel(historyEntry.path),
+        history: {
+          ...target.history,
+          index: nextIndex,
+        },
+      };
+
+      focusWindow(next, windowId, { restoreMinimized: true });
+      targetPath = historyEntry.path;
+
+      return next;
+    });
+
+    return targetPath;
+  }
+
   function closeWindow(windowId, activePath = null) {
     let suggestedPath = null;
 
@@ -621,6 +720,7 @@ function createWindowManagerStore() {
     toggleSidebar,
     moveWindow,
     resizeWindow,
+    stepWindowHistory,
     closeWindow,
     getDefaultPathForApp,
     getSnapshot,

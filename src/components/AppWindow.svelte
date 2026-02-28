@@ -32,6 +32,16 @@
     dispatch('toggleSidebar', { windowId: windowState.windowId });
   }
 
+  function requestHistoryBack(event) {
+    event.stopPropagation();
+    dispatch('historyBack', { windowId: windowState.windowId });
+  }
+
+  function requestHistoryForward(event) {
+    event.stopPropagation();
+    dispatch('historyForward', { windowId: windowState.windowId });
+  }
+
   function startDrag(event) {
     if (event.button !== 0 || windowState.isMaximized) {
       return;
@@ -116,6 +126,10 @@
   $: bounds = windowState.bounds;
   $: visibility = windowState.isMinimized ? 'hidden' : 'visible';
   $: pointerEvents = windowState.isMinimized ? 'none' : 'auto';
+  $: historyIndex = windowState.history?.index ?? 0;
+  $: historyLength = windowState.history?.entries?.length ?? 0;
+  $: canGoBack = historyIndex > 0;
+  $: canGoForward = historyIndex < historyLength - 1;
 </script>
 
 <section
@@ -127,6 +141,20 @@
 >
   <header class="window-header" role="group" aria-label="Window header" on:pointerdown={startDrag}>
     <div class="window-header-left">
+      {#if windowState.showWindowHistoryNavigation}
+        <button type="button" disabled={!canGoBack} on:click={requestHistoryBack} aria-label="Back in app">
+          &lt;
+        </button>
+        <button
+          type="button"
+          disabled={!canGoForward}
+          on:click={requestHistoryForward}
+          aria-label="Forward in app"
+        >
+          &gt;
+        </button>
+      {/if}
+
       {#if windowState.hasSidebar}
         <button type="button" on:click={requestSidebarToggle} aria-label="Toggle app sidebar">Sidebar</button>
       {/if}

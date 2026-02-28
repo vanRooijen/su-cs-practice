@@ -218,6 +218,22 @@
     });
   }
 
+  function handleWindowHistoryBack(windowId) {
+    const targetPath = windowManager.stepWindowHistory(windowId, 'back');
+
+    if (targetPath && targetPath !== $route.path) {
+      navigateTo(targetPath, { replace: true, forceEmit: true });
+    }
+  }
+
+  function handleWindowHistoryForward(windowId) {
+    const targetPath = windowManager.stepWindowHistory(windowId, 'forward');
+
+    if (targetPath && targetPath !== $route.path) {
+      navigateTo(targetPath, { replace: true, forceEmit: true });
+    }
+  }
+
   function handleClose(windowId) {
     const suggestedPath = windowManager.closeWindow(windowId, $route.path);
 
@@ -337,6 +353,8 @@
             on:minimize={(event) => handleMinimize(event.detail.windowId)}
             on:maximize={(event) => handleMaximize(event.detail.windowId)}
             on:toggleSidebar={(event) => handleToggleSidebar(event.detail.windowId)}
+            on:historyBack={(event) => handleWindowHistoryBack(event.detail.windowId)}
+            on:historyForward={(event) => handleWindowHistoryForward(event.detail.windowId)}
             on:move={(event) => handleMove(event.detail.windowId, event.detail.x, event.detail.y)}
             on:resize={(event) =>
               handleResize(

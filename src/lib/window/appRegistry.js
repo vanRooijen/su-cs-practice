@@ -26,6 +26,7 @@ export const APP_REGISTRY = {
     defaultSubroute: '',
     hasSidebar: false,
     resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
+    enableWindowHistoryNavigation: false,
   },
   people: {
     id: 'people',
@@ -34,6 +35,7 @@ export const APP_REGISTRY = {
     defaultSubroute: '',
     hasSidebar: true,
     resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
+    enableWindowHistoryNavigation: true,
   },
   reader: {
     id: 'reader',
@@ -42,6 +44,7 @@ export const APP_REGISTRY = {
     defaultSubroute: 'articles',
     hasSidebar: true,
     resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
+    enableWindowHistoryNavigation: true,
   },
 };
 
