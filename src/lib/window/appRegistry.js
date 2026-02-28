@@ -4,6 +4,20 @@ import ReaderApp from '../../apps/ReaderApp.svelte';
 
 export const DEFAULT_APP_ID = 'home';
 
+function reuseFocusedOrTopMostWindow(context) {
+  const { appWindowIds, focusedWindowId } = context;
+
+  if (!appWindowIds.length) {
+    return null;
+  }
+
+  if (focusedWindowId && appWindowIds.includes(focusedWindowId)) {
+    return focusedWindowId;
+  }
+
+  return appWindowIds.at(-1);
+}
+
 export const APP_REGISTRY = {
   home: {
     id: 'home',
@@ -11,6 +25,7 @@ export const APP_REGISTRY = {
     component: HomeApp,
     defaultSubroute: '',
     hasSidebar: false,
+    resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
   },
   people: {
     id: 'people',
@@ -18,6 +33,7 @@ export const APP_REGISTRY = {
     component: PeopleApp,
     defaultSubroute: '',
     hasSidebar: true,
+    resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
   },
   reader: {
     id: 'reader',
@@ -25,6 +41,7 @@ export const APP_REGISTRY = {
     component: ReaderApp,
     defaultSubroute: 'articles',
     hasSidebar: true,
+    resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
   },
 };
 

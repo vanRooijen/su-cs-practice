@@ -209,17 +209,34 @@ function focusWindow(state, windowId, options = {}) {
   state.focusedWindowId = windowId;
 }
 
-function topWindowMatchingRoute(state, routeKey) {
-  for (let index = state.windowOrder.length - 1; index >= 0; index -= 1) {
-    const id = state.windowOrder[index];
-    const win = state.windows[id];
+function listWindowsForApp(state, appId) {
+  return state.windowOrder.filter((id) => state.windows[id]?.appId === appId);
+}
 
-    if (win?.routeKey === routeKey) {
-      return id;
+function resolveNavigationWindowForApp(state, route) {
+  const appConfig = APP_REGISTRY[route.appId];
+  const appWindowIds = listWindowsForApp(state, route.appId);
+
+  if (!appWindowIds.length) {
+    return null;
+  }
+
+  if (typeof appConfig?.resolveNavigationWindowId === 'function') {
+    const selected = appConfig.resolveNavigationWindowId({
+      appId: route.appId,
+      appWindowIds,
+      focusedWindowId: state.focusedWindowId,
+      windowOrder: state.windowOrder,
+      windows: state.windows,
+      route,
+    });
+
+    if (selected && state.windows[selected]?.appId === route.appId) {
+      return selected;
     }
   }
 
-  return null;
+  return appWindowIds.at(-1) ?? null;
 }
 
 function highestVisibleWindowId(state) {
@@ -279,7 +296,7 @@ function createWindowManagerStore() {
       };
 
       const shouldForceDuplicate = route.openMode === 'new-window';
-      let targetWindowId = shouldForceDuplicate ? null : topWindowMatchingRoute(next, route.routeKey);
+      let targetWindowId = shouldForceDuplicate ? null : resolveNavigationWindowForApp(next, route);
 
       if (!targetWindowId) {
         targetWindowId = createWindowFromRoute(next, route);
