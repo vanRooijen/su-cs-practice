@@ -1,5 +1,9 @@
 import { get, writable } from 'svelte/store';
-import { APP_REGISTRY, DEFAULT_APP_ID } from '../window/appRegistry.js';
+import {
+  APP_DEFINITIONS,
+  DEFAULT_APP_ID,
+  NOT_FOUND_APP_ID,
+} from './siteManifest.js';
 
 let navigationSequence = 0;
 let hasInitialized = false;
@@ -17,6 +21,11 @@ function toSegments(pathname = '/') {
   return trimSlashes(pathOnly)
     .split('/')
     .filter(Boolean);
+}
+
+function normalizePathname(pathname = '/') {
+  const segments = toSegments(pathname);
+  return segments.length ? `/${segments.join('/')}` : '/';
 }
 
 function normalizeSubroute(subroute = '') {
@@ -39,7 +48,7 @@ export function parsePath(pathname = '/') {
   const segments = toSegments(pathname);
   const candidateAppId = (segments[0] ?? '').toLowerCase();
 
-  if (!candidateAppId || !APP_REGISTRY[candidateAppId]) {
+  if (!candidateAppId) {
     const canonicalPath = buildAppPath(DEFAULT_APP_ID);
     return {
       appId: DEFAULT_APP_ID,
@@ -47,6 +56,19 @@ export function parsePath(pathname = '/') {
       canonicalPath,
       routeKey: toRouteKey(DEFAULT_APP_ID, canonicalPath),
       shouldCanonicalize: true,
+    };
+  }
+
+  if (!APP_DEFINITIONS[candidateAppId]) {
+    const canonicalPath = normalizePathname(pathname);
+    const subroute = trimSlashes(canonicalPath);
+
+    return {
+      appId: NOT_FOUND_APP_ID,
+      subroute,
+      canonicalPath,
+      routeKey: toRouteKey(NOT_FOUND_APP_ID, canonicalPath),
+      shouldCanonicalize: ensureLeadingSlash(pathname) !== canonicalPath,
     };
   }
 

@@ -1,5 +1,6 @@
 <script>
   import ContentRegion from '../components/ContentRegion.svelte';
+  import { APP_NAV_LINKS } from '../lib/navigation/siteManifest.js';
   import { listReaderArticles, resolveContent } from '../lib/content/resolveContent.js';
 
   export let subroute = '';
@@ -17,8 +18,11 @@
     <aside>
       <h3>Reader</h3>
       <nav aria-label="Reader sections">
-        <a href="/reader" aria-current={activePath === '/reader' ? 'page' : undefined}>Overview</a>
-        <a href="/reader/articles" aria-current={activePath === '/reader/articles' ? 'page' : undefined}>Articles</a>
+        {#each APP_NAV_LINKS.reader as section}
+          <a href={section.href} aria-current={activePath === section.href ? 'page' : undefined}>
+            {section.label}
+          </a>
+        {/each}
       </nav>
 
       <h4>Entries</h4>
@@ -30,9 +34,6 @@
             <a href={path} data-open-in-new-window="true">Open in new window</a>
           </li>
         {/each}
-        <li>
-          <a href="/reader/help" aria-current={activePath === '/reader/help' ? 'page' : undefined}>Help</a>
-        </li>
       </ul>
     </aside>
   {/if}

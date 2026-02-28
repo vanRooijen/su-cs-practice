@@ -1,16 +1,10 @@
 <script>
   import ContentRegion from '../components/ContentRegion.svelte';
+  import { APP_NAV_LINKS } from '../lib/navigation/siteManifest.js';
   import { resolveContent } from '../lib/content/resolveContent.js';
 
   export let subroute = '';
   export let sidebarCollapsed = false;
-
-  const sections = [
-    { label: 'Overview', href: '/people' },
-    { label: 'Staff', href: '/people/staff' },
-    { label: 'Students', href: '/people/students' },
-    { label: 'Alumni', href: '/people/alumni' },
-  ];
 
   $: normalizedSubroute = subroute.replace(/^\/+|\/+$/g, '');
   $: activePath = normalizedSubroute ? `/people/${normalizedSubroute}` : '/people';
@@ -22,7 +16,7 @@
     <aside>
       <h3>People Sections</h3>
       <nav aria-label="People sections">
-        {#each sections as section}
+        {#each APP_NAV_LINKS.people as section}
           <a href={section.href} aria-current={activePath === section.href ? 'page' : undefined}>
             {section.label}
           </a>

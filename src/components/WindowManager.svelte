@@ -1,22 +1,10 @@
 <script>
   import { onMount, tick } from 'svelte';
   import { APP_REGISTRY } from '../lib/window/appRegistry.js';
+  import { DESKTOP_SHORTCUTS, TOPBAR_LINKS } from '../lib/navigation/siteManifest.js';
   import { navigateTo, openInNewWindow, route } from '../lib/navigation/historyRouter.js';
   import { windowManager } from '../lib/window/windowManagerStore.js';
   import AppWindow from './AppWindow.svelte';
-
-  const topbarLinks = [
-    { label: 'home', path: '/home' },
-    { label: 'people', path: '/people' },
-    { label: 'article', path: '/reader/articles' },
-  ];
-
-  const desktopShortcuts = [
-    { label: 'Home', path: '/home' },
-    { label: 'People Staff', path: '/people/staff' },
-    { label: 'People Students', path: '/people/students' },
-    { label: 'Reader Hackathon', path: '/reader/articles/hackathon-2026' },
-  ];
 
   let workspaceElement;
   let contextMenuElement;
@@ -276,7 +264,7 @@
     <div class="site-block" aria-hidden="true"></div>
 
     <nav aria-label="Topbar app links">
-      {#each topbarLinks as link}
+      {#each TOPBAR_LINKS as link}
         <button
           type="button"
           data-context-path={link.path}
@@ -323,7 +311,7 @@
         <h2>Desktop</h2>
 
         <ul class="desktop-icons">
-          {#each desktopShortcuts as shortcut}
+          {#each DESKTOP_SHORTCUTS as shortcut}
             <li>
               <button
                 type="button"

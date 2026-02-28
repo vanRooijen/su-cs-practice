@@ -1,5 +1,5 @@
 import { get, writable } from 'svelte/store';
-import { APP_REGISTRY, DEFAULT_APP_ID } from './appRegistry.js';
+import { APP_DEFINITIONS, DEFAULT_APP_ID } from '../navigation/siteManifest.js';
 
 const MIN_WINDOW_WIDTH = 420;
 const MIN_WINDOW_HEIGHT = 280;
@@ -286,7 +286,7 @@ function listWindowsForApp(state, appId) {
 }
 
 function resolveNavigationWindowForApp(state, route) {
-  const appConfig = APP_REGISTRY[route.appId];
+  const appConfig = APP_DEFINITIONS[route.appId];
   const appWindowIds = listWindowsForApp(state, route.appId);
 
   if (!appWindowIds.length) {
@@ -324,7 +324,7 @@ function highestVisibleWindowId(state) {
 }
 
 function createWindowFromRoute(state, route) {
-  const appConfig = APP_REGISTRY[route.appId];
+  const appConfig = APP_DEFINITIONS[route.appId];
   const windowId = state.nextWindowId;
 
   state.nextWindowId += 1;
@@ -356,7 +356,7 @@ function createWindowFromRoute(state, route) {
   return windowId;
 }
 
-function createWindowManagerStore() {
+export function createWindowManagerStore() {
   const store = writable(createInitialState());
 
   function applyRoute(route) {
@@ -715,7 +715,7 @@ function createWindowManagerStore() {
   }
 
   function getDefaultPathForApp(appId) {
-    const app = APP_REGISTRY[appId] ?? APP_REGISTRY[DEFAULT_APP_ID];
+    const app = APP_DEFINITIONS[appId] ?? APP_DEFINITIONS[DEFAULT_APP_ID];
     const subroute = app.defaultSubroute ?? '';
 
     return subroute ? `/${app.id}/${subroute}` : `/${app.id}`;
