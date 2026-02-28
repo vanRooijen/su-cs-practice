@@ -1,12 +1,51 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onDestroy } from 'svelte';
 
   export let windowState;
   export let isFocused = false;
   export let zIndex = 1;
 
   const dispatch = createEventDispatcher();
+  let windowElement;
   let interactionState = null;
+  let interactionSourceElement = null;
+  let hasWindowInteractionListeners = false;
+
+  function addWindowInteractionListeners() {
+    if (hasWindowInteractionListeners) {
+      return;
+    }
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', finishDrag);
+    window.addEventListener('pointercancel', finishDrag);
+    hasWindowInteractionListeners = true;
+  }
+
+  function removeWindowInteractionListeners() {
+    if (!hasWindowInteractionListeners) {
+      return;
+    }
+
+    window.removeEventListener('pointermove', handlePointerMove);
+    window.removeEventListener('pointerup', finishDrag);
+    window.removeEventListener('pointercancel', finishDrag);
+    hasWindowInteractionListeners = false;
+  }
+
+  function capturePointer(sourceElement, pointerId) {
+    if (!(sourceElement instanceof Element)) {
+      return false;
+    }
+
+    try {
+      sourceElement.setPointerCapture(pointerId);
+      return true;
+    } catch {
+      // Ignore: capture can fail if the pointer is no longer active.
+      return false;
+    }
+  }
 
   function requestFocus() {
     dispatch('focus', { windowId: windowState.windowId });
@@ -61,7 +100,10 @@
       startWindowX: windowState.bounds.x,
       startWindowY: windowState.bounds.y,
     };
+    interactionSourceElement = event.currentTarget instanceof Element ? event.currentTarget : windowElement;
 
+    capturePointer(interactionSourceElement, event.pointerId);
+    addWindowInteractionListeners();
     event.preventDefault();
   }
 
@@ -81,7 +123,10 @@
       startPointerY: event.clientY,
       startBounds: { ...windowState.bounds },
     };
+    interactionSourceElement = event.currentTarget instanceof Element ? event.currentTarget : windowElement;
 
+    capturePointer(interactionSourceElement, event.pointerId);
+    addWindowInteractionListeners();
     event.preventDefault();
   }
 
@@ -120,8 +165,22 @@
       return;
     }
 
+    const pointerId = interactionState.pointerId;
+    const sourceElement = interactionSourceElement;
     interactionState = null;
+    interactionSourceElement = null;
+    removeWindowInteractionListeners();
+
+    if (sourceElement?.hasPointerCapture(pointerId)) {
+      sourceElement.releasePointerCapture(pointerId);
+    }
   }
+
+  onDestroy(() => {
+    interactionState = null;
+    interactionSourceElement = null;
+    removeWindowInteractionListeners();
+  });
 
   $: bounds = windowState.bounds;
   $: visibility = windowState.isMinimized ? 'hidden' : 'visible';
@@ -134,6 +193,7 @@
 
 <section
   class="app-window"
+  bind:this={windowElement}
   on:click={requestFocus}
   data-focused={isFocused}
   aria-hidden={windowState.isMinimized}
@@ -233,8 +293,6 @@
     ></button>
   {/if}
 </section>
-
-<svelte:window on:pointermove={handlePointerMove} on:pointerup={finishDrag} on:pointercancel={finishDrag} />
 
 <style>
   .app-window {
