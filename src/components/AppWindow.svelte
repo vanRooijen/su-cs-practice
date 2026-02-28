@@ -10,6 +10,8 @@
   let interactionState = null;
   let interactionSourceElement = null;
   let hasWindowInteractionListeners = false;
+  let interactionFrameRequestId = 0;
+  let latestPointerPosition = null;
 
   function addWindowInteractionListeners() {
     if (hasWindowInteractionListeners) {
@@ -45,6 +47,59 @@
       // Ignore: capture can fail if the pointer is no longer active.
       return false;
     }
+  }
+
+  function emitInteractionAt(clientX, clientY) {
+    if (!interactionState) {
+      return;
+    }
+
+    const deltaX = clientX - interactionState.startPointerX;
+    const deltaY = clientY - interactionState.startPointerY;
+
+    if (interactionState.kind === 'drag') {
+      dispatch('move', {
+        windowId: windowState.windowId,
+        x: interactionState.startWindowX + deltaX,
+        y: interactionState.startWindowY + deltaY,
+      });
+      return;
+    }
+
+    dispatch('resize', {
+      windowId: windowState.windowId,
+      edge: interactionState.edge,
+      deltaX,
+      deltaY,
+      startBounds: interactionState.startBounds,
+    });
+  }
+
+  function flushInteractionFrame() {
+    interactionFrameRequestId = 0;
+
+    if (!interactionState || !latestPointerPosition) {
+      return;
+    }
+
+    emitInteractionAt(latestPointerPosition.x, latestPointerPosition.y);
+  }
+
+  function requestInteractionFrame() {
+    if (interactionFrameRequestId !== 0) {
+      return;
+    }
+
+    interactionFrameRequestId = window.requestAnimationFrame(flushInteractionFrame);
+  }
+
+  function cancelInteractionFrame() {
+    if (interactionFrameRequestId !== 0) {
+      window.cancelAnimationFrame(interactionFrameRequestId);
+      interactionFrameRequestId = 0;
+    }
+
+    latestPointerPosition = null;
   }
 
   function requestFocus() {
@@ -135,25 +190,11 @@
       return;
     }
 
-    const deltaX = event.clientX - interactionState.startPointerX;
-    const deltaY = event.clientY - interactionState.startPointerY;
-
-    if (interactionState.kind === 'drag') {
-      dispatch('move', {
-        windowId: windowState.windowId,
-        x: interactionState.startWindowX + deltaX,
-        y: interactionState.startWindowY + deltaY,
-      });
-      return;
-    }
-
-    dispatch('resize', {
-      windowId: windowState.windowId,
-      edge: interactionState.edge,
-      deltaX,
-      deltaY,
-      startBounds: interactionState.startBounds,
-    });
+    latestPointerPosition = {
+      x: event.clientX,
+      y: event.clientY,
+    };
+    requestInteractionFrame();
   }
 
   function finishDrag(event) {
@@ -165,10 +206,15 @@
       return;
     }
 
+    if (typeof event.clientX === 'number' && typeof event.clientY === 'number') {
+      emitInteractionAt(event.clientX, event.clientY);
+    }
+
     const pointerId = interactionState.pointerId;
     const sourceElement = interactionSourceElement;
     interactionState = null;
     interactionSourceElement = null;
+    cancelInteractionFrame();
     removeWindowInteractionListeners();
 
     if (sourceElement?.hasPointerCapture(pointerId)) {
@@ -179,6 +225,7 @@
   onDestroy(() => {
     interactionState = null;
     interactionSourceElement = null;
+    cancelInteractionFrame();
     removeWindowInteractionListeners();
   });
 
