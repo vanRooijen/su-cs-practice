@@ -53,6 +53,11 @@
       return null;
     }
 
+    const pathSource = target.closest('[data-context-path]');
+    if (pathSource?.dataset.contextPath) {
+      return pathSource.dataset.contextPath;
+    }
+
     const anchor = target.closest('a[href]');
     if (!anchor) {
       return null;
@@ -256,7 +261,13 @@
 
     <nav aria-label="Topbar app links">
       {#each topbarLinks as link}
-        <button type="button" on:click={() => openPath(link.path)}>{link.label}</button>
+        <button
+          type="button"
+          data-context-path={link.path}
+          on:click={() => openPath(link.path)}
+        >
+          {link.label}
+        </button>
       {/each}
     </nav>
   </header>
@@ -277,6 +288,7 @@
           <button
             type="button"
             class="entry-main"
+            data-context-path={win.path}
             data-focused={$windowManager.focusedWindowId === windowId && !win.isMinimized}
             on:click={() => activateSidebarEntry(windowId)}
           >
@@ -286,8 +298,6 @@
               <small>(minimized)</small>
             {/if}
           </button>
-
-          <button type="button" on:click={() => openPathInNewWindow(win.path)}>New</button>
         </div>
       {/each}
     </aside>
@@ -302,6 +312,7 @@
               <button
                 type="button"
                 class="desktop-icon"
+                data-context-path={shortcut.path}
                 on:click={() => openPath(shortcut.path)}
                 title={shortcut.path}
               >
@@ -415,9 +426,7 @@
   }
 
   .sidebar-entry {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 0.3rem;
+    display: block;
     margin-bottom: 0.3rem;
   }
 
