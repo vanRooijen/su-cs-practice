@@ -51,6 +51,23 @@ function clamp(value, minimum, maximum) {
   return Math.max(minimum, Math.min(value, maximum));
 }
 
+function clampBoundsToWorkspace(workspaceRect, bounds) {
+  const minWidth = Math.min(MIN_WINDOW_WIDTH, workspaceRect.width);
+  const minHeight = Math.min(MIN_WINDOW_HEIGHT, workspaceRect.height);
+  const width = clamp(Math.round(bounds.width), minWidth, workspaceRect.width);
+  const height = clamp(Math.round(bounds.height), minHeight, workspaceRect.height);
+
+  const maxX = Math.max(0, workspaceRect.width - width);
+  const maxY = Math.max(0, workspaceRect.height - height);
+
+  return {
+    x: clamp(Math.round(bounds.x), 0, maxX),
+    y: clamp(Math.round(bounds.y), 0, maxY),
+    width,
+    height,
+  };
+}
+
 function normalizeTitleSegment(segment = '') {
   const cleaned = segment
     .replace(/[-_]+/g, ' ')
@@ -398,8 +415,13 @@ function createWindowManagerStore() {
         }
 
         if (win.isMaximized) {
+          const nextRestoreBounds = win.restoreBounds
+            ? clampBoundsToWorkspace(next.workspaceRect, win.restoreBounds)
+            : makeCenteredBounds(next.workspaceRect, windowId);
+
           next.windows[windowId] = {
             ...win,
+            restoreBounds: cloneBounds(nextRestoreBounds),
             bounds: {
               x: 0,
               y: 0,
@@ -410,20 +432,11 @@ function createWindowManagerStore() {
           continue;
         }
 
-        const width = clamp(win.bounds.width, MIN_WINDOW_WIDTH, normalizedWidth);
-        const height = clamp(win.bounds.height, MIN_WINDOW_HEIGHT, normalizedHeight);
-
-        const maxX = Math.max(0, normalizedWidth - width);
-        const maxY = Math.max(0, normalizedHeight - height);
+        const nextBounds = clampBoundsToWorkspace(next.workspaceRect, win.bounds);
 
         next.windows[windowId] = {
           ...win,
-          bounds: {
-            x: clamp(win.bounds.x, 0, maxX),
-            y: clamp(win.bounds.y, 0, maxY),
-            width,
-            height,
-          },
+          bounds: nextBounds,
         };
       }
 
@@ -501,10 +514,13 @@ function createWindowManagerStore() {
 
       if (current.isMaximized) {
         const restored = current.restoreBounds ?? makeCenteredBounds(next.workspaceRect, windowId);
+        const restoredBounds = clampBoundsToWorkspace(next.workspaceRect, restored);
+
         next.windows[windowId] = {
           ...current,
           isMaximized: false,
-          bounds: cloneBounds(restored),
+          bounds: cloneBounds(restoredBounds),
+          restoreBounds: cloneBounds(restoredBounds),
         };
       } else {
         next.windows[windowId] = {
