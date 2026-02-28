@@ -102,6 +102,16 @@ function makeCenteredBounds(workspaceRect, seed) {
   };
 }
 
+function clampPositionToWorkspace(workspaceRect, bounds, x, y) {
+  const maxX = Math.max(0, workspaceRect.width - bounds.width);
+  const maxY = Math.max(0, workspaceRect.height - bounds.height);
+
+  return {
+    x: clamp(Math.round(x), 0, maxX),
+    y: clamp(Math.round(y), 0, maxY),
+  };
+}
+
 function moveToFront(state, windowId) {
   state.windowOrder = [...state.windowOrder.filter((id) => id !== windowId), windowId];
 }
@@ -381,6 +391,39 @@ function createWindowManagerStore() {
     });
   }
 
+  function moveWindow(windowId, position) {
+    store.update((state) => {
+      const target = state.windows[windowId];
+
+      if (!target || target.isMaximized) {
+        return state;
+      }
+
+      const nextPosition = clampPositionToWorkspace(
+        state.workspaceRect,
+        target.bounds,
+        position?.x ?? target.bounds.x,
+        position?.y ?? target.bounds.y,
+      );
+
+      if (nextPosition.x === target.bounds.x && nextPosition.y === target.bounds.y) {
+        return state;
+      }
+
+      const next = cloneState(state);
+      next.windows[windowId] = {
+        ...target,
+        bounds: {
+          ...target.bounds,
+          x: nextPosition.x,
+          y: nextPosition.y,
+        },
+      };
+
+      return next;
+    });
+  }
+
   function closeWindow(windowId, activePath = null) {
     let suggestedPath = null;
 
@@ -446,6 +489,7 @@ function createWindowManagerStore() {
     toggleMinimize,
     toggleMaximize,
     toggleSidebar,
+    moveWindow,
     closeWindow,
     getDefaultPathForApp,
     getSnapshot,

@@ -6,6 +6,7 @@
   export let zIndex = 1;
 
   const dispatch = createEventDispatcher();
+  let dragState = null;
 
   function requestFocus() {
     dispatch('focus', { windowId: windowState.windowId });
@@ -31,6 +32,55 @@
     dispatch('toggleSidebar', { windowId: windowState.windowId });
   }
 
+  function startDrag(event) {
+    if (event.button !== 0 || windowState.isMaximized) {
+      return;
+    }
+
+    const target = event.target instanceof Element ? event.target : null;
+    if (target?.closest('button, a, input, textarea, select')) {
+      return;
+    }
+
+    requestFocus();
+    dragState = {
+      pointerId: event.pointerId,
+      startPointerX: event.clientX,
+      startPointerY: event.clientY,
+      startWindowX: windowState.bounds.x,
+      startWindowY: windowState.bounds.y,
+    };
+
+    event.preventDefault();
+  }
+
+  function handlePointerMove(event) {
+    if (!dragState || event.pointerId !== dragState.pointerId) {
+      return;
+    }
+
+    const deltaX = event.clientX - dragState.startPointerX;
+    const deltaY = event.clientY - dragState.startPointerY;
+
+    dispatch('move', {
+      windowId: windowState.windowId,
+      x: dragState.startWindowX + deltaX,
+      y: dragState.startWindowY + deltaY,
+    });
+  }
+
+  function finishDrag(event) {
+    if (!dragState) {
+      return;
+    }
+
+    if (typeof event.pointerId === 'number' && event.pointerId !== dragState.pointerId) {
+      return;
+    }
+
+    dragState = null;
+  }
+
   $: bounds = windowState.bounds;
   $: visibility = windowState.isMinimized ? 'hidden' : 'visible';
   $: pointerEvents = windowState.isMinimized ? 'none' : 'auto';
@@ -43,7 +93,7 @@
   aria-hidden={windowState.isMinimized}
   style={`z-index:${zIndex};left:${bounds.x}px;top:${bounds.y}px;width:${bounds.width}px;height:${bounds.height}px;visibility:${visibility};pointer-events:${pointerEvents};`}
 >
-  <header class="window-header">
+  <header class="window-header" role="group" aria-label="Window header" on:pointerdown={startDrag}>
     <div class="window-header-left">
       {#if windowState.hasSidebar}
         <button type="button" on:click={requestSidebarToggle} aria-label="Toggle app sidebar">Sidebar</button>
@@ -65,6 +115,8 @@
   </div>
 </section>
 
+<svelte:window on:pointermove={handlePointerMove} on:pointerup={finishDrag} on:pointercancel={finishDrag} />
+
 <style>
   .app-window {
     position: absolute;
@@ -83,6 +135,8 @@
     gap: 0.5rem;
     border-bottom: 1px solid;
     padding: 0.25rem;
+    cursor: move;
+    user-select: none;
   }
 
   .window-header-left {

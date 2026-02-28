@@ -74,6 +74,10 @@
     windowManager.toggleSidebar(windowId);
   }
 
+  function handleMove(windowId, x, y) {
+    windowManager.moveWindow(windowId, { x, y });
+  }
+
   function handleClose(windowId) {
     const suggestedPath = windowManager.closeWindow(windowId, $route.path);
 
@@ -182,6 +186,7 @@
             on:minimize={(event) => handleMinimize(event.detail.windowId)}
             on:maximize={(event) => handleMaximize(event.detail.windowId)}
             on:toggleSidebar={(event) => handleToggleSidebar(event.detail.windowId)}
+            on:move={(event) => handleMove(event.detail.windowId, event.detail.x, event.detail.y)}
             on:close={(event) => handleClose(event.detail.windowId)}
           >
             <svelte:component
