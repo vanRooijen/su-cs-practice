@@ -2,14 +2,7 @@
   import { onMount, tick } from 'svelte';
   import { APP_REGISTRY } from '../lib/window/appRegistry.js';
   import { DESKTOP_SHORTCUTS, TOPBAR_LINKS } from '../lib/navigation/siteManifest.js';
-  import {
-    clearNavigationError,
-    navigateTo,
-    navigateToDesktop,
-    navigationError,
-    openInNewWindow,
-    route,
-  } from '../lib/navigation/historyRouter.js';
+  import { navigateTo, navigateToDesktop, openInNewWindow, route } from '../lib/navigation/historyRouter.js';
   import { windowManager } from '../lib/window/windowManagerStore.js';
   import AppWindow from './AppWindow.svelte';
 
@@ -30,10 +23,6 @@
 
   function openPathInNewWindow(path) {
     openInNewWindow(path);
-  }
-
-  function dismissNavigationError() {
-    clearNavigationError();
   }
 
   function closeContextMenu() {
@@ -133,9 +122,6 @@
       return;
     }
 
-    if (event.key === 'Escape' && $navigationError) {
-      dismissNavigationError();
-    }
   }
 
   function onGlobalResize() {
@@ -407,15 +393,6 @@
     </div>
   {/if}
 
-  {#if $navigationError}
-    <div class="navigation-error-popup" role="alertdialog" aria-label="Navigation error">
-      <h3>Navigation Error</h3>
-      <p>{$navigationError.message}</p>
-      <div>
-        <button type="button" on:click={dismissNavigationError}>OK</button>
-      </div>
-    </div>
-  {/if}
 </div>
 
 <svelte:window on:click={onGlobalClick} on:keydown={onGlobalKeydown} on:resize={onGlobalResize} />
@@ -565,22 +542,6 @@
     border: 0;
     border-top: 1px solid;
     margin: 0.15rem 0;
-  }
-
-  .navigation-error-popup {
-    position: fixed;
-    right: 0.75rem;
-    bottom: 0.75rem;
-    z-index: 60;
-    border: 1px solid;
-    background: white;
-    padding: 0.5rem;
-    max-width: min(420px, calc(100vw - 1.5rem));
-  }
-
-  .navigation-error-popup h3,
-  .navigation-error-popup p {
-    margin: 0 0 0.35rem;
   }
 
   @media (max-width: 860px) {

@@ -1,6 +1,7 @@
 import { hasContent } from '../content/resolveContent.js';
 
 export const DEFAULT_APP_ID = 'home';
+export const ERROR_APP_ID = 'error';
 
 function validateContentBackedSubroute({ appId, subroute }) {
   return hasContent(appId, subroute);
@@ -47,6 +48,19 @@ export const APP_DEFINITIONS = {
     enableWindowHistoryNavigation: true,
     validateSubroute: validateContentBackedSubroute,
     resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
+  },
+  [ERROR_APP_ID]: {
+    id: ERROR_APP_ID,
+    title: 'Error Message',
+    defaultSubroute: 'path-not-found',
+    hasSidebar: false,
+    enableWindowHistoryNavigation: false,
+    validateSubroute: validateContentBackedSubroute,
+    resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
+    initialBounds: {
+      width: 560,
+      height: 360,
+    },
   },
 };
 

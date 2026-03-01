@@ -111,9 +111,17 @@ function toLastSegmentLabel(path = '/') {
   return normalizeTitleSegment(pathSegments.at(-1));
 }
 
-function makeCenteredBounds(workspaceRect, seed) {
-  const width = clamp(Math.floor(workspaceRect.width * 0.72), MIN_WINDOW_WIDTH, workspaceRect.width);
-  const height = clamp(Math.floor(workspaceRect.height * 0.72), MIN_WINDOW_HEIGHT, workspaceRect.height);
+function makeCenteredBounds(workspaceRect, seed, preferredSize = null) {
+  const preferredWidth =
+    Number.isFinite(preferredSize?.width) && preferredSize.width > 0
+      ? Math.round(preferredSize.width)
+      : Math.floor(workspaceRect.width * 0.72);
+  const preferredHeight =
+    Number.isFinite(preferredSize?.height) && preferredSize.height > 0
+      ? Math.round(preferredSize.height)
+      : Math.floor(workspaceRect.height * 0.72);
+  const width = clamp(preferredWidth, MIN_WINDOW_WIDTH, workspaceRect.width);
+  const height = clamp(preferredHeight, MIN_WINDOW_HEIGHT, workspaceRect.height);
 
   const offsetStep = ((seed - 1) % 7) * 24;
   const baseX = Math.floor((workspaceRect.width - width) / 2);
@@ -339,7 +347,7 @@ function createWindowFromRoute(state, route) {
 
   state.nextWindowId += 1;
 
-  const bounds = makeCenteredBounds(state.workspaceRect, windowId);
+  const bounds = makeCenteredBounds(state.workspaceRect, windowId, appConfig?.initialBounds ?? null);
 
   state.windows[windowId] = {
     windowId,

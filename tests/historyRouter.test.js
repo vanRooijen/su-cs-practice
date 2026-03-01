@@ -41,3 +41,12 @@ test('parsePath marks unknown app subroutes as invalid paths', () => {
   assert.equal(parsed.errorCode, 'path-not-found');
   assert.equal(parsed.canonicalPath, '/people/unknown-section');
 });
+
+test('parsePath accepts hidden error application routes', () => {
+  const parsed = parsePath('/error/path-not-found');
+
+  assert.equal(parsed.isValid, true);
+  assert.equal(parsed.appId, 'error');
+  assert.equal(parsed.subroute, 'path-not-found');
+  assert.equal(parsed.canonicalPath, '/error/path-not-found');
+});

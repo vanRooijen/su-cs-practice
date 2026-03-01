@@ -1,5 +1,7 @@
 import { get, writable } from 'svelte/store';
-import { APP_DEFINITIONS, DEFAULT_APP_ID } from './siteManifest.js';
+import { APP_DEFINITIONS, DEFAULT_APP_ID, ERROR_APP_ID } from './siteManifest.js';
+
+const MAX_NAVIGATION_ERROR_ENTRIES = 100;
 
 let navigationSequence = 0;
 let navigationErrorSequence = 0;
@@ -48,17 +50,23 @@ function hasDesktopRootState(state) {
 
 function reportNavigationError(errorCode, requestedPath) {
   const readableCode = errorCode === 'app-not-found' ? 'App not found' : 'Path not found';
-
-  navigationErrorStore.set({
+  const nextEntry = {
     id: ++navigationErrorSequence,
     code: errorCode,
     requestedPath,
     message: `${readableCode}: ${requestedPath}`,
-  });
-}
+    occurredAt: new Date().toISOString(),
+  };
 
-export function clearNavigationError() {
-  navigationErrorStore.set(null);
+  navigationErrorStore.set(nextEntry);
+  navigationErrorHistoryStore.update((entries) => {
+    const nextEntries = [...entries, nextEntry];
+    if (nextEntries.length <= MAX_NAVIGATION_ERROR_ENTRIES) {
+      return nextEntries;
+    }
+
+    return nextEntries.slice(nextEntries.length - MAX_NAVIGATION_ERROR_ENTRIES);
+  });
 }
 
 export function buildAppPath(appId, subroute = '') {
@@ -101,7 +109,7 @@ export function parsePath(pathname = '/') {
   if (validation === false || validation?.isValid === false) {
     return {
       isValid: false,
-      errorCode: 'path-not-found',
+      errorCode: validation?.errorCode ?? 'path-not-found',
       canonicalPath,
     };
   }
@@ -126,6 +134,12 @@ const routeStore = writable({
 });
 
 const navigationErrorStore = writable(null);
+const navigationErrorHistoryStore = writable([]);
+
+export function clearNavigationErrorHistory() {
+  navigationErrorStore.set(null);
+  navigationErrorHistoryStore.set([]);
+}
 
 function syncRoute(pathname, options = {}) {
   const { historyMode = 'none', openMode = 'match', forceEmit = false } = options;
@@ -133,14 +147,18 @@ function syncRoute(pathname, options = {}) {
   const current = get(routeStore);
 
   if (!parsed.isValid) {
-    const fallbackPath = current?.path ?? buildAppPath(DEFAULT_APP_ID);
+    reportNavigationError(parsed.errorCode, parsed.canonicalPath);
 
-    if (window.location.pathname !== fallbackPath) {
-      window.history.replaceState(createHistoryState(fallbackPath), '', fallbackPath);
+    const errorPath = buildAppPath(ERROR_APP_ID, parsed.errorCode ?? 'path-not-found');
+    if (normalizePathname(pathname) === normalizePathname(errorPath)) {
+      return current;
     }
 
-    reportNavigationError(parsed.errorCode, parsed.canonicalPath);
-    return current;
+    return syncRoute(errorPath, {
+      historyMode: 'replace',
+      openMode: 'match',
+      forceEmit: true,
+    });
   }
 
   if (historyMode === 'push' && current.path !== parsed.canonicalPath) {
@@ -284,4 +302,8 @@ export const route = {
 
 export const navigationError = {
   subscribe: navigationErrorStore.subscribe,
+};
+
+export const navigationErrorHistory = {
+  subscribe: navigationErrorHistoryStore.subscribe,
 };
