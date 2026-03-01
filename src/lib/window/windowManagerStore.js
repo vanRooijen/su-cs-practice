@@ -303,12 +303,68 @@ function listWindowsForApp(state, appId) {
   return state.windowOrder.filter((id) => state.windows[id]?.appId === appId);
 }
 
+function hasSameRouteIdentity(windowState, route) {
+  return (
+    windowState?.path === route.path &&
+    windowState?.subroute === route.subroute &&
+    windowState?.routeKey === route.routeKey
+  );
+}
+
+function hasSameLastRouteIdentity(lastRoute, route) {
+  return (
+    lastRoute?.appId === route.appId &&
+    lastRoute?.path === route.path &&
+    lastRoute?.subroute === route.subroute &&
+    lastRoute?.routeKey === route.routeKey
+  );
+}
+
+function resolveExactRouteWindowId(state, appWindowIds, route) {
+  if (!appWindowIds.length) {
+    return null;
+  }
+
+  const prioritizedWindowIds = [];
+  if (state.focusedWindowId && appWindowIds.includes(state.focusedWindowId)) {
+    prioritizedWindowIds.push(state.focusedWindowId);
+  }
+
+  for (let index = appWindowIds.length - 1; index >= 0; index -= 1) {
+    const windowId = appWindowIds[index];
+    if (!prioritizedWindowIds.includes(windowId)) {
+      prioritizedWindowIds.push(windowId);
+    }
+  }
+
+  for (const windowId of prioritizedWindowIds) {
+    const win = state.windows[windowId];
+    if (win?.routeKey === route.routeKey) {
+      return windowId;
+    }
+  }
+
+  for (const windowId of prioritizedWindowIds) {
+    const win = state.windows[windowId];
+    if (win?.path === route.path) {
+      return windowId;
+    }
+  }
+
+  return null;
+}
+
 function resolveNavigationWindowForApp(state, route) {
   const appConfig = APP_DEFINITIONS[route.appId];
   const appWindowIds = listWindowsForApp(state, route.appId);
 
   if (!appWindowIds.length) {
     return null;
+  }
+
+  const exactRouteWindowId = resolveExactRouteWindowId(state, appWindowIds, route);
+  if (exactRouteWindowId) {
+    return exactRouteWindowId;
   }
 
   if (typeof appConfig?.resolveNavigationWindowId === 'function') {
@@ -379,6 +435,20 @@ export function createWindowManagerStore() {
 
   function applyRoute(route) {
     store.update((state) => {
+      const shouldForceDuplicate = route.openMode === 'new-window';
+      const preselectedWindowId = shouldForceDuplicate ? null : resolveNavigationWindowForApp(state, route);
+      const preselectedWindow = preselectedWindowId ? state.windows[preselectedWindowId] : null;
+      const isStrictNoOp =
+        Boolean(preselectedWindow) &&
+        hasSameRouteIdentity(preselectedWindow, route) &&
+        state.focusedWindowId === preselectedWindowId &&
+        !preselectedWindow.isMinimized &&
+        hasSameLastRouteIdentity(state.lastRoute, route);
+
+      if (isStrictNoOp) {
+        return state;
+      }
+
       const next = cloneState(state);
       next.lastRoute = {
         appId: route.appId,
@@ -410,22 +480,23 @@ export function createWindowManagerStore() {
         return next;
       }
 
-      const shouldForceDuplicate = route.openMode === 'new-window';
       let targetWindowId = shouldForceDuplicate ? null : resolveNavigationWindowForApp(next, route);
 
       if (!targetWindowId) {
         targetWindowId = createWindowFromRoute(next, route);
       } else {
         const target = next.windows[targetWindowId];
-        const nextHistory = pushWindowHistory(target.history, route);
-        next.windows[targetWindowId] = {
-          ...target,
-          path: route.path,
-          subroute: route.subroute,
-          routeKey: route.routeKey,
-          routeLabel: toLastSegmentLabel(route.path),
-          history: nextHistory,
-        };
+        if (!hasSameRouteIdentity(target, route)) {
+          const nextHistory = pushWindowHistory(target.history, route);
+          next.windows[targetWindowId] = {
+            ...target,
+            path: route.path,
+            subroute: route.subroute,
+            routeKey: route.routeKey,
+            routeLabel: toLastSegmentLabel(route.path),
+            history: nextHistory,
+          };
+        }
       }
 
       focusWindow(next, targetWindowId, { restoreMinimized: true });

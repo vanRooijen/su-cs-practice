@@ -3,13 +3,15 @@ import test from 'node:test';
 
 import { createWindowManagerStore } from '../src/lib/window/windowManagerStore.js';
 
-function makeRoute(path, appId, subroute) {
+function makeRoute(path, appId, subroute, options = {}) {
+  const { openMode = 'match' } = options;
+
   return {
     path,
     appId,
     subroute,
     routeKey: `${appId}::${path}`,
-    openMode: 'match',
+    openMode,
   };
 }
 
@@ -104,4 +106,40 @@ test('window history limit is isolated per window instance', () => {
   assert.equal(readerWindow.history.entries.length, 10);
   assert.equal(peopleWindow.history.entries.length, 1);
   assert.equal(peopleWindow.history.entries[0].path, '/people/staff');
+});
+
+test('applyRoute is a strict no-op for unchanged focused route', () => {
+  const store = createWindowManagerStore();
+  const route = makeRoute('/people/staff', 'people', 'staff');
+
+  store.applyRoute(route);
+  const before = store.getSnapshot();
+  const beforeFocusedId = before.focusedWindowId;
+  assert.ok(beforeFocusedId, 'expected focused window');
+
+  store.applyRoute(route);
+  const after = store.getSnapshot();
+
+  assert.equal(after, before);
+  assert.equal(after.windows[beforeFocusedId].history.entries.length, 1);
+});
+
+test('route navigation prefers exact route window match before app fallback strategy', () => {
+  const store = createWindowManagerStore();
+
+  store.applyRoute(makeRoute('/reader/articles', 'reader', 'articles'));
+  const firstWindowId = store.getSnapshot().focusedWindowId;
+  assert.ok(firstWindowId, 'expected first reader window');
+
+  store.applyRoute(makeRoute('/reader/help', 'reader', 'help', { openMode: 'new-window' }));
+  const secondWindowId = store.getSnapshot().focusedWindowId;
+  assert.ok(secondWindowId, 'expected second reader window');
+  assert.notEqual(firstWindowId, secondWindowId);
+
+  store.applyRoute(makeRoute('/reader/articles', 'reader', 'articles'));
+  const snapshot = store.getSnapshot();
+
+  assert.equal(snapshot.focusedWindowId, firstWindowId);
+  assert.equal(snapshot.windows[firstWindowId].path, '/reader/articles');
+  assert.equal(snapshot.windows[secondWindowId].path, '/reader/help');
 });
