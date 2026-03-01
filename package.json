@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
+    "preview": "npm run build && wrangler dev",
     "test": "npm run test:unit",
     "test:unit": "node --test \"tests/**/*.test.js\"",
     "test:component": "vitest run",
@@ -14,9 +14,11 @@
     "test:all": "npm run test:unit && npm run test:component && npm run test:gui",
     "content:build": "node scripts/build-content.mjs",
     "predev": "npm run content:build",
-    "prebuild": "npm run content:build"
+    "prebuild": "npm run content:build",
+    "deploy": "npm run build && wrangler deploy"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.25.6",
     "@playwright/test": "^1.58.2",
     "@sveltejs/vite-plugin-svelte": "^6.2.1",
     "@testing-library/svelte": "^5.3.1",
@@ -24,6 +26,7 @@
     "marked": "^17.0.3",
     "svelte": "^5.45.2",
     "vite": "^7.3.1",
-    "vitest": "^4.0.18"
+    "vitest": "^4.0.18",
+    "wrangler": "^4.69.0"
   }
 }
