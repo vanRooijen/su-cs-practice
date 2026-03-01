@@ -1,12 +1,20 @@
 const WINDOW_SESSION_DB_NAME = 'su-cs-practice-window-session';
-const WINDOW_SESSION_DB_VERSION = 1;
+const WINDOW_SESSION_DB_VERSION = 4;
 const CHECKPOINT_STORE = 'checkpoint';
 const DELTA_STORE = 'deltas';
 const CHECKPOINT_ID = 'latest';
+const LEGACY_META_STORE = 'meta';
+const LEGACY_WORKSPACE_STORE = 'workspaces';
 
-const DEFAULT_CHECKPOINT_INTERVAL = 40;
 const DEFAULT_FLUSH_DELAY_MS = 220;
 const DEFAULT_IDLE_TIMEOUT_MS = 1200;
+const SESSION_SYNC_PROTOCOL = 'su-cs-window-sync-v1';
+const SESSION_SYNC_CHANNEL_NAME = 'su-cs-window-sync';
+const PRESENCE_PROTOCOL = 'su-cs-owner-presence-v1';
+const PRESENCE_CHANNEL_NAME = 'su-cs-owner-presence';
+const SYNC_SCOPE_STORAGE_KEY = 'su-cs-window-sync-scope';
+const PRESENCE_HEARTBEAT_MS = 4000;
+const PRESENCE_STALE_MS = 12000;
 
 function isRecord(value) {
   return Boolean(value) && typeof value === 'object';
@@ -98,6 +106,10 @@ function cloneWindow(windowLike, fallbackWindowId) {
   const bounds = cloneBounds(windowLike?.bounds);
   const restoreBounds = cloneBounds(windowLike?.restoreBounds, bounds);
   const history = cloneHistory(windowLike?.history, path, subroute, routeKey);
+  const minimizeReason =
+    windowLike?.minimizeReason === 'user' || windowLike?.minimizeReason === 'offline' ? windowLike.minimizeReason : null;
+  const ownerRuntimeId =
+    typeof windowLike?.ownerRuntimeId === 'string' && windowLike.ownerRuntimeId.trim() ? windowLike.ownerRuntimeId : null;
 
   return {
     windowId,
@@ -111,6 +123,8 @@ function cloneWindow(windowLike, fallbackWindowId) {
     showWindowHistoryNavigation: Boolean(windowLike?.showWindowHistoryNavigation),
     isSidebarCollapsed: Boolean(windowLike?.isSidebarCollapsed),
     isMinimized: Boolean(windowLike?.isMinimized),
+    minimizeReason,
+    ownerRuntimeId,
     isMaximized: Boolean(windowLike?.isMaximized),
     bounds,
     restoreBounds,
@@ -196,6 +210,8 @@ function windowsEqual(left, right) {
     left.showWindowHistoryNavigation === right.showWindowHistoryNavigation &&
     left.isSidebarCollapsed === right.isSidebarCollapsed &&
     left.isMinimized === right.isMinimized &&
+    left.minimizeReason === right.minimizeReason &&
+    left.ownerRuntimeId === right.ownerRuntimeId &&
     left.isMaximized === right.isMaximized &&
     left.createdAt === right.createdAt &&
     left.lastFocusedAt === right.lastFocusedAt &&
@@ -271,6 +287,94 @@ function createEmptySnapshot() {
     workspaceRect: { width: 1200, height: 720 },
     lastRoute: null,
   };
+}
+
+function sanitizeWindowIdList(rawList) {
+  if (!Array.isArray(rawList)) {
+    return [];
+  }
+
+  const ids = [];
+  const seen = new Set();
+
+  for (const rawId of rawList) {
+    const windowId = toPositiveWindowId(rawId);
+    if (!windowId || seen.has(windowId)) {
+      continue;
+    }
+
+    ids.push(windowId);
+    seen.add(windowId);
+  }
+
+  return ids;
+}
+
+function sanitizeSharedWindowDelta(rawUpsertedWindows) {
+  if (!isRecord(rawUpsertedWindows)) {
+    return null;
+  }
+
+  const upsertedWindows = {};
+
+  for (const [rawWindowId, candidate] of Object.entries(rawUpsertedWindows)) {
+    const windowId = toPositiveWindowId(rawWindowId);
+    if (!windowId) {
+      continue;
+    }
+
+    const cloned = cloneWindow(candidate, windowId);
+    if (!cloned) {
+      continue;
+    }
+
+    upsertedWindows[windowId] = cloned;
+  }
+
+  return Object.keys(upsertedWindows).length ? upsertedWindows : null;
+}
+
+function sanitizeSharedDelta(deltaLike) {
+  if (!isRecord(deltaLike)) {
+    return null;
+  }
+
+  if (deltaLike.kind !== 'patch') {
+    return null;
+  }
+
+  const next = {
+    kind: 'patch',
+  };
+  let hasChanges = false;
+
+  if ('nextWindowId' in deltaLike) {
+    const nextWindowId = toPositiveWindowId(deltaLike.nextWindowId);
+    if (nextWindowId) {
+      next.nextWindowId = nextWindowId;
+      hasChanges = true;
+    }
+  }
+
+  if ('windowOrder' in deltaLike) {
+    const windowOrder = sanitizeWindowIdList(deltaLike.windowOrder);
+    next.windowOrder = windowOrder;
+    hasChanges = true;
+  }
+
+  const upsertedWindows = sanitizeSharedWindowDelta(deltaLike.upsertedWindows);
+  if (upsertedWindows) {
+    next.upsertedWindows = upsertedWindows;
+    hasChanges = true;
+  }
+
+  if ('removedWindowIds' in deltaLike) {
+    const removedWindowIds = sanitizeWindowIdList(deltaLike.removedWindowIds);
+    next.removedWindowIds = removedWindowIds;
+    hasChanges = true;
+  }
+
+  return hasChanges ? next : null;
 }
 
 export function createWindowSessionDelta(previousSnapshot, nextSnapshot) {
@@ -441,6 +545,10 @@ function hasIndexedDb() {
   return typeof window !== 'undefined' && typeof window.indexedDB !== 'undefined';
 }
 
+function hasBroadcastChannel() {
+  return typeof window !== 'undefined' && typeof window.BroadcastChannel === 'function';
+}
+
 function requestToPromise(request) {
   return new Promise((resolve, reject) => {
     request.onsuccess = () => resolve(request.result);
@@ -456,6 +564,35 @@ function transactionToPromise(transaction) {
   });
 }
 
+function createOpaqueId(prefix) {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return `${prefix}-${crypto.randomUUID()}`;
+  }
+
+  const randomPart = Math.random().toString(36).slice(2, 12);
+  const timestamp = Date.now().toString(36);
+  return `${prefix}-${timestamp}-${randomPart}`;
+}
+
+function resolveSyncScopeId() {
+  if (typeof window === 'undefined') {
+    return 'scope-server';
+  }
+
+  try {
+    const existing = window.localStorage.getItem(SYNC_SCOPE_STORAGE_KEY);
+    if (typeof existing === 'string' && existing.trim()) {
+      return existing;
+    }
+
+    const created = createOpaqueId('scope');
+    window.localStorage.setItem(SYNC_SCOPE_STORAGE_KEY, created);
+    return created;
+  } catch {
+    return 'scope-fallback';
+  }
+}
+
 function openWindowSessionDb() {
   if (!hasIndexedDb()) {
     return Promise.resolve(null);
@@ -466,13 +603,24 @@ function openWindowSessionDb() {
   request.onupgradeneeded = () => {
     const database = request.result;
 
-    if (!database.objectStoreNames.contains(CHECKPOINT_STORE)) {
-      database.createObjectStore(CHECKPOINT_STORE, { keyPath: 'id' });
+    if (database.objectStoreNames.contains(CHECKPOINT_STORE)) {
+      database.deleteObjectStore(CHECKPOINT_STORE);
     }
 
-    if (!database.objectStoreNames.contains(DELTA_STORE)) {
-      database.createObjectStore(DELTA_STORE, { keyPath: 'revision' });
+    if (database.objectStoreNames.contains(DELTA_STORE)) {
+      database.deleteObjectStore(DELTA_STORE);
     }
+
+    if (database.objectStoreNames.contains(LEGACY_META_STORE)) {
+      database.deleteObjectStore(LEGACY_META_STORE);
+    }
+
+    if (database.objectStoreNames.contains(LEGACY_WORKSPACE_STORE)) {
+      database.deleteObjectStore(LEGACY_WORKSPACE_STORE);
+    }
+
+    database.createObjectStore(CHECKPOINT_STORE, { keyPath: 'id' });
+    database.createObjectStore(DELTA_STORE, { keyPath: 'revision' });
   };
 
   return requestToPromise(request);
@@ -519,17 +667,6 @@ async function readPersistedSession(db) {
   };
 }
 
-async function writeDelta(db, revision, delta) {
-  const tx = db.transaction(DELTA_STORE, 'readwrite');
-  const store = tx.objectStore(DELTA_STORE);
-  store.put({
-    revision,
-    delta,
-    writtenAt: Date.now(),
-  });
-  await transactionToPromise(tx);
-}
-
 async function writeCheckpoint(db, revision, snapshot) {
   const tx = db.transaction([CHECKPOINT_STORE, DELTA_STORE], 'readwrite');
   const checkpointStore = tx.objectStore(CHECKPOINT_STORE);
@@ -574,15 +711,28 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     return createNoopController();
   }
 
-  const checkpointInterval = Number.isInteger(options.checkpointInterval)
-    ? Math.max(1, options.checkpointInterval)
-    : DEFAULT_CHECKPOINT_INTERVAL;
   const flushDelayMs = Number.isFinite(options.flushDelayMs)
     ? Math.max(0, Math.floor(options.flushDelayMs))
     : DEFAULT_FLUSH_DELAY_MS;
   const idleTimeoutMs = Number.isFinite(options.idleTimeoutMs)
     ? Math.max(50, Math.floor(options.idleTimeoutMs))
     : DEFAULT_IDLE_TIMEOUT_MS;
+  const syncBroadcastDelayMs = Number.isFinite(options.syncBroadcastDelayMs)
+    ? Math.max(0, Math.floor(options.syncBroadcastDelayMs))
+    : 36;
+  const presenceHeartbeatMs = Number.isFinite(options.presenceHeartbeatMs)
+    ? Math.max(500, Math.floor(options.presenceHeartbeatMs))
+    : PRESENCE_HEARTBEAT_MS;
+  const presenceStaleMs = Number.isFinite(options.presenceStaleMs)
+    ? Math.max(presenceHeartbeatMs + 300, Math.floor(options.presenceStaleMs))
+    : PRESENCE_STALE_MS;
+  const runtimeIdCandidate = typeof windowManager.getRuntimeId === 'function' ? windowManager.getRuntimeId() : '';
+  const runtimeId =
+    typeof runtimeIdCandidate === 'string' && runtimeIdCandidate.trim()
+      ? runtimeIdCandidate
+      : createOpaqueId('runtime');
+  const instanceId = createOpaqueId('instance');
+  const syncScopeId = resolveSyncScopeId();
 
   const db = await openWindowSessionDb();
   if (!db) {
@@ -590,17 +740,19 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   }
 
   let restoredFocusedPath = null;
-  let lastRevision = 0;
-  let lastCheckpointRevision = 0;
   let lastPersistedSnapshot = null;
+  let localSyncSequence = 0;
+  let hasSeenInitialSubscription = false;
+  let suppressBroadcastOnce = false;
+  let isDestroyed = false;
+  let isHydratingRemote = false;
 
   try {
     const restored = await readPersistedSession(db);
     if (restored.snapshot) {
-      restoredFocusedPath = windowManager.hydratePersistedState(restored.snapshot);
+      suppressBroadcastOnce = true;
+      restoredFocusedPath = windowManager.hydratePersistedState(localizeSnapshotForHydration(restored.snapshot));
     }
-    lastRevision = restored.revision;
-    lastCheckpointRevision = restored.checkpointRevision;
   } catch {
     // Ignore restore failures and continue with in-memory state only.
   }
@@ -608,10 +760,255 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   lastPersistedSnapshot = serializeWindowManagerSnapshot(windowManager.getSnapshot());
 
   let flushTimerId = 0;
+  let broadcastTimerId = 0;
+  let heartbeatTimerId = 0;
+  let staleSweepTimerId = 0;
   let pendingSnapshot = null;
+  let pendingBroadcastDelta = null;
   let flushInFlight = false;
-  let isDestroyed = false;
   let unsubscribe = null;
+  let syncChannel = null;
+  let presenceChannel = null;
+  const activeRuntimeSeenAt = new Map([[runtimeId, Date.now()]]);
+  const latestRemoteSequence = new Map();
+  let previousLocalSnapshotForSync = lastPersistedSnapshot;
+
+  function localizeSnapshotForHydration(snapshotLike) {
+    const normalized = serializeWindowManagerSnapshot(snapshotLike ?? createEmptySnapshot());
+    const localWorkspaceRect = windowManager.getSnapshot()?.workspaceRect;
+
+    if (isRecord(localWorkspaceRect)) {
+      normalized.workspaceRect = cloneWorkspaceRect(localWorkspaceRect);
+    }
+
+    return normalized;
+  }
+
+  function activeRuntimeIds(now = Date.now()) {
+    const activeIds = new Set([runtimeId]);
+
+    for (const [candidateRuntimeId, seenAt] of activeRuntimeSeenAt.entries()) {
+      if (candidateRuntimeId === runtimeId) {
+        continue;
+      }
+
+      if (!Number.isFinite(seenAt) || now - seenAt > presenceStaleMs) {
+        continue;
+      }
+
+      activeIds.add(candidateRuntimeId);
+    }
+
+    return activeIds;
+  }
+
+  function reconcileOwnershipFromPresence() {
+    if (typeof windowManager.reconcileOwnership !== 'function') {
+      return;
+    }
+
+    try {
+      windowManager.reconcileOwnership(activeRuntimeIds());
+    } catch {
+      // Ignore runtime reconciliation failures.
+    }
+  }
+
+  function touchRuntimePresence(otherRuntimeId, seenAt = Date.now()) {
+    if (typeof otherRuntimeId !== 'string' || !otherRuntimeId.trim() || otherRuntimeId === runtimeId) {
+      return;
+    }
+
+    const previous = activeRuntimeSeenAt.get(otherRuntimeId);
+    if (Number.isFinite(previous) && previous >= seenAt) {
+      return;
+    }
+
+    activeRuntimeSeenAt.set(otherRuntimeId, seenAt);
+    reconcileOwnershipFromPresence();
+  }
+
+  function pruneStaleRuntimes(now = Date.now()) {
+    let removed = false;
+
+    for (const [candidateRuntimeId, seenAt] of activeRuntimeSeenAt.entries()) {
+      if (candidateRuntimeId === runtimeId) {
+        continue;
+      }
+
+      if (!Number.isFinite(seenAt) || now - seenAt <= presenceStaleMs) {
+        continue;
+      }
+
+      activeRuntimeSeenAt.delete(candidateRuntimeId);
+      removed = true;
+    }
+
+    if (removed) {
+      reconcileOwnershipFromPresence();
+    }
+  }
+
+  function postPresence(type) {
+    if (!presenceChannel || isDestroyed) {
+      return;
+    }
+
+    try {
+      presenceChannel.postMessage({
+        protocol: PRESENCE_PROTOCOL,
+        type,
+        scopeId: syncScopeId,
+        runtimeId,
+        instanceId,
+        sentAt: Date.now(),
+      });
+    } catch {
+      // Ignore cross-tab presence send failures.
+    }
+  }
+
+  function postSyncMessage(kind, payload = {}) {
+    if (!syncChannel || isDestroyed) {
+      return;
+    }
+
+    localSyncSequence += 1;
+
+    try {
+      syncChannel.postMessage({
+        protocol: SESSION_SYNC_PROTOCOL,
+        kind,
+        scopeId: syncScopeId,
+        runtimeId,
+        instanceId,
+        sequence: localSyncSequence,
+        sentAt: Date.now(),
+        ...payload,
+      });
+    } catch {
+      // Ignore cross-tab sync send failures.
+    }
+  }
+
+  function postSnapshot(snapshot) {
+    if (!snapshot) {
+      return;
+    }
+
+    postSyncMessage('snapshot', { snapshot });
+  }
+
+  function postDelta(delta) {
+    if (!delta) {
+      return;
+    }
+
+    postSyncMessage('delta', { delta });
+  }
+
+  function scheduleBroadcast(delay = syncBroadcastDelayMs) {
+    if (isDestroyed || !syncChannel || broadcastTimerId) {
+      return;
+    }
+
+    broadcastTimerId = window.setTimeout(() => {
+      broadcastTimerId = 0;
+
+      if (!pendingBroadcastDelta || isDestroyed) {
+        return;
+      }
+
+      const delta = pendingBroadcastDelta;
+      pendingBroadcastDelta = null;
+      postDelta(delta);
+    }, delay);
+  }
+
+  function queueDeltaBroadcast(delta) {
+    if (!syncChannel || !delta || isDestroyed) {
+      return;
+    }
+
+    pendingBroadcastDelta = delta;
+    scheduleBroadcast();
+  }
+
+  function requestPeerState() {
+    if (!syncChannel || isDestroyed) {
+      return;
+    }
+
+    try {
+      syncChannel.postMessage({
+        protocol: SESSION_SYNC_PROTOCOL,
+        kind: 'state-request',
+        scopeId: syncScopeId,
+        runtimeId,
+        instanceId,
+        sentAt: Date.now(),
+      });
+    } catch {
+      // Ignore sync request failures.
+    }
+  }
+
+  function applyRemoteSnapshot(snapshotLike, sourceRuntimeId) {
+    if (!snapshotLike || isDestroyed) {
+      return;
+    }
+
+    if (typeof sourceRuntimeId === 'string' && sourceRuntimeId.trim()) {
+      touchRuntimePresence(sourceRuntimeId, Date.now());
+    }
+
+    const localized = localizeSnapshotForHydration(snapshotLike);
+    const currentSnapshot = windowManager.getSnapshot();
+    if (Array.isArray(currentSnapshot?.windowOrder) && currentSnapshot.windowOrder.length > 0) {
+      return;
+    }
+
+    suppressBroadcastOnce = true;
+    isHydratingRemote = true;
+    try {
+      windowManager.hydratePersistedState(localized);
+    } catch {
+      // Ignore malformed remote snapshots.
+    } finally {
+      isHydratingRemote = false;
+    }
+  }
+
+  function applyRemoteDelta(deltaLike, sourceRuntimeId) {
+    if (!deltaLike || isDestroyed) {
+      return;
+    }
+
+    if (typeof sourceRuntimeId === 'string' && sourceRuntimeId.trim()) {
+      touchRuntimePresence(sourceRuntimeId, Date.now());
+    }
+
+    const sharedDelta = sanitizeSharedDelta(deltaLike);
+    if (!sharedDelta) {
+      return;
+    }
+
+    const currentSnapshot = windowManager.getSnapshot();
+    const mergedSnapshot = applyWindowSessionDelta(currentSnapshot, sharedDelta);
+    if (isRecord(currentSnapshot?.workspaceRect)) {
+      mergedSnapshot.workspaceRect = cloneWorkspaceRect(currentSnapshot.workspaceRect);
+    }
+
+    suppressBroadcastOnce = true;
+    isHydratingRemote = true;
+    try {
+      windowManager.hydratePersistedState(mergedSnapshot);
+    } catch {
+      // Ignore malformed remote deltas.
+    } finally {
+      isHydratingRemote = false;
+    }
+  }
 
   async function flushPending({ force = false } = {}) {
     if (flushInFlight || !pendingSnapshot) {
@@ -629,30 +1026,15 @@ export async function createWindowSessionPersistence(windowManager, options = {}
           await waitForIdle(idleTimeoutMs);
         }
 
-        if (!lastRevision) {
-          const initialRevision = 1;
-          await writeCheckpoint(db, initialRevision, snapshotToPersist);
-          lastPersistedSnapshot = snapshotToPersist;
-          lastRevision = initialRevision;
-          lastCheckpointRevision = initialRevision;
-          continue;
-        }
-
         const delta = createWindowSessionDelta(lastPersistedSnapshot, snapshotToPersist);
         if (!delta) {
           lastPersistedSnapshot = snapshotToPersist;
           continue;
         }
 
-        const nextRevision = lastRevision + 1;
-        await writeDelta(db, nextRevision, delta);
+        const nextRevision = Date.now();
+        await writeCheckpoint(db, nextRevision, snapshotToPersist);
         lastPersistedSnapshot = snapshotToPersist;
-        lastRevision = nextRevision;
-
-        if (lastRevision - lastCheckpointRevision >= checkpointInterval) {
-          await writeCheckpoint(db, lastRevision, snapshotToPersist);
-          lastCheckpointRevision = lastRevision;
-        }
       }
     } catch {
       // Ignore write failures and continue with in-memory state.
@@ -673,12 +1055,97 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   }
 
   function onPageHide() {
+    postPresence('bye');
     void flushPending({ force: true });
   }
 
   function onVisibilityChange() {
     if (document.visibilityState === 'hidden') {
       void flushPending({ force: true });
+      return;
+    }
+
+    activeRuntimeSeenAt.set(runtimeId, Date.now());
+    postPresence('hello');
+    requestPeerState();
+    reconcileOwnershipFromPresence();
+  }
+
+  function onBeforeUnload() {
+    postPresence('bye');
+  }
+
+  function onSyncMessage(event) {
+    const message = event?.data;
+    if (!isRecord(message) || message.protocol !== SESSION_SYNC_PROTOCOL) {
+      return;
+    }
+    if (message.scopeId !== syncScopeId) {
+      return;
+    }
+
+    const sourceRuntimeId =
+      typeof message.runtimeId === 'string' && message.runtimeId.trim() ? message.runtimeId : null;
+    if (!sourceRuntimeId || sourceRuntimeId === runtimeId) {
+      return;
+    }
+
+    touchRuntimePresence(sourceRuntimeId, Number.isFinite(message.sentAt) ? message.sentAt : Date.now());
+
+    if (message.kind === 'state-request') {
+      postSnapshot(serializeWindowManagerSnapshot(windowManager.getSnapshot()));
+      return;
+    }
+
+    if (message.kind === 'delta') {
+      applyRemoteDelta(message.delta, sourceRuntimeId);
+      return;
+    }
+
+    if (message.kind !== 'snapshot') {
+      return;
+    }
+
+    const incomingSequence = Number(message.sequence);
+    if (!Number.isInteger(incomingSequence) || incomingSequence < 1) {
+      return;
+    }
+
+    const previousSequence = latestRemoteSequence.get(sourceRuntimeId) ?? 0;
+    if (incomingSequence <= previousSequence) {
+      return;
+    }
+    latestRemoteSequence.set(sourceRuntimeId, incomingSequence);
+
+    applyRemoteSnapshot(message.snapshot, sourceRuntimeId);
+  }
+
+  function onPresenceMessage(event) {
+    const message = event?.data;
+    if (!isRecord(message) || message.protocol !== PRESENCE_PROTOCOL) {
+      return;
+    }
+    if (message.scopeId !== syncScopeId) {
+      return;
+    }
+
+    const sourceRuntimeId =
+      typeof message.runtimeId === 'string' && message.runtimeId.trim() ? message.runtimeId : null;
+    if (!sourceRuntimeId || sourceRuntimeId === runtimeId) {
+      return;
+    }
+
+    if (message.type === 'bye') {
+      if (activeRuntimeSeenAt.delete(sourceRuntimeId)) {
+        reconcileOwnershipFromPresence();
+      }
+      return;
+    }
+
+    touchRuntimePresence(sourceRuntimeId, Number.isFinite(message.sentAt) ? message.sentAt : Date.now());
+
+    if (message.type === 'probe') {
+      postPresence('heartbeat');
     }
   }
 
@@ -687,11 +1154,77 @@ export async function createWindowSessionPersistence(windowManager, options = {}
       return;
     }
 
-    pendingSnapshot = serializeWindowManagerSnapshot(snapshot);
+    const normalizedSnapshot = serializeWindowManagerSnapshot(snapshot);
+    const localDelta = createWindowSessionDelta(previousLocalSnapshotForSync, normalizedSnapshot);
+    previousLocalSnapshotForSync = normalizedSnapshot;
+    pendingSnapshot = normalizedSnapshot;
     scheduleFlush();
+
+    if (!hasSeenInitialSubscription) {
+      hasSeenInitialSubscription = true;
+      suppressBroadcastOnce = false;
+      return;
+    }
+
+    if (isHydratingRemote || suppressBroadcastOnce) {
+      suppressBroadcastOnce = false;
+      return;
+    }
+
+    const sharedDelta = sanitizeSharedDelta(localDelta);
+    if (!sharedDelta) {
+      return;
+    }
+
+    queueDeltaBroadcast(sharedDelta);
   });
 
+  if (hasBroadcastChannel()) {
+    try {
+      syncChannel = new window.BroadcastChannel(SESSION_SYNC_CHANNEL_NAME);
+      syncChannel.addEventListener('message', onSyncMessage);
+    } catch {
+      syncChannel = null;
+    }
+
+    try {
+      presenceChannel = new window.BroadcastChannel(PRESENCE_CHANNEL_NAME);
+      presenceChannel.addEventListener('message', onPresenceMessage);
+    } catch {
+      presenceChannel = null;
+    }
+  }
+
+  if (presenceChannel) {
+    postPresence('hello');
+    postPresence('probe');
+    heartbeatTimerId = window.setInterval(() => {
+      if (isDestroyed) {
+        return;
+      }
+
+      activeRuntimeSeenAt.set(runtimeId, Date.now());
+      postPresence('heartbeat');
+      pruneStaleRuntimes(Date.now());
+    }, presenceHeartbeatMs);
+
+    staleSweepTimerId = window.setInterval(() => {
+      if (isDestroyed) {
+        return;
+      }
+
+      pruneStaleRuntimes(Date.now());
+    }, Math.max(500, Math.floor(presenceHeartbeatMs / 2)));
+  }
+
+  if (syncChannel) {
+    requestPeerState();
+  }
+
+  reconcileOwnershipFromPresence();
+
   window.addEventListener('pagehide', onPageHide);
+  window.addEventListener('beforeunload', onBeforeUnload);
   document.addEventListener('visibilitychange', onVisibilityChange);
 
   async function destroy() {
@@ -706,7 +1239,24 @@ export async function createWindowSessionPersistence(windowManager, options = {}
       flushTimerId = 0;
     }
 
+    if (broadcastTimerId) {
+      window.clearTimeout(broadcastTimerId);
+      broadcastTimerId = 0;
+    }
+
+    if (heartbeatTimerId) {
+      window.clearInterval(heartbeatTimerId);
+      heartbeatTimerId = 0;
+    }
+
+    if (staleSweepTimerId) {
+      window.clearInterval(staleSweepTimerId);
+      staleSweepTimerId = 0;
+    }
+
+    postPresence('bye');
     window.removeEventListener('pagehide', onPageHide);
+    window.removeEventListener('beforeunload', onBeforeUnload);
     document.removeEventListener('visibilitychange', onVisibilityChange);
 
     if (typeof unsubscribe === 'function') {
@@ -719,6 +1269,10 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     }
 
     await flushPending({ force: true });
+    syncChannel?.removeEventListener('message', onSyncMessage);
+    presenceChannel?.removeEventListener('message', onPresenceMessage);
+    syncChannel?.close();
+    presenceChannel?.close();
     db.close();
   }
 

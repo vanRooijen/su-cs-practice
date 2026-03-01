@@ -1,4 +1,4 @@
-import { cloneBounds, makeCenteredBounds, makeDefaultWorkspaceRect } from './geometry.js';
+import { clampBoundsToWorkspace, cloneBounds, makeCenteredBounds, makeDefaultWorkspaceRect } from './geometry.js';
 import { createWindowHistory } from './history.js';
 import { toLastSegmentLabel } from './routing.js';
 
@@ -39,16 +39,40 @@ function moveToFront(state, windowId) {
 }
 
 export function focusWindow(state, windowId, options = {}) {
-  const { restoreMinimized = true } = options;
+  const { restoreMinimized = true, ownerRuntimeId = null } = options;
   const target = state.windows[windowId];
 
   if (!target) {
     return;
   }
 
+  const shouldSetOwner = typeof ownerRuntimeId === 'string' && ownerRuntimeId;
+  const ownerChanged = shouldSetOwner && target.ownerRuntimeId !== ownerRuntimeId;
+
+  let bounds = target.bounds;
+  let restoreBounds = target.restoreBounds;
+
+  if (ownerChanged) {
+    const clampedRestoreBounds = clampBoundsToWorkspace(state.workspaceRect, target.restoreBounds ?? target.bounds);
+    restoreBounds = cloneBounds(clampedRestoreBounds);
+
+    bounds = target.isMaximized
+      ? {
+          x: 0,
+          y: 0,
+          width: state.workspaceRect.width,
+          height: state.workspaceRect.height,
+        }
+      : cloneBounds(clampBoundsToWorkspace(state.workspaceRect, target.bounds));
+  }
+
   state.windows[windowId] = {
     ...target,
+    ownerRuntimeId: shouldSetOwner ? ownerRuntimeId : target.ownerRuntimeId ?? null,
     isMinimized: restoreMinimized ? false : target.isMinimized,
+    minimizeReason: restoreMinimized ? null : target.minimizeReason ?? null,
+    bounds,
+    restoreBounds,
     lastFocusedAt: Date.now(),
   };
 
@@ -56,11 +80,20 @@ export function focusWindow(state, windowId, options = {}) {
   state.focusedWindowId = windowId;
 }
 
-export function highestVisibleWindowId(state) {
+export function highestVisibleWindowId(state, ownerRuntimeId = null) {
   for (let index = state.windowOrder.length - 1; index >= 0; index -= 1) {
     const id = state.windowOrder[index];
+    const windowState = state.windows[id];
 
-    if (!state.windows[id]?.isMinimized) {
+    if (!windowState || windowState.isMinimized) {
+      continue;
+    }
+
+    if (typeof ownerRuntimeId === 'string' && ownerRuntimeId && windowState.ownerRuntimeId !== ownerRuntimeId) {
+      continue;
+    }
+
+    if (!windowState.isMinimized) {
       return id;
     }
   }
@@ -68,9 +101,10 @@ export function highestVisibleWindowId(state) {
   return null;
 }
 
-export function createWindowFromRoute(state, route, appDefinitions) {
+export function createWindowFromRoute(state, route, appDefinitions, options = {}) {
   const appConfig = appDefinitions[route.appId];
   const windowId = state.nextWindowId;
+  const ownerRuntimeId = typeof options.ownerRuntimeId === 'string' ? options.ownerRuntimeId : null;
 
   state.nextWindowId += 1;
 
@@ -88,6 +122,8 @@ export function createWindowFromRoute(state, route, appDefinitions) {
     showWindowHistoryNavigation: Boolean(appConfig?.enableWindowHistoryNavigation),
     isSidebarCollapsed: false,
     isMinimized: false,
+    minimizeReason: null,
+    ownerRuntimeId,
     isMaximized: false,
     bounds,
     restoreBounds: cloneBounds(bounds),

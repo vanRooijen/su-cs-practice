@@ -27,10 +27,18 @@ import {
 
 export function createWindowManagerStore() {
   const store = writable(createInitialState());
+  const runtimeId =
+    typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `runtime-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 
   function toPositiveWindowId(value) {
     const numeric = Number(value);
     return Number.isInteger(numeric) && numeric > 0 ? numeric : null;
+  }
+
+  function isOwnedByRuntime(windowState) {
+    return windowState?.ownerRuntimeId === runtimeId;
   }
 
   function sanitizeWorkspaceRect(candidateRect, fallbackRect) {
@@ -41,6 +49,19 @@ export function createWindowManagerStore() {
     const height = Math.max(Math.floor(candidateRect?.height ?? fallbackHeight), MIN_WINDOW_HEIGHT);
 
     return { width, height };
+  }
+
+  function sanitizeLooseBounds(candidateBounds, fallbackBounds = null) {
+    const fallback = fallbackBounds ?? { x: 0, y: 0, width: 640, height: 420 };
+
+    return {
+      x: Number.isFinite(candidateBounds?.x) ? Math.round(candidateBounds.x) : fallback.x,
+      y: Number.isFinite(candidateBounds?.y) ? Math.round(candidateBounds.y) : fallback.y,
+      width: Number.isFinite(candidateBounds?.width) ? Math.max(1, Math.round(candidateBounds.width)) : fallback.width,
+      height: Number.isFinite(candidateBounds?.height)
+        ? Math.max(1, Math.round(candidateBounds.height))
+        : fallback.height,
+    };
   }
 
   function toRoutePath(routeLike, appId, defaultSubroute = '') {
@@ -114,21 +135,32 @@ export function createWindowManagerStore() {
       typeof windowLike?.routeKey === 'string' && windowLike.routeKey.trim()
         ? windowLike.routeKey
         : `${appId}::${path}`;
+    const ownerRuntimeId =
+      typeof windowLike?.ownerRuntimeId === 'string' && windowLike.ownerRuntimeId.trim()
+        ? windowLike.ownerRuntimeId
+        : runtimeId;
+    const isOwnedLocally = ownerRuntimeId === runtimeId;
 
     const nextBoundsCandidate =
       windowLike?.bounds && typeof windowLike.bounds === 'object'
         ? windowLike.bounds
         : makeCenteredBounds(workspaceRect, windowId, appDefinition?.initialBounds ?? null);
-    const nextBounds = clampBoundsToWorkspace(workspaceRect, nextBoundsCandidate);
+    const nextBounds = isOwnedLocally
+      ? clampBoundsToWorkspace(workspaceRect, nextBoundsCandidate)
+      : sanitizeLooseBounds(nextBoundsCandidate);
 
     const restoreBoundsCandidate =
       windowLike?.restoreBounds && typeof windowLike.restoreBounds === 'object'
         ? windowLike.restoreBounds
         : nextBounds;
-    const restoreBounds = clampBoundsToWorkspace(workspaceRect, restoreBoundsCandidate);
+    const restoreBounds = isOwnedLocally
+      ? clampBoundsToWorkspace(workspaceRect, restoreBoundsCandidate)
+      : sanitizeLooseBounds(restoreBoundsCandidate, nextBounds);
 
     const isMaximized = Boolean(windowLike?.isMaximized);
     const history = sanitizeHistory(windowLike?.history, path, subroute, routeKey);
+    const minimizeReason =
+      windowLike?.minimizeReason === 'user' || windowLike?.minimizeReason === 'offline' ? windowLike.minimizeReason : null;
 
     return {
       windowId,
@@ -142,8 +174,10 @@ export function createWindowManagerStore() {
       showWindowHistoryNavigation: Boolean(appDefinition.enableWindowHistoryNavigation),
       isSidebarCollapsed: Boolean(windowLike?.isSidebarCollapsed) && Boolean(appDefinition.hasSidebar),
       isMinimized: Boolean(windowLike?.isMinimized),
+      minimizeReason,
+      ownerRuntimeId,
       isMaximized,
-      bounds: isMaximized
+      bounds: isMaximized && isOwnedLocally
         ? {
             x: 0,
             y: 0,
@@ -206,10 +240,10 @@ export function createWindowManagerStore() {
 
     const focusedWindowId = toPositiveWindowId(persistedState?.focusedWindowId);
     const focusedWindow = focusedWindowId ? next.windows[focusedWindowId] : null;
-    if (focusedWindow && !focusedWindow.isMinimized) {
+    if (focusedWindow && !focusedWindow.isMinimized && isOwnedByRuntime(focusedWindow)) {
       next.focusedWindowId = focusedWindowId;
     } else {
-      next.focusedWindowId = highestVisibleWindowId(next);
+      next.focusedWindowId = highestVisibleWindowId(next, runtimeId);
     }
 
     if (next.focusedWindowId && next.windows[next.focusedWindowId]) {
@@ -239,6 +273,31 @@ export function createWindowManagerStore() {
     return next;
   }
 
+  function ensureOwnedFocus(next) {
+    const focusedWindow = next.focusedWindowId ? next.windows[next.focusedWindowId] : null;
+    const focusedVisibleOwned = Boolean(focusedWindow && !focusedWindow.isMinimized && isOwnedByRuntime(focusedWindow));
+
+    if (focusedVisibleOwned) {
+      return;
+    }
+
+    next.focusedWindowId = highestVisibleWindowId(next, runtimeId);
+    if (!next.focusedWindowId) {
+      return;
+    }
+
+    const target = next.windows[next.focusedWindowId];
+    if (!target) {
+      next.focusedWindowId = null;
+      return;
+    }
+
+    next.windows[next.focusedWindowId] = {
+      ...target,
+      lastFocusedAt: Date.now(),
+    };
+  }
+
   function applyRoute(route) {
     store.update((state) => {
       const shouldForceDuplicate = route.openMode === 'new-window';
@@ -250,6 +309,7 @@ export function createWindowManagerStore() {
         Boolean(preselectedWindow) &&
         hasSameRouteIdentity(preselectedWindow, route) &&
         state.focusedWindowId === preselectedWindowId &&
+        isOwnedByRuntime(preselectedWindow) &&
         !preselectedWindow.isMinimized &&
         hasSameLastRouteIdentity(state.lastRoute, route);
 
@@ -278,6 +338,7 @@ export function createWindowManagerStore() {
           next.windows[windowId] = {
             ...win,
             isMinimized: true,
+            minimizeReason: 'user',
           };
         }
 
@@ -291,7 +352,7 @@ export function createWindowManagerStore() {
       let targetWindowId = shouldForceDuplicate ? null : resolveNavigationWindowForApp(next, route, APP_DEFINITIONS);
 
       if (!targetWindowId) {
-        targetWindowId = createWindowFromRoute(next, route, APP_DEFINITIONS);
+        targetWindowId = createWindowFromRoute(next, route, APP_DEFINITIONS, { ownerRuntimeId: runtimeId });
       } else {
         const target = next.windows[targetWindowId];
         if (!hasSameRouteIdentity(target, route)) {
@@ -307,7 +368,7 @@ export function createWindowManagerStore() {
         }
       }
 
-      focusWindow(next, targetWindowId, { restoreMinimized: true });
+      focusWindow(next, targetWindowId, { restoreMinimized: true, ownerRuntimeId: runtimeId });
       return next;
     });
   }
@@ -330,7 +391,7 @@ export function createWindowManagerStore() {
       for (const windowId of next.windowOrder) {
         const win = next.windows[windowId];
 
-        if (!win) {
+        if (!win || !isOwnedByRuntime(win)) {
           continue;
         }
 
@@ -372,12 +433,12 @@ export function createWindowManagerStore() {
         return state;
       }
 
-      if (state.focusedWindowId === windowId && !target.isMinimized) {
+      if (state.focusedWindowId === windowId && !target.isMinimized && isOwnedByRuntime(target)) {
         return state;
       }
 
       const next = cloneState(state);
-      focusWindow(next, windowId, { restoreMinimized: true });
+      focusWindow(next, windowId, { restoreMinimized: true, ownerRuntimeId: runtimeId });
       return next;
     });
   }
@@ -390,16 +451,17 @@ export function createWindowManagerStore() {
         return state;
       }
 
-      const isFocused = state.focusedWindowId === windowId && !target.isMinimized;
+      const isFocused = state.focusedWindowId === windowId && !target.isMinimized && isOwnedByRuntime(target);
       const next = cloneState(state);
 
       if (isFocused) {
         next.windows[windowId] = {
           ...target,
           isMinimized: true,
+          minimizeReason: 'user',
         };
 
-        const nextVisibleWindowId = highestVisibleWindowId(next);
+        const nextVisibleWindowId = highestVisibleWindowId(next, runtimeId);
         next.focusedWindowId = nextVisibleWindowId;
 
         if (nextVisibleWindowId) {
@@ -412,7 +474,7 @@ export function createWindowManagerStore() {
         return next;
       }
 
-      focusWindow(next, windowId, { restoreMinimized: true });
+      focusWindow(next, windowId, { restoreMinimized: true, ownerRuntimeId: runtimeId });
       return next;
     });
   }
@@ -429,17 +491,18 @@ export function createWindowManagerStore() {
       const current = next.windows[windowId];
 
       if (current.isMinimized) {
-        focusWindow(next, windowId, { restoreMinimized: true });
+        focusWindow(next, windowId, { restoreMinimized: true, ownerRuntimeId: runtimeId });
         return next;
       }
 
       next.windows[windowId] = {
         ...current,
         isMinimized: true,
+        minimizeReason: 'user',
       };
 
       if (next.focusedWindowId === windowId || !next.windows[next.focusedWindowId]) {
-        const nextVisibleWindowId = highestVisibleWindowId(next);
+        const nextVisibleWindowId = highestVisibleWindowId(next, runtimeId);
         next.focusedWindowId = nextVisibleWindowId;
 
         if (nextVisibleWindowId) {
@@ -458,7 +521,7 @@ export function createWindowManagerStore() {
     store.update((state) => {
       const target = state.windows[windowId];
 
-      if (!target) {
+      if (!target || !isOwnedByRuntime(target)) {
         return state;
       }
 
@@ -489,7 +552,7 @@ export function createWindowManagerStore() {
         };
       }
 
-      focusWindow(next, windowId, { restoreMinimized: true });
+      focusWindow(next, windowId, { restoreMinimized: true, ownerRuntimeId: runtimeId });
       return next;
     });
   }
@@ -498,7 +561,7 @@ export function createWindowManagerStore() {
     store.update((state) => {
       const target = state.windows[windowId];
 
-      if (!target || !target.hasSidebar) {
+      if (!target || !target.hasSidebar || !isOwnedByRuntime(target)) {
         return state;
       }
 
@@ -515,7 +578,7 @@ export function createWindowManagerStore() {
     store.update((state) => {
       const target = state.windows[windowId];
 
-      if (!target || target.isMaximized) {
+      if (!target || target.isMaximized || !isOwnedByRuntime(target)) {
         return state;
       }
 
@@ -545,7 +608,7 @@ export function createWindowManagerStore() {
     store.update((state) => {
       const target = state.windows[windowId];
 
-      if (!target || target.isMaximized) {
+      if (!target || target.isMaximized || !isOwnedByRuntime(target)) {
         return state;
       }
 
@@ -582,7 +645,7 @@ export function createWindowManagerStore() {
     store.update((state) => {
       const target = state.windows[windowId];
 
-      if (!target?.history || !canStepWindowHistory(target, direction)) {
+      if (!target?.history || !canStepWindowHistory(target, direction) || !isOwnedByRuntime(target)) {
         return state;
       }
 
@@ -607,7 +670,7 @@ export function createWindowManagerStore() {
         },
       };
 
-      focusWindow(next, windowId, { restoreMinimized: true });
+      focusWindow(next, windowId, { restoreMinimized: true, ownerRuntimeId: runtimeId });
       targetPath = historyEntry.path;
 
       return next;
@@ -633,11 +696,10 @@ export function createWindowManagerStore() {
       delete next.windows[windowId];
       next.windowOrder = next.windowOrder.filter((id) => id !== windowId);
 
-      if (wasFocused) {
-        next.focusedWindowId = highestVisibleWindowId(next);
-      } else if (next.focusedWindowId && !next.windows[next.focusedWindowId]) {
-        next.focusedWindowId = highestVisibleWindowId(next);
+      if (wasFocused || next.focusedWindowId && !next.windows[next.focusedWindowId]) {
+        next.focusedWindowId = highestVisibleWindowId(next, runtimeId);
       }
+      ensureOwnedFocus(next);
 
       if (next.focusedWindowId) {
         const focused = next.windows[next.focusedWindowId];
@@ -694,6 +756,7 @@ export function createWindowManagerStore() {
 
     store.update((state) => {
       const next = sanitizePersistedState(state, persistedState);
+      ensureOwnedFocus(next);
 
       if (next.focusedWindowId && next.windows[next.focusedWindowId]) {
         focusedPath = next.windows[next.focusedWindowId].path;
@@ -703,6 +766,69 @@ export function createWindowManagerStore() {
     });
 
     return focusedPath;
+  }
+
+  function reconcileOwnership(activeRuntimeIdsLike) {
+    const activeRuntimeIds = new Set(
+      activeRuntimeIdsLike instanceof Set
+        ? [...activeRuntimeIdsLike]
+        : Array.isArray(activeRuntimeIdsLike)
+          ? activeRuntimeIdsLike
+          : [],
+    );
+    activeRuntimeIds.add(runtimeId);
+
+    store.update((state) => {
+      const next = cloneState(state);
+      let hasChanges = false;
+
+      for (const windowId of next.windowOrder) {
+        const win = next.windows[windowId];
+        if (!win) {
+          continue;
+        }
+
+        const ownerRuntimeId =
+          typeof win.ownerRuntimeId === 'string' && win.ownerRuntimeId.trim() ? win.ownerRuntimeId : null;
+        if (!ownerRuntimeId) {
+          continue;
+        }
+
+        const ownerIsActive = activeRuntimeIds.has(ownerRuntimeId);
+        if (!ownerIsActive) {
+          if (!win.isMinimized || win.minimizeReason !== 'offline') {
+            next.windows[windowId] = {
+              ...win,
+              isMinimized: true,
+              minimizeReason: 'offline',
+            };
+            hasChanges = true;
+          }
+          continue;
+        }
+
+        if (win.isMinimized && win.minimizeReason === 'offline') {
+          next.windows[windowId] = {
+            ...win,
+            isMinimized: false,
+            minimizeReason: null,
+          };
+          hasChanges = true;
+        }
+      }
+
+      const focusedBefore = next.focusedWindowId;
+      ensureOwnedFocus(next);
+      if (next.focusedWindowId !== focusedBefore) {
+        hasChanges = true;
+      }
+
+      return hasChanges ? next : state;
+    });
+  }
+
+  function getRuntimeId() {
+    return runtimeId;
   }
 
   return {
@@ -722,6 +848,8 @@ export function createWindowManagerStore() {
     getDefaultPathForApp,
     getSnapshot,
     hydratePersistedState,
+    reconcileOwnership,
+    getRuntimeId,
   };
 }
 

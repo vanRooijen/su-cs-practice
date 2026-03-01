@@ -8,6 +8,8 @@
 
   export let onCloseAll = null;
 
+  const runtimeId = windowManager.getRuntimeId?.() ?? null;
+
   let workspaceElement;
   let contextMenuElement;
   let contextMenu = {
@@ -29,6 +31,15 @@
       return left.windowId - right.windowId;
     })
     .map((windowState) => windowState.windowId);
+
+  $: renderedWindowIds = $windowManager.windowOrder.filter((windowId) => {
+    const win = $windowManager.windows[windowId];
+    return Boolean(win && !win.isMinimized && win.ownerRuntimeId === runtimeId);
+  });
+
+  function isWindowStolen(win) {
+    return Boolean(win && !win.isMinimized && win.ownerRuntimeId && win.ownerRuntimeId !== runtimeId);
+  }
 
   function openPath(path) {
     navigateTo(path, { forceEmit: true });
@@ -171,11 +182,50 @@
     closeContextMenu();
   }
 
-  function syncUrlToFocusedWindowOrDesktop() {
+  function shouldFallbackToDesktop(snapshot) {
+    if (!snapshot || snapshot.windowOrder.length === 0) {
+      return true;
+    }
+
+    let hasOwnedVisibleWindow = false;
+    let hasUserMinimizedWindow = false;
+
+    for (const windowId of snapshot.windowOrder) {
+      const win = snapshot.windows[windowId];
+      if (!win) {
+        continue;
+      }
+
+      if (win.ownerRuntimeId === runtimeId && !win.isMinimized) {
+        hasOwnedVisibleWindow = true;
+        break;
+      }
+
+      if (win.isMinimized && win.minimizeReason === 'user') {
+        hasUserMinimizedWindow = true;
+      }
+    }
+
+    if (hasOwnedVisibleWindow) {
+      return false;
+    }
+
+    return !hasUserMinimizedWindow;
+  }
+
+  function syncUrlToFocusedWindowOrDesktop(options = {}) {
     const snapshot = windowManager.getSnapshot();
+    const allowDesktopFallback =
+      typeof options.allowDesktopFallback === 'boolean'
+        ? options.allowDesktopFallback
+        : shouldFallbackToDesktop(snapshot);
     const focusedWindowId = snapshot.focusedWindowId;
 
     if (!focusedWindowId) {
+      if (!allowDesktopFallback) {
+        return;
+      }
+
       if ($route.path !== '/') {
         navigateToDesktop({ replace: true });
       }
@@ -201,7 +251,8 @@
       return;
     }
 
-    const isFocusedVisibleWindow = snapshot.focusedWindowId === windowId && !target.isMinimized;
+    const isFocusedVisibleWindow =
+      snapshot.focusedWindowId === windowId && !target.isMinimized && target.ownerRuntimeId === runtimeId;
     windowManager.activateWindowFromSidebar(windowId);
 
     // Pure compositor minimize: minimizing never mutates URL/history.
@@ -289,8 +340,33 @@
 
     observer.observe(workspaceElement);
 
+    const initialSnapshot = windowManager.getSnapshot();
+    const initialFocusedWindowId = initialSnapshot.focusedWindowId;
+    const initialFocusedPath = initialFocusedWindowId ? initialSnapshot.windows[initialFocusedWindowId]?.path ?? '' : '';
+    let previousFocusKey = `${initialFocusedWindowId ?? 'none'}::${initialFocusedPath}`;
+    let hasSeenFocusedWindow = Boolean(initialFocusedWindowId && initialFocusedPath);
+    const stopWindowSubscription = windowManager.subscribe((snapshot) => {
+      const focusedWindowId = snapshot.focusedWindowId;
+      const focusedPath = focusedWindowId ? snapshot.windows[focusedWindowId]?.path ?? '' : '';
+      const focusKey = `${focusedWindowId ?? 'none'}::${focusedPath}`;
+
+      if (focusKey === previousFocusKey) {
+        return;
+      }
+
+      previousFocusKey = focusKey;
+      if (focusedWindowId && focusedPath) {
+        hasSeenFocusedWindow = true;
+      }
+
+      syncUrlToFocusedWindowOrDesktop({
+        allowDesktopFallback: hasSeenFocusedWindow && shouldFallbackToDesktop(snapshot),
+      });
+    });
+
     return () => {
       observer.disconnect();
+      stopWindowSubscription();
     };
   });
 </script>
@@ -326,7 +402,7 @@
 
         <div
           class="sidebar-entry"
-          data-focused={$windowManager.focusedWindowId === windowId && !win.isMinimized}
+          data-focused={$windowManager.focusedWindowId === windowId && !win.isMinimized && win.ownerRuntimeId === runtimeId}
         >
           <button
             type="button"
@@ -338,6 +414,8 @@
             <small>~ {win.routeLabel}</small>
             {#if win.isMinimized}
               <small>(minimized)</small>
+            {:else if isWindowStolen(win)}
+              <small>(stolen)</small>
             {/if}
           </button>
 
@@ -380,7 +458,7 @@
       </div>
 
       <div class="window-canvas" aria-live="polite">
-        {#each $windowManager.windowOrder as windowId, index (windowId)}
+        {#each renderedWindowIds as windowId, index (windowId)}
           {@const windowState = $windowManager.windows[windowId]}
           {@const appConfig = APP_REGISTRY[windowState.appId]}
 
