@@ -22,6 +22,20 @@ npm run build
 npm run preview
 ```
 
+## Deploy (Cloudflare Pages)
+
+Notes:
+
+- `prebuild` runs automatically, so markdown content is compiled during deploy.
+- SPA deep links are supported via `public/_redirects` (`/* /index.html 200`).
+
+Optional direct deploy from CLI:
+
+```bash
+npx wrangler login
+npx wrangler pages deploy dist --project-name <su-cs-practice>
+```
+
 ## Testing
 
 ```bash

@@ -7,11 +7,13 @@
     clearWindowSessionPersistence,
     createWindowSessionPersistence,
   } from './lib/window/windowSessionPersistence.js';
+  import { resolveRestoredFocusedPath } from './lib/window/restorePolicy.js';
 
   let stopRouteSubscription = () => {};
   let persistenceController = null;
   let isDisposed = false;
   let isClosingAll = false;
+  let initialEntryPathname = '/';
 
   async function startWindowSessionPersistence() {
     try {
@@ -26,13 +28,14 @@
       return;
     }
 
-    const restoredFocusedPath = persistenceController?.restoredFocusedPath;
-    if (
-      typeof restoredFocusedPath === 'string' &&
-      restoredFocusedPath &&
-      restoredFocusedPath !== window.location.pathname
-    ) {
-      navigateTo(restoredFocusedPath, {
+    const restorePath = resolveRestoredFocusedPath({
+      initialEntryPathname,
+      currentPathname: window.location.pathname,
+      restoredFocusedPath: persistenceController?.restoredFocusedPath,
+    });
+
+    if (restorePath) {
+      navigateTo(restorePath, {
         replace: true,
         forceEmit: true,
       });
@@ -71,6 +74,7 @@
   }
 
   onMount(() => {
+    initialEntryPathname = window.location.pathname;
     const stopRouter = initHistoryRouter();
     isDisposed = false;
 
