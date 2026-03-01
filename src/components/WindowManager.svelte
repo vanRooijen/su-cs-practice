@@ -450,6 +450,7 @@
     position: relative;
     min-height: 0;
     overflow: hidden;
+    background: #d7e7ff;
   }
 
   .desktop-layer,
@@ -461,6 +462,10 @@
   .desktop-layer {
     overflow: auto;
     padding: 0.5rem;
+    background-image:
+      linear-gradient(to right, rgba(32, 72, 140, 0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(32, 72, 140, 0.08) 1px, transparent 1px);
+    background-size: 24px 24px;
   }
 
   .desktop-icons {
