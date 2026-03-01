@@ -335,6 +335,7 @@
 
           <AppWindow
             windowState={windowState}
+            workspaceRect={$windowManager.workspaceRect}
             zIndex={index + 1}
             isFocused={$windowManager.focusedWindowId === windowId && !windowState.isMinimized}
             on:focus={(event) => focusWindowAndSyncUrl(event.detail.windowId)}

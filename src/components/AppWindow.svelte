@@ -4,6 +4,7 @@
   export let windowState;
   export let isFocused = false;
   export let zIndex = 1;
+  export let workspaceRect = null;
 
   const dispatch = createEventDispatcher();
   let windowElement;
@@ -12,6 +13,7 @@
   let hasWindowInteractionListeners = false;
   let interactionFrameRequestId = 0;
   let latestPointerPosition = null;
+  let dragPreviewOffset = null;
 
   function addWindowInteractionListeners() {
     if (hasWindowInteractionListeners) {
@@ -49,23 +51,47 @@
     }
   }
 
+  function clamp(value, minimum, maximum) {
+    return Math.max(minimum, Math.min(value, maximum));
+  }
+
+  function toDraggedPosition(interaction, clientX, clientY) {
+    const rawX = interaction.startWindowX + (clientX - interaction.startPointerX);
+    const rawY = interaction.startWindowY + (clientY - interaction.startPointerY);
+
+    if (!workspaceRect) {
+      return {
+        x: Math.round(rawX),
+        y: Math.round(rawY),
+      };
+    }
+
+    const maxX = Math.max(0, workspaceRect.width - windowState.bounds.width);
+    const maxY = Math.max(0, workspaceRect.height - windowState.bounds.height);
+
+    return {
+      x: clamp(Math.round(rawX), 0, maxX),
+      y: clamp(Math.round(rawY), 0, maxY),
+    };
+  }
+
   function emitInteractionAt(clientX, clientY) {
     if (!interactionState) {
       return;
     }
 
-    const deltaX = clientX - interactionState.startPointerX;
-    const deltaY = clientY - interactionState.startPointerY;
-
     if (interactionState.kind === 'drag') {
+      const nextPosition = toDraggedPosition(interactionState, clientX, clientY);
       dispatch('move', {
         windowId: windowState.windowId,
-        x: interactionState.startWindowX + deltaX,
-        y: interactionState.startWindowY + deltaY,
+        x: nextPosition.x,
+        y: nextPosition.y,
       });
       return;
     }
 
+    const deltaX = clientX - interactionState.startPointerX;
+    const deltaY = clientY - interactionState.startPointerY;
     dispatch('resize', {
       windowId: windowState.windowId,
       edge: interactionState.edge,
@@ -79,6 +105,15 @@
     interactionFrameRequestId = 0;
 
     if (!interactionState || !latestPointerPosition) {
+      return;
+    }
+
+    if (interactionState.kind === 'drag') {
+      const nextPosition = toDraggedPosition(interactionState, latestPointerPosition.x, latestPointerPosition.y);
+      dragPreviewOffset = {
+        x: nextPosition.x - interactionState.startWindowX,
+        y: nextPosition.y - interactionState.startWindowY,
+      };
       return;
     }
 
@@ -155,6 +190,7 @@
       startWindowX: windowState.bounds.x,
       startWindowY: windowState.bounds.y,
     };
+    dragPreviewOffset = { x: 0, y: 0 };
     interactionSourceElement = event.currentTarget instanceof Element ? event.currentTarget : windowElement;
 
     capturePointer(interactionSourceElement, event.pointerId);
@@ -178,6 +214,7 @@
       startPointerY: event.clientY,
       startBounds: { ...windowState.bounds },
     };
+    dragPreviewOffset = null;
     interactionSourceElement = event.currentTarget instanceof Element ? event.currentTarget : windowElement;
 
     capturePointer(interactionSourceElement, event.pointerId);
@@ -206,14 +243,18 @@
       return;
     }
 
-    if (typeof event.clientX === 'number' && typeof event.clientY === 'number') {
-      emitInteractionAt(event.clientX, event.clientY);
-    }
+    const finalClientX =
+      typeof event.clientX === 'number' ? event.clientX : (latestPointerPosition?.x ?? interactionState.startPointerX);
+    const finalClientY =
+      typeof event.clientY === 'number' ? event.clientY : (latestPointerPosition?.y ?? interactionState.startPointerY);
+
+    emitInteractionAt(finalClientX, finalClientY);
 
     const pointerId = interactionState.pointerId;
     const sourceElement = interactionSourceElement;
     interactionState = null;
     interactionSourceElement = null;
+    dragPreviewOffset = null;
     cancelInteractionFrame();
     removeWindowInteractionListeners();
 
@@ -225,6 +266,7 @@
   onDestroy(() => {
     interactionState = null;
     interactionSourceElement = null;
+    dragPreviewOffset = null;
     cancelInteractionFrame();
     removeWindowInteractionListeners();
   });
@@ -232,6 +274,11 @@
   $: bounds = windowState.bounds;
   $: visibility = windowState.isMinimized ? 'hidden' : 'visible';
   $: pointerEvents = windowState.isMinimized ? 'none' : 'auto';
+  $: activeTransform =
+    interactionState?.kind === 'drag' && dragPreviewOffset
+      ? `translate3d(${dragPreviewOffset.x}px, ${dragPreviewOffset.y}px, 0)`
+      : 'none';
+  $: windowWillChange = interactionState?.kind === 'drag' ? 'transform' : 'auto';
   $: historyIndex = windowState.history?.index ?? 0;
   $: historyLength = windowState.history?.entries?.length ?? 0;
   $: canGoBack = historyIndex > 0;
@@ -244,7 +291,7 @@
   on:click={requestFocus}
   data-focused={isFocused}
   aria-hidden={windowState.isMinimized}
-  style={`z-index:${zIndex};left:${bounds.x}px;top:${bounds.y}px;width:${bounds.width}px;height:${bounds.height}px;visibility:${visibility};pointer-events:${pointerEvents};`}
+  style={`z-index:${zIndex};left:${bounds.x}px;top:${bounds.y}px;width:${bounds.width}px;height:${bounds.height}px;visibility:${visibility};pointer-events:${pointerEvents};transform:${activeTransform};will-change:${windowWillChange};`}
 >
   <header class="window-header" role="group" aria-label="Window header" on:pointerdown={startDrag}>
     <div class="window-header-left">
