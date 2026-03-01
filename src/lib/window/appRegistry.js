@@ -21,5 +21,4 @@ export const APP_REGISTRY = Object.fromEntries(
   ]),
 );
 
-export const APP_LIST = Object.values(APP_REGISTRY);
 export { DEFAULT_APP_ID } from '../navigation/siteManifest.js';

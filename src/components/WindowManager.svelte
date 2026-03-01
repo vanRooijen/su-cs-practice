@@ -121,7 +121,6 @@
       closeContextMenu();
       return;
     }
-
   }
 
   function onGlobalResize() {
@@ -378,7 +377,6 @@
               path={windowState.path}
               subroute={windowState.subroute}
               sidebarCollapsed={windowState.isSidebarCollapsed}
-              isFocused={$windowManager.focusedWindowId === windowId && !windowState.isMinimized}
             />
           </AppWindow>
         {/each}
