@@ -174,13 +174,26 @@
   }
 
   function activateSidebarEntry(windowId) {
+    const snapshot = windowManager.getSnapshot();
+    const target = snapshot.windows[windowId];
+
+    if (!target) {
+      return;
+    }
+
+    const isFocusedVisibleWindow = snapshot.focusedWindowId === windowId && !target.isMinimized;
     windowManager.activateWindowFromSidebar(windowId);
+
+    // Pure compositor minimize: minimizing never mutates URL/history.
+    if (isFocusedVisibleWindow) {
+      return;
+    }
+
     syncUrlToFocusedWindowOrDesktop();
   }
 
   function handleMinimize(windowId) {
     windowManager.toggleMinimize(windowId);
-    syncUrlToFocusedWindowOrDesktop();
   }
 
   function handleMaximize(windowId) {

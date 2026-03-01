@@ -50,12 +50,14 @@
     inset: 0;
     overflow: auto;
     padding: 0.5rem;
-    visibility: hidden;
+    opacity: 0;
+    z-index: 0;
     pointer-events: none;
   }
 
   .content-pane[data-active='true'] {
-    visibility: visible;
+    opacity: 1;
+    z-index: 1;
     pointer-events: auto;
   }
 </style>
