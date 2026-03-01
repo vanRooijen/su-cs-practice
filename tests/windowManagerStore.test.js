@@ -77,3 +77,31 @@ test('closing the final focused window suggests desktop root path', () => {
   assert.equal(suggestedPath, '/');
   assert.equal(store.getSnapshot().focusedWindowId, null);
 });
+
+test('window history limit is isolated per window instance', () => {
+  const store = createWindowManagerStore();
+
+  store.applyRoute(makeRoute('/reader/articles', 'reader', 'articles'));
+  const readerWindowId = store.getSnapshot().focusedWindowId;
+  assert.ok(readerWindowId, 'expected reader window to be created');
+
+  store.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
+  const peopleWindowId = store.getSnapshot().focusedWindowId;
+  assert.ok(peopleWindowId, 'expected people window to be created');
+  assert.notEqual(readerWindowId, peopleWindowId);
+
+  for (let index = 0; index < 14; index += 1) {
+    const subroute = `articles/entry-${index}`;
+    store.applyRoute(makeRoute(`/reader/${subroute}`, 'reader', subroute));
+  }
+
+  const snapshot = store.getSnapshot();
+  const readerWindow = snapshot.windows[readerWindowId];
+  const peopleWindow = snapshot.windows[peopleWindowId];
+
+  assert.ok(readerWindow, 'expected reader window to remain');
+  assert.ok(peopleWindow, 'expected people window to remain');
+  assert.equal(readerWindow.history.entries.length, 10);
+  assert.equal(peopleWindow.history.entries.length, 1);
+  assert.equal(peopleWindow.history.entries[0].path, '/people/staff');
+});

@@ -3,10 +3,12 @@
   import { listReaderArticles, resolveContent } from '../lib/content/resolveContent.js';
 
   export let subroute = '';
+  export let windowId = null;
 
   const featuredArticles = listReaderArticles();
 
   $: content = resolveContent('home', subroute);
+  $: contentCacheScope = `home:${windowId ?? 'default'}`;
 </script>
 
 <div class="app-layout">
@@ -35,7 +37,7 @@
   </section>
 
   <div class="content-slot">
-    <ContentRegion artifact={content} />
+    <ContentRegion artifact={content} cacheScope={contentCacheScope} />
   </div>
 </div>
 
