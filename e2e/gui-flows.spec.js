@@ -10,7 +10,7 @@ test('topbar navigation opens People and focuses it', async ({ page }) => {
 
   await expect(page).toHaveURL(/\/people$/);
   await expect(page.locator('.sidebar-entry')).toHaveCount(2);
-  await expect(page.locator('.entry-main[data-focused="true"] strong')).toHaveText('People');
+  await expect(page.locator('.sidebar-entry[data-focused="true"] strong')).toHaveText('People');
 });
 
 test('open in new window creates an additional Reader window', async ({ page }) => {
@@ -24,7 +24,7 @@ test('open in new window creates an additional Reader window', async ({ page }) 
   await expect(page).toHaveURL(/\/reader\//);
   await expect(page.locator('.sidebar-entry')).toHaveCount(2);
   await expect(page.locator('.app-window')).toHaveCount(2);
-  await expect(page.locator('.entry-main[data-focused="true"] strong')).toHaveText('Reader');
+  await expect(page.locator('.sidebar-entry[data-focused="true"] strong')).toHaveText('Reader');
 });
 
 test('invalid routes are redirected to error app and logged', async ({ page }) => {

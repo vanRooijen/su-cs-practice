@@ -32,12 +32,12 @@ test('browser back and forward focus existing windows without duplicating them',
   await page.goBack();
   await expect(page).toHaveURL(/\/people$/);
   await expect(page.locator('.sidebar-entry')).toHaveCount(3);
-  await expect(page.locator('.entry-main[data-focused="true"] strong')).toHaveText('People');
+  await expect(page.locator('.sidebar-entry[data-focused="true"] strong')).toHaveText('People');
 
   await page.goForward();
   await expect(page).toHaveURL(/\/reader\/articles$/);
   await expect(page.locator('.sidebar-entry')).toHaveCount(3);
-  await expect(page.locator('.entry-main[data-focused="true"] strong')).toHaveText('Reader');
+  await expect(page.locator('.sidebar-entry[data-focused="true"] strong')).toHaveText('Reader');
 });
 
 test('context menu can open a link in a new window', async ({ page }) => {
@@ -51,7 +51,7 @@ test('context menu can open a link in a new window', async ({ page }) => {
   await expect(page).toHaveURL(/\/people\/students$/);
   await expect(page.locator('.sidebar-entry')).toHaveCount(2);
   await expect(page.locator('.app-window')).toHaveCount(2);
-  await expect(page.locator('.entry-main[data-focused="true"] small')).toContainText('Students');
+  await expect(page.locator('.sidebar-entry[data-focused="true"] small')).toContainText('Students');
 });
 
 test('context menu help action routes to reader help', async ({ page }) => {
@@ -62,7 +62,7 @@ test('context menu help action routes to reader help', async ({ page }) => {
   await page.getByRole('menuitem', { name: 'Help' }).click();
 
   await expect(page).toHaveURL(/\/reader\/help$/);
-  await expect(page.locator('.entry-main[data-focused="true"] strong')).toHaveText('Reader');
+  await expect(page.locator('.sidebar-entry[data-focused="true"] strong')).toHaveText('Reader');
 });
 
 test('window controls handle minimize, maximize, restore, and close lifecycle', async ({ page }) => {
@@ -71,11 +71,11 @@ test('window controls handle minimize, maximize, restore, and close lifecycle', 
 
   await focusedWindow(page).getByRole('button', { name: 'Minimize window' }).click();
   await expect(page).toHaveURL(/\/people\/staff$/);
-  await expect(page.locator('.entry-main[data-focused="true"]')).toHaveCount(0);
+  await expect(page.locator('.sidebar-entry[data-focused="true"]')).toHaveCount(0);
   await expect(page.locator('.sidebar-entry small')).toContainText(['(minimized)']);
 
   await page.locator('.entry-main').first().click();
-  await expect(page.locator('.entry-main[data-focused="true"] strong')).toHaveText('People');
+  await expect(page.locator('.sidebar-entry[data-focused="true"] strong')).toHaveText('People');
 
   await focusedWindow(page).getByRole('button', { name: 'Maximize window' }).click();
   await expect(focusedWindow(page).locator('.resize-handle')).toHaveCount(0);
