@@ -28,6 +28,217 @@ import {
 export function createWindowManagerStore() {
   const store = writable(createInitialState());
 
+  function toPositiveWindowId(value) {
+    const numeric = Number(value);
+    return Number.isInteger(numeric) && numeric > 0 ? numeric : null;
+  }
+
+  function sanitizeWorkspaceRect(candidateRect, fallbackRect) {
+    const fallbackWidth = Math.max(Math.floor(fallbackRect?.width ?? 0), MIN_WINDOW_WIDTH);
+    const fallbackHeight = Math.max(Math.floor(fallbackRect?.height ?? 0), MIN_WINDOW_HEIGHT);
+
+    const width = Math.max(Math.floor(candidateRect?.width ?? fallbackWidth), MIN_WINDOW_WIDTH);
+    const height = Math.max(Math.floor(candidateRect?.height ?? fallbackHeight), MIN_WINDOW_HEIGHT);
+
+    return { width, height };
+  }
+
+  function toRoutePath(routeLike, appId, defaultSubroute = '') {
+    const normalizedSubroute =
+      typeof defaultSubroute === 'string'
+        ? defaultSubroute
+            .replace(/^\/+|\/+$/g, '')
+            .split('/')
+            .filter(Boolean)
+            .join('/')
+        : '';
+    const defaultPath = normalizedSubroute ? `/${appId}/${normalizedSubroute}` : `/${appId}`;
+    const candidatePath = typeof routeLike?.path === 'string' ? routeLike.path.trim() : '';
+
+    if (!candidatePath) {
+      return defaultPath;
+    }
+
+    return candidatePath.startsWith('/') ? candidatePath : `/${candidatePath}`;
+  }
+
+  function sanitizeHistory(historyLike, fallbackPath, fallbackSubroute, fallbackRouteKey) {
+    const entryCandidates = Array.isArray(historyLike?.entries) ? historyLike.entries : [];
+    const entries = [];
+
+    for (const entry of entryCandidates) {
+      const path = typeof entry?.path === 'string' && entry.path.trim() ? entry.path : null;
+      if (!path) {
+        continue;
+      }
+
+      const subroute = typeof entry?.subroute === 'string' ? entry.subroute : '';
+      const routeKey = typeof entry?.routeKey === 'string' && entry.routeKey.trim() ? entry.routeKey : null;
+
+      entries.push({
+        path,
+        subroute,
+        routeKey: routeKey ?? `${path}::${subroute}`,
+      });
+    }
+
+    if (!entries.length) {
+      entries.push({
+        path: fallbackPath,
+        subroute: fallbackSubroute,
+        routeKey: fallbackRouteKey,
+      });
+    }
+
+    const indexCandidate = Number(historyLike?.index);
+    const index = Number.isInteger(indexCandidate)
+      ? Math.max(0, Math.min(indexCandidate, entries.length - 1))
+      : entries.length - 1;
+
+    return {
+      entries,
+      index,
+    };
+  }
+
+  function sanitizePersistedWindow(windowLike, windowId, workspaceRect) {
+    const appId = typeof windowLike?.appId === 'string' ? windowLike.appId : null;
+    const appDefinition = appId ? APP_DEFINITIONS[appId] : null;
+    if (!appDefinition) {
+      return null;
+    }
+
+    const path = toRoutePath(windowLike, appId, appDefinition.defaultSubroute ?? '');
+    const subroute = typeof windowLike?.subroute === 'string' ? windowLike.subroute : '';
+    const routeKey =
+      typeof windowLike?.routeKey === 'string' && windowLike.routeKey.trim()
+        ? windowLike.routeKey
+        : `${appId}::${path}`;
+
+    const nextBoundsCandidate =
+      windowLike?.bounds && typeof windowLike.bounds === 'object'
+        ? windowLike.bounds
+        : makeCenteredBounds(workspaceRect, windowId, appDefinition?.initialBounds ?? null);
+    const nextBounds = clampBoundsToWorkspace(workspaceRect, nextBoundsCandidate);
+
+    const restoreBoundsCandidate =
+      windowLike?.restoreBounds && typeof windowLike.restoreBounds === 'object'
+        ? windowLike.restoreBounds
+        : nextBounds;
+    const restoreBounds = clampBoundsToWorkspace(workspaceRect, restoreBoundsCandidate);
+
+    const isMaximized = Boolean(windowLike?.isMaximized);
+    const history = sanitizeHistory(windowLike?.history, path, subroute, routeKey);
+
+    return {
+      windowId,
+      appId,
+      title: appDefinition.title,
+      path,
+      subroute,
+      routeKey,
+      routeLabel: toLastSegmentLabel(path),
+      hasSidebar: Boolean(appDefinition.hasSidebar),
+      showWindowHistoryNavigation: Boolean(appDefinition.enableWindowHistoryNavigation),
+      isSidebarCollapsed: Boolean(windowLike?.isSidebarCollapsed) && Boolean(appDefinition.hasSidebar),
+      isMinimized: Boolean(windowLike?.isMinimized),
+      isMaximized,
+      bounds: isMaximized
+        ? {
+            x: 0,
+            y: 0,
+            width: workspaceRect.width,
+            height: workspaceRect.height,
+          }
+        : cloneBounds(nextBounds),
+      restoreBounds: cloneBounds(restoreBounds),
+      history,
+      createdAt: Number.isFinite(windowLike?.createdAt) ? windowLike.createdAt : Date.now(),
+      lastFocusedAt: Number.isFinite(windowLike?.lastFocusedAt) ? windowLike.lastFocusedAt : Date.now(),
+    };
+  }
+
+  function sanitizePersistedState(state, persistedState) {
+    const next = createInitialState();
+    next.workspaceRect = sanitizeWorkspaceRect(persistedState?.workspaceRect, state.workspaceRect);
+
+    const rawWindows =
+      persistedState?.windows && typeof persistedState.windows === 'object' ? persistedState.windows : {};
+    const rawOrder = Array.isArray(persistedState?.windowOrder) ? persistedState.windowOrder : [];
+    const seenWindowIds = new Set();
+
+    for (const rawWindowId of rawOrder) {
+      const windowId = toPositiveWindowId(rawWindowId);
+      if (!windowId || seenWindowIds.has(windowId)) {
+        continue;
+      }
+
+      const candidate = rawWindows[windowId] ?? rawWindows[String(windowId)];
+      const sanitizedWindow = sanitizePersistedWindow(candidate, windowId, next.workspaceRect);
+      if (!sanitizedWindow) {
+        continue;
+      }
+
+      next.windows[windowId] = sanitizedWindow;
+      next.windowOrder.push(windowId);
+      seenWindowIds.add(windowId);
+    }
+
+    for (const [rawWindowId, candidate] of Object.entries(rawWindows)) {
+      const windowId = toPositiveWindowId(rawWindowId);
+      if (!windowId || seenWindowIds.has(windowId)) {
+        continue;
+      }
+
+      const sanitizedWindow = sanitizePersistedWindow(candidate, windowId, next.workspaceRect);
+      if (!sanitizedWindow) {
+        continue;
+      }
+
+      next.windows[windowId] = sanitizedWindow;
+      next.windowOrder.push(windowId);
+      seenWindowIds.add(windowId);
+    }
+
+    const maxWindowId = next.windowOrder.reduce((highest, id) => Math.max(highest, id), 0);
+    const persistedNextWindowId = toPositiveWindowId(persistedState?.nextWindowId);
+    next.nextWindowId = persistedNextWindowId ? Math.max(persistedNextWindowId, maxWindowId + 1) : maxWindowId + 1;
+
+    const focusedWindowId = toPositiveWindowId(persistedState?.focusedWindowId);
+    const focusedWindow = focusedWindowId ? next.windows[focusedWindowId] : null;
+    if (focusedWindow && !focusedWindow.isMinimized) {
+      next.focusedWindowId = focusedWindowId;
+    } else {
+      next.focusedWindowId = highestVisibleWindowId(next);
+    }
+
+    if (next.focusedWindowId && next.windows[next.focusedWindowId]) {
+      const focused = next.windows[next.focusedWindowId];
+      next.windows[next.focusedWindowId] = {
+        ...focused,
+        lastFocusedAt: Number.isFinite(focused.lastFocusedAt) ? focused.lastFocusedAt : Date.now(),
+      };
+    }
+
+    const lastRoute = persistedState?.lastRoute;
+    const lastRouteAppId = typeof lastRoute?.appId === 'string' ? lastRoute.appId : null;
+    if (lastRouteAppId && APP_DEFINITIONS[lastRouteAppId] && typeof lastRoute?.path === 'string') {
+      next.lastRoute = {
+        appId: lastRouteAppId,
+        path: lastRoute.path,
+        subroute: typeof lastRoute?.subroute === 'string' ? lastRoute.subroute : '',
+        routeKey:
+          typeof lastRoute?.routeKey === 'string' && lastRoute.routeKey.trim()
+            ? lastRoute.routeKey
+            : `${lastRouteAppId}::${lastRoute.path}`,
+      };
+    } else {
+      next.lastRoute = null;
+    }
+
+    return next;
+  }
+
   function applyRoute(route) {
     store.update((state) => {
       const shouldForceDuplicate = route.openMode === 'new-window';
@@ -428,6 +639,22 @@ export function createWindowManagerStore() {
     return get(store);
   }
 
+  function hydratePersistedState(persistedState) {
+    let focusedPath = null;
+
+    store.update((state) => {
+      const next = sanitizePersistedState(state, persistedState);
+
+      if (next.focusedWindowId && next.windows[next.focusedWindowId]) {
+        focusedPath = next.windows[next.focusedWindowId].path;
+      }
+
+      return next;
+    });
+
+    return focusedPath;
+  }
+
   return {
     subscribe: store.subscribe,
     applyRoute,
@@ -443,6 +670,7 @@ export function createWindowManagerStore() {
     closeWindow,
     getDefaultPathForApp,
     getSnapshot,
+    hydratePersistedState,
   };
 }
 

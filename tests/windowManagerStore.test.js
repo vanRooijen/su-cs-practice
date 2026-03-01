@@ -266,3 +266,35 @@ test('toggleSidebar is a no-op for apps without sidebars', () => {
   const after = store.getSnapshot();
   assert.equal(after, before);
 });
+
+test('hydratePersistedState restores z-order, focus, and window metadata', () => {
+  const sourceStore = createWindowManagerStore();
+  sourceStore.setWorkspaceRect({ width: 1400, height: 900 });
+
+  sourceStore.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
+  const peopleWindowId = sourceStore.getSnapshot().focusedWindowId;
+  assert.ok(peopleWindowId, 'expected people window');
+
+  sourceStore.applyRoute(makeRoute('/reader/help', 'reader', 'help', { openMode: 'new-window' }));
+  const readerWindowId = sourceStore.getSnapshot().focusedWindowId;
+  assert.ok(readerWindowId, 'expected reader window');
+
+  sourceStore.moveWindow(peopleWindowId, { x: 128, y: 88 });
+  sourceStore.activateWindowFromSidebar(peopleWindowId);
+  sourceStore.activateWindowFromSidebar(peopleWindowId);
+
+  const persistedSnapshot = sourceStore.getSnapshot();
+
+  const restoredStore = createWindowManagerStore();
+  const restoredFocusedPath = restoredStore.hydratePersistedState(persistedSnapshot);
+  const restoredSnapshot = restoredStore.getSnapshot();
+
+  assert.equal(restoredSnapshot.windowOrder.length, 2);
+  assert.deepEqual(restoredSnapshot.windowOrder, persistedSnapshot.windowOrder);
+  assert.equal(restoredSnapshot.focusedWindowId, readerWindowId);
+  assert.equal(restoredFocusedPath, '/reader/help');
+  assert.equal(restoredSnapshot.windows[peopleWindowId].isMinimized, true);
+  assert.equal(restoredSnapshot.windows[readerWindowId].path, '/reader/help');
+  assert.equal(restoredSnapshot.windows[peopleWindowId].bounds.x, 128);
+  assert.equal(restoredSnapshot.windows[peopleWindowId].bounds.y, 88);
+});
