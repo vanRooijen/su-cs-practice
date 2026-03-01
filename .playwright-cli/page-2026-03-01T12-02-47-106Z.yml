@@ -1,0 +1,77 @@
+- application "Desktop workspace" [ref=e3]:
+  - banner [ref=e4]:
+    - navigation "Topbar app links" [ref=e6]:
+      - button "home" [ref=e7]
+      - button "people" [ref=e8]
+      - button "article" [ref=e9]
+  - generic [ref=e10]:
+    - complementary [ref=e11]:
+      - heading "Windows" [level=2] [ref=e12]
+      - generic [ref=e13]:
+        - button "Home ~ Home" [ref=e14]:
+          - strong [ref=e15]: Home
+          - generic [ref=e16]: ~ Home
+        - button "Close Home" [ref=e17]: x
+      - button "Close All" [ref=e19]
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - heading "Desktop" [level=2] [ref=e22]
+        - list [ref=e23]:
+          - listitem [ref=e24]:
+            - button "Home" [ref=e25] [cursor=pointer]:
+              - generic [ref=e27]: Home
+          - listitem [ref=e28]:
+            - button "People Staff" [ref=e29] [cursor=pointer]:
+              - generic [ref=e31]: People Staff
+          - listitem [ref=e32]:
+            - button "People Students" [ref=e33] [cursor=pointer]:
+              - generic [ref=e35]: People Students
+          - listitem [ref=e36]:
+            - button "Reader Hackathon" [ref=e37] [cursor=pointer]:
+              - generic [ref=e39]: Reader Hackathon
+      - generic [ref=e40]:
+        - group "Window header" [ref=e41]:
+          - generic [ref=e42]:
+            - generic [ref=e43]: Home
+            - generic [ref=e44]: /home
+          - generic [ref=e45]:
+            - button "Minimize window" [ref=e46]: _
+            - button "Maximize window" [ref=e47]: "[]"
+            - button "Close window" [ref=e48]: X
+        - generic [ref=e50]:
+          - generic [ref=e51]:
+            - heading "Home" [level=3] [ref=e52]
+            - paragraph [ref=e53]: Featured articles delegate into Reader routes.
+            - list [ref=e54]:
+              - listitem [ref=e55]:
+                - strong [ref=e56]: 2026 SUDS Div and Conquer Web Development Hackathon
+                - generic [ref=e57]:
+                  - link "Open" [ref=e58] [cursor=pointer]:
+                    - /url: /reader/articles/hackathon-2026
+                  - link "Open in new window" [ref=e59] [cursor=pointer]:
+                    - /url: /reader/articles/hackathon-2026
+            - heading "Broken Link Tests" [level=4] [ref=e60]
+            - list [ref=e61]:
+              - listitem [ref=e62]:
+                - link "Broken app route" [ref=e63] [cursor=pointer]:
+                  - /url: /broken-app/demo
+              - listitem [ref=e64]:
+                - link "Broken reader path" [ref=e65] [cursor=pointer]:
+                  - /url: /reader/articles/this-does-not-exist
+          - generic [ref=e68]:
+            - generic [ref=e69]:
+              - heading "SU Computer Science Department" [level=3] [ref=e70]
+              - paragraph [ref=e71]: Main landing experience for the division.
+            - article [ref=e72]:
+              - heading "Welcome" [level=2] [ref=e73]
+              - paragraph [ref=e74]: The Department of Computer Science was founded in 1972. We have now merged with Mathematics and Applied Mathematics to form the Computer Science Division in the Department of Mathematical Sciences.
+              - paragraph [ref=e75]: Our research spans Automata Theory, Broadband and Mobile Networks, Software Engineering, Program Testing and Verification, Robotics, Natural Language Processing, and Machine Learning.
+              - paragraph [ref=e76]: Use the carousel above to open feature stories in the Reader app.
+        - button "Resize north" [ref=e77]
+        - button "Resize south" [ref=e78]
+        - button "Resize east" [ref=e79]
+        - button "Resize west" [ref=e80]
+        - button "Resize northeast" [ref=e81]
+        - button "Resize northwest" [ref=e82]
+        - button "Resize southeast" [ref=e83]
+        - button "Resize southwest" [ref=e84]
