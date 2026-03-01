@@ -6,6 +6,8 @@
   import { windowManager } from '../lib/window/windowManagerStore.js';
   import AppWindow from './AppWindow.svelte';
 
+  export let onCloseAll = null;
+
   let workspaceElement;
   let contextMenuElement;
   let contextMenu = {
@@ -130,6 +132,14 @@
   function openHelpPage() {
     openPath('/reader/help');
     closeContextMenu();
+  }
+
+  function handleCloseAll() {
+    if (typeof onCloseAll !== 'function') {
+      return;
+    }
+
+    onCloseAll();
   }
 
   function openContextLink() {
@@ -319,6 +329,10 @@
           </button>
         </div>
       {/each}
+
+      <div class="sidebar-actions">
+        <button type="button" on:click={handleCloseAll}>Close All</button>
+      </div>
     </aside>
 
     <section class="workspace" bind:this={workspaceElement}>
@@ -450,6 +464,12 @@
   .sidebar-entry {
     display: block;
     margin-bottom: 0.3rem;
+  }
+
+  .sidebar-actions {
+    margin-top: 0.6rem;
+    padding-top: 0.4rem;
+    border-top: 1px solid;
   }
 
   .entry-main {

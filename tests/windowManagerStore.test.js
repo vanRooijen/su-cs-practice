@@ -80,6 +80,25 @@ test('closing the final focused window suggests desktop root path', () => {
   assert.equal(store.getSnapshot().focusedWindowId, null);
 });
 
+test('closeAllWindows clears every window and focus while preserving workspace bounds', () => {
+  const store = createWindowManagerStore();
+  store.setWorkspaceRect({ width: 1333, height: 777 });
+  store.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
+  store.applyRoute(makeRoute('/reader/help', 'reader', 'help'));
+
+  const before = store.getSnapshot();
+  assert.equal(before.windowOrder.length, 2);
+
+  store.closeAllWindows();
+  const after = store.getSnapshot();
+
+  assert.equal(after.windowOrder.length, 0);
+  assert.equal(Object.keys(after.windows).length, 0);
+  assert.equal(after.focusedWindowId, null);
+  assert.equal(after.nextWindowId, 1);
+  assert.deepEqual(after.workspaceRect, before.workspaceRect);
+});
+
 test('window history limit is isolated per window instance', () => {
   const store = createWindowManagerStore();
 

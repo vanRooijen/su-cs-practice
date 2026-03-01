@@ -550,7 +550,7 @@ function createNoopController() {
   return {
     restoredFocusedPath: null,
     flush: async () => {},
-    destroy: () => {},
+    destroy: async () => {},
   };
 }
 
@@ -725,8 +725,34 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   return {
     restoredFocusedPath,
     flush: () => flushPending({ force: true }),
-    destroy: () => {
-      void destroy();
-    },
+    destroy,
   };
+}
+
+export async function clearWindowSessionPersistence() {
+  if (!hasIndexedDb()) {
+    return { ok: false, reason: 'unsupported' };
+  }
+
+  return new Promise((resolve) => {
+    const request = window.indexedDB.deleteDatabase(WINDOW_SESSION_DB_NAME);
+    let settled = false;
+
+    const settle = (result) => {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      resolve(result);
+    };
+
+    request.onsuccess = () => settle({ ok: true });
+    request.onerror = () =>
+      settle({
+        ok: false,
+        reason: request.error?.message ?? 'delete-error',
+      });
+    request.onblocked = () => settle({ ok: false, reason: 'blocked' });
+  });
 }

@@ -661,6 +661,23 @@ export function createWindowManagerStore() {
     return suggestedPath;
   }
 
+  function closeAllWindows() {
+    store.update((state) => {
+      if (state.windowOrder.length === 0 && !state.focusedWindowId) {
+        return state;
+      }
+
+      return {
+        windows: {},
+        windowOrder: [],
+        focusedWindowId: null,
+        nextWindowId: 1,
+        workspaceRect: { ...state.workspaceRect },
+        lastRoute: null,
+      };
+    });
+  }
+
   function getDefaultPathForApp(appId) {
     const app = APP_DEFINITIONS[appId] ?? APP_DEFINITIONS[DEFAULT_APP_ID];
     const subroute = app.defaultSubroute ?? '';
@@ -701,6 +718,7 @@ export function createWindowManagerStore() {
     resizeWindow,
     stepWindowHistory,
     closeWindow,
+    closeAllWindows,
     getDefaultPathForApp,
     getSnapshot,
     hydratePersistedState,
