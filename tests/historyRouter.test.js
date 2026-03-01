@@ -2,19 +2,19 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { buildAppPath, parsePath } from '../src/lib/navigation/historyRouter.js';
-import { DEFAULT_APP_ID, NOT_FOUND_APP_ID } from '../src/lib/navigation/siteManifest.js';
 
 test('buildAppPath normalizes subroute slashes', () => {
   assert.equal(buildAppPath('reader', '/articles/hackathon-2026/'), '/reader/articles/hackathon-2026');
   assert.equal(buildAppPath('people', ''), '/people');
 });
 
-test('parsePath routes root to default app', () => {
+test('parsePath keeps root as desktop route', () => {
   const parsed = parsePath('/');
 
-  assert.equal(parsed.appId, DEFAULT_APP_ID);
-  assert.equal(parsed.canonicalPath, '/home');
-  assert.equal(parsed.shouldCanonicalize, true);
+  assert.equal(parsed.isValid, true);
+  assert.equal(parsed.appId, null);
+  assert.equal(parsed.canonicalPath, '/');
+  assert.equal(parsed.shouldCanonicalize, false);
 });
 
 test('parsePath canonicalizes known app routes', () => {
@@ -26,11 +26,18 @@ test('parsePath canonicalizes known app routes', () => {
   assert.equal(parsed.shouldCanonicalize, true);
 });
 
-test('parsePath maps unknown apps to not-found while preserving path', () => {
+test('parsePath marks unknown apps as invalid routes', () => {
   const parsed = parsePath('/custom-app/feature');
 
-  assert.equal(parsed.appId, NOT_FOUND_APP_ID);
-  assert.equal(parsed.subroute, 'custom-app/feature');
+  assert.equal(parsed.isValid, false);
+  assert.equal(parsed.errorCode, 'app-not-found');
   assert.equal(parsed.canonicalPath, '/custom-app/feature');
-  assert.equal(parsed.shouldCanonicalize, false);
+});
+
+test('parsePath marks unknown app subroutes as invalid paths', () => {
+  const parsed = parsePath('/people/unknown-section');
+
+  assert.equal(parsed.isValid, false);
+  assert.equal(parsed.errorCode, 'path-not-found');
+  assert.equal(parsed.canonicalPath, '/people/unknown-section');
 });

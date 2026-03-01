@@ -379,6 +379,29 @@ export function createWindowManagerStore() {
         routeKey: route.routeKey,
       };
 
+      if (!route.appId) {
+        next.focusedWindowId = null;
+
+        for (const windowId of next.windowOrder) {
+          const win = next.windows[windowId];
+
+          if (!win || win.isMinimized) {
+            continue;
+          }
+
+          next.windows[windowId] = {
+            ...win,
+            isMinimized: true,
+          };
+        }
+
+        return next;
+      }
+
+      if (!APP_DEFINITIONS[route.appId]) {
+        return next;
+      }
+
       const shouldForceDuplicate = route.openMode === 'new-window';
       let targetWindowId = shouldForceDuplicate ? null : resolveNavigationWindowForApp(next, route);
 
@@ -708,7 +731,7 @@ export function createWindowManagerStore() {
         if (next.focusedWindowId) {
           suggestedPath = next.windows[next.focusedWindowId].path;
         } else {
-          suggestedPath = `/${DEFAULT_APP_ID}`;
+          suggestedPath = '/';
         }
       }
 

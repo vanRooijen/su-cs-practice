@@ -1,5 +1,10 @@
+import { hasContent } from '../content/resolveContent.js';
+
 export const DEFAULT_APP_ID = 'home';
-export const NOT_FOUND_APP_ID = 'not-found';
+
+function validateContentBackedSubroute({ appId, subroute }) {
+  return hasContent(appId, subroute);
+}
 
 function reuseFocusedOrTopMostWindow(context) {
   const { appWindowIds, focusedWindowId } = context;
@@ -22,6 +27,7 @@ export const APP_DEFINITIONS = {
     defaultSubroute: '',
     hasSidebar: false,
     enableWindowHistoryNavigation: false,
+    validateSubroute: validateContentBackedSubroute,
     resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
   },
   people: {
@@ -30,6 +36,7 @@ export const APP_DEFINITIONS = {
     defaultSubroute: '',
     hasSidebar: true,
     enableWindowHistoryNavigation: true,
+    validateSubroute: validateContentBackedSubroute,
     resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
   },
   reader: {
@@ -38,14 +45,8 @@ export const APP_DEFINITIONS = {
     defaultSubroute: 'articles',
     hasSidebar: true,
     enableWindowHistoryNavigation: true,
+    validateSubroute: validateContentBackedSubroute,
     resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
-  },
-  [NOT_FOUND_APP_ID]: {
-    id: NOT_FOUND_APP_ID,
-    title: 'Not Found',
-    defaultSubroute: '',
-    hasSidebar: false,
-    enableWindowHistoryNavigation: false,
   },
 };
 

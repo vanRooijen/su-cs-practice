@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { parsePath } from '../src/lib/navigation/historyRouter.js';
 import { createWindowManagerStore } from '../src/lib/window/windowManagerStore.js';
 
 function makeRoute(path, appId, subroute) {
@@ -39,24 +38,24 @@ test('restored window bounds are clamped after workspace shrink', () => {
   assert.ok(restored.bounds.height <= snapshot.workspaceRect.height);
 });
 
-test('unknown app routes open not-found windows instead of forcing home', () => {
+test('desktop root route minimizes windows and clears focus', () => {
   const store = createWindowManagerStore();
-  const parsed = parsePath('/missing-app/docs');
 
+  store.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
+  store.applyRoute(makeRoute('/reader/help', 'reader', 'help'));
   store.applyRoute({
-    ...parsed,
-    path: parsed.canonicalPath,
+    path: '/',
+    appId: null,
+    subroute: '',
+    routeKey: 'desktop::/',
     openMode: 'match',
   });
 
   const snapshot = store.getSnapshot();
-  const windowId = snapshot.focusedWindowId;
-  const openedWindow = snapshot.windows[windowId];
 
-  assert.ok(openedWindow, 'expected a window for unknown route');
-  assert.equal(openedWindow.appId, 'not-found');
-  assert.equal(openedWindow.title, 'Not Found');
-  assert.equal(openedWindow.path, '/missing-app/docs');
+  assert.equal(snapshot.focusedWindowId, null);
+  assert.equal(snapshot.windowOrder.length, 2);
+  assert.ok(snapshot.windowOrder.every((windowId) => snapshot.windows[windowId]?.isMinimized === true));
 });
 
 test('getDefaultPathForApp falls back to home for unknown app ids', () => {
@@ -64,4 +63,17 @@ test('getDefaultPathForApp falls back to home for unknown app ids', () => {
 
   assert.equal(store.getDefaultPathForApp('reader'), '/reader/articles');
   assert.equal(store.getDefaultPathForApp('does-not-exist'), '/home');
+});
+
+test('closing the final focused window suggests desktop root path', () => {
+  const store = createWindowManagerStore();
+
+  store.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
+  const { focusedWindowId } = store.getSnapshot();
+  assert.ok(focusedWindowId, 'expected a focused window');
+
+  const suggestedPath = store.closeWindow(focusedWindowId, '/people/staff');
+
+  assert.equal(suggestedPath, '/');
+  assert.equal(store.getSnapshot().focusedWindowId, null);
 });

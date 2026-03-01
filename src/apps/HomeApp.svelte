@@ -26,6 +26,12 @@
         </li>
       {/each}
     </ul>
+
+    <h4>Broken Link Tests</h4>
+    <ul>
+      <li><a href="/broken-app/demo">Broken app route</a></li>
+      <li><a href="/reader/articles/this-does-not-exist">Broken reader path</a></li>
+    </ul>
   </section>
 
   <div class="content-slot">

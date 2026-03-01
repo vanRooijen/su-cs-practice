@@ -1,11 +1,8 @@
 import { get, writable } from 'svelte/store';
-import {
-  APP_DEFINITIONS,
-  DEFAULT_APP_ID,
-  NOT_FOUND_APP_ID,
-} from './siteManifest.js';
+import { APP_DEFINITIONS, DEFAULT_APP_ID } from './siteManifest.js';
 
 let navigationSequence = 0;
+let navigationErrorSequence = 0;
 let hasInitialized = false;
 
 function trimSlashes(value = '') {
@@ -35,13 +32,38 @@ function normalizeSubroute(subroute = '') {
     .join('/');
 }
 
+function toRouteKey(appId, fullPath) {
+  return `${appId ?? 'desktop'}::${fullPath}`;
+}
+
+function createHistoryState(pathname) {
+  return {
+    desktopRoot: normalizePathname(pathname) === '/',
+  };
+}
+
+function hasDesktopRootState(state) {
+  return Boolean(state && typeof state === 'object' && state.desktopRoot === true);
+}
+
+function reportNavigationError(errorCode, requestedPath) {
+  const readableCode = errorCode === 'app-not-found' ? 'App not found' : 'Path not found';
+
+  navigationErrorStore.set({
+    id: ++navigationErrorSequence,
+    code: errorCode,
+    requestedPath,
+    message: `${readableCode}: ${requestedPath}`,
+  });
+}
+
+export function clearNavigationError() {
+  navigationErrorStore.set(null);
+}
+
 export function buildAppPath(appId, subroute = '') {
   const cleanedSubroute = normalizeSubroute(subroute);
   return cleanedSubroute ? `/${appId}/${cleanedSubroute}` : `/${appId}`;
-}
-
-function toRouteKey(appId, fullPath) {
-  return `${appId}::${fullPath}`;
 }
 
 export function parsePath(pathname = '/') {
@@ -49,33 +71,43 @@ export function parsePath(pathname = '/') {
   const candidateAppId = (segments[0] ?? '').toLowerCase();
 
   if (!candidateAppId) {
-    const canonicalPath = buildAppPath(DEFAULT_APP_ID);
     return {
-      appId: DEFAULT_APP_ID,
+      isValid: true,
+      appId: null,
       subroute: '',
-      canonicalPath,
-      routeKey: toRouteKey(DEFAULT_APP_ID, canonicalPath),
-      shouldCanonicalize: true,
+      canonicalPath: '/',
+      routeKey: toRouteKey(null, '/'),
+      shouldCanonicalize: ensureLeadingSlash(pathname) !== '/',
     };
   }
 
   if (!APP_DEFINITIONS[candidateAppId]) {
-    const canonicalPath = normalizePathname(pathname);
-    const subroute = trimSlashes(canonicalPath);
-
     return {
-      appId: NOT_FOUND_APP_ID,
-      subroute,
-      canonicalPath,
-      routeKey: toRouteKey(NOT_FOUND_APP_ID, canonicalPath),
-      shouldCanonicalize: ensureLeadingSlash(pathname) !== canonicalPath,
+      isValid: false,
+      errorCode: 'app-not-found',
+      canonicalPath: normalizePathname(pathname),
     };
   }
 
+  const appDefinition = APP_DEFINITIONS[candidateAppId];
   const subroute = normalizeSubroute(segments.slice(1).join('/'));
   const canonicalPath = buildAppPath(candidateAppId, subroute);
+  const validation = appDefinition.validateSubroute?.({
+    appId: candidateAppId,
+    subroute,
+    path: canonicalPath,
+  });
+
+  if (validation === false || validation?.isValid === false) {
+    return {
+      isValid: false,
+      errorCode: 'path-not-found',
+      canonicalPath,
+    };
+  }
 
   return {
+    isValid: true,
     appId: candidateAppId,
     subroute,
     canonicalPath,
@@ -93,17 +125,30 @@ const routeStore = writable({
   navigationId: ++navigationSequence,
 });
 
+const navigationErrorStore = writable(null);
+
 function syncRoute(pathname, options = {}) {
   const { historyMode = 'none', openMode = 'match', forceEmit = false } = options;
   const parsed = parsePath(pathname);
   const current = get(routeStore);
 
+  if (!parsed.isValid) {
+    const fallbackPath = current?.path ?? buildAppPath(DEFAULT_APP_ID);
+
+    if (window.location.pathname !== fallbackPath) {
+      window.history.replaceState(createHistoryState(fallbackPath), '', fallbackPath);
+    }
+
+    reportNavigationError(parsed.errorCode, parsed.canonicalPath);
+    return current;
+  }
+
   if (historyMode === 'push' && current.path !== parsed.canonicalPath) {
-    window.history.pushState({}, '', parsed.canonicalPath);
+    window.history.pushState(createHistoryState(parsed.canonicalPath), '', parsed.canonicalPath);
   }
 
   if (historyMode === 'replace' || parsed.shouldCanonicalize) {
-    window.history.replaceState({}, '', parsed.canonicalPath);
+    window.history.replaceState(createHistoryState(parsed.canonicalPath), '', parsed.canonicalPath);
   }
 
   const unchangedRoute =
@@ -165,6 +210,16 @@ export function navigateTo(pathname, options = {}) {
   });
 }
 
+export function navigateToDesktop(options = {}) {
+  const { replace = false, forceEmit = false } = options;
+
+  syncRoute('/', {
+    historyMode: replace ? 'replace' : 'push',
+    openMode: 'match',
+    forceEmit,
+  });
+}
+
 export function openInNewWindow(pathname, options = {}) {
   const { replace = false } = options;
 
@@ -207,7 +262,14 @@ export function initHistoryRouter() {
   window.addEventListener('popstate', onPopState);
   document.addEventListener('click', onDocumentClick);
 
-  syncRoute(window.location.pathname, { historyMode: 'replace', openMode: 'match' });
+  const initialPath = window.location.pathname;
+  const shouldOpenDefaultHome =
+    normalizePathname(initialPath) === '/' && !hasDesktopRootState(window.history.state);
+
+  syncRoute(shouldOpenDefaultHome ? buildAppPath(DEFAULT_APP_ID) : initialPath, {
+    historyMode: 'replace',
+    openMode: 'match',
+  });
 
   return () => {
     window.removeEventListener('popstate', onPopState);
@@ -218,4 +280,8 @@ export function initHistoryRouter() {
 
 export const route = {
   subscribe: routeStore.subscribe,
+};
+
+export const navigationError = {
+  subscribe: navigationErrorStore.subscribe,
 };

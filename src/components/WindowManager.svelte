@@ -2,7 +2,14 @@
   import { onMount, tick } from 'svelte';
   import { APP_REGISTRY } from '../lib/window/appRegistry.js';
   import { DESKTOP_SHORTCUTS, TOPBAR_LINKS } from '../lib/navigation/siteManifest.js';
-  import { navigateTo, openInNewWindow, route } from '../lib/navigation/historyRouter.js';
+  import {
+    clearNavigationError,
+    navigateTo,
+    navigateToDesktop,
+    navigationError,
+    openInNewWindow,
+    route,
+  } from '../lib/navigation/historyRouter.js';
   import { windowManager } from '../lib/window/windowManagerStore.js';
   import AppWindow from './AppWindow.svelte';
 
@@ -23,6 +30,10 @@
 
   function openPathInNewWindow(path) {
     openInNewWindow(path);
+  }
+
+  function dismissNavigationError() {
+    clearNavigationError();
   }
 
   function closeContextMenu() {
@@ -117,8 +128,13 @@
   }
 
   function onGlobalKeydown(event) {
-    if (event.key === 'Escape') {
+    if (event.key === 'Escape' && contextMenu.open) {
       closeContextMenu();
+      return;
+    }
+
+    if (event.key === 'Escape' && $navigationError) {
+      dismissNavigationError();
     }
   }
 
@@ -149,40 +165,36 @@
     closeContextMenu();
   }
 
-  function focusWindowAndSyncUrl(windowId) {
-    windowManager.focusExistingWindow(windowId);
-
+  function syncUrlToFocusedWindowOrDesktop() {
     const snapshot = windowManager.getSnapshot();
-    const targetPath = snapshot.windows[windowId]?.path;
+    const focusedWindowId = snapshot.focusedWindowId;
 
+    if (!focusedWindowId) {
+      if ($route.path !== '/') {
+        navigateToDesktop({ replace: true });
+      }
+      return;
+    }
+
+    const targetPath = snapshot.windows[focusedWindowId]?.path;
     if (targetPath && targetPath !== $route.path) {
       navigateTo(targetPath, { replace: true });
     }
   }
 
+  function focusWindowAndSyncUrl(windowId) {
+    windowManager.focusExistingWindow(windowId);
+    syncUrlToFocusedWindowOrDesktop();
+  }
+
   function activateSidebarEntry(windowId) {
-    const snapshot = windowManager.getSnapshot();
-    const target = snapshot.windows[windowId];
-
-    if (!target) {
-      return;
-    }
-
-    const wasFocused = snapshot.focusedWindowId === windowId && !target.isMinimized;
     windowManager.activateWindowFromSidebar(windowId);
-
-    if (!wasFocused) {
-      const nextSnapshot = windowManager.getSnapshot();
-      const targetPath = nextSnapshot.windows[windowId]?.path;
-
-      if (targetPath && targetPath !== $route.path) {
-        navigateTo(targetPath, { replace: true });
-      }
-    }
+    syncUrlToFocusedWindowOrDesktop();
   }
 
   function handleMinimize(windowId) {
     windowManager.toggleMinimize(windowId);
+    syncUrlToFocusedWindowOrDesktop();
   }
 
   function handleMaximize(windowId) {
@@ -224,6 +236,11 @@
 
   function handleClose(windowId) {
     const suggestedPath = windowManager.closeWindow(windowId, $route.path);
+
+    if (suggestedPath === '/' && $route.path !== '/') {
+      navigateToDesktop({ replace: true });
+      return;
+    }
 
     if (suggestedPath && suggestedPath !== $route.path) {
       navigateTo(suggestedPath, { replace: true });
@@ -389,6 +406,16 @@
       <button type="button" role="menuitem" on:click={openHelpPage}>Help</button>
     </div>
   {/if}
+
+  {#if $navigationError}
+    <div class="navigation-error-popup" role="alertdialog" aria-label="Navigation error">
+      <h3>Navigation Error</h3>
+      <p>{$navigationError.message}</p>
+      <div>
+        <button type="button" on:click={dismissNavigationError}>OK</button>
+      </div>
+    </div>
+  {/if}
 </div>
 
 <svelte:window on:click={onGlobalClick} on:keydown={onGlobalKeydown} on:resize={onGlobalResize} />
@@ -538,6 +565,22 @@
     border: 0;
     border-top: 1px solid;
     margin: 0.15rem 0;
+  }
+
+  .navigation-error-popup {
+    position: fixed;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    z-index: 60;
+    border: 1px solid;
+    background: white;
+    padding: 0.5rem;
+    max-width: min(420px, calc(100vw - 1.5rem));
+  }
+
+  .navigation-error-popup h3,
+  .navigation-error-popup p {
+    margin: 0 0 0.35rem;
   }
 
   @media (max-width: 860px) {

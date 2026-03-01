@@ -16,13 +16,23 @@ function toDotted(subroute = '') {
   return cleaned ? cleaned.split('/').join('.') : 'index';
 }
 
-export function resolveContent(appId, subroute = '') {
+function getCandidateKeys(appId, subroute = '') {
   const cleanedSubroute = trimSlashes(subroute);
   const dotted = toDotted(cleanedSubroute);
 
-  const candidates = cleanedSubroute
+  return cleanedSubroute
     ? [`${appId}.${dotted}`, `${appId}.${dotted}.index`]
     : [`${appId}.index`];
+}
+
+export function hasContent(appId, subroute = '') {
+  return getCandidateKeys(appId, subroute).some((key) => Boolean(CONTENT_ARTIFACTS[key]));
+}
+
+export function resolveContent(appId, subroute = '') {
+  const cleanedSubroute = trimSlashes(subroute);
+  const dotted = toDotted(cleanedSubroute);
+  const candidates = getCandidateKeys(appId, cleanedSubroute);
 
   for (const key of candidates) {
     if (CONTENT_ARTIFACTS[key]) {
