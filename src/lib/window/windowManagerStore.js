@@ -47,6 +47,16 @@ function cloneState(state) {
   };
 }
 
+function withUpdatedWindow(state, windowId, nextWindowState) {
+  return {
+    ...state,
+    windows: {
+      ...state.windows,
+      [windowId]: nextWindowState,
+    },
+  };
+}
+
 function clamp(value, minimum, maximum) {
   return Math.max(minimum, Math.min(value, maximum));
 }
@@ -577,17 +587,14 @@ export function createWindowManagerStore() {
         return state;
       }
 
-      const next = cloneState(state);
-      next.windows[windowId] = {
+      return withUpdatedWindow(state, windowId, {
         ...target,
         bounds: {
           ...target.bounds,
           x: nextPosition.x,
           y: nextPosition.y,
         },
-      };
-
-      return next;
+      });
     });
   }
 
@@ -619,13 +626,10 @@ export function createWindowManagerStore() {
         return state;
       }
 
-      const next = cloneState(state);
-      next.windows[windowId] = {
+      return withUpdatedWindow(state, windowId, {
         ...target,
         bounds: nextBounds,
-      };
-
-      return next;
+      });
     });
   }
 
