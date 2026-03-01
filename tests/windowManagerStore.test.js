@@ -143,3 +143,126 @@ test('route navigation prefers exact route window match before app fallback stra
   assert.equal(snapshot.windows[firstWindowId].path, '/reader/articles');
   assert.equal(snapshot.windows[secondWindowId].path, '/reader/help');
 });
+
+test('sidebar activation minimizes focused window and restores it on second activation', () => {
+  const store = createWindowManagerStore();
+
+  store.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
+  const peopleWindowId = store.getSnapshot().focusedWindowId;
+  assert.ok(peopleWindowId, 'expected people window');
+
+  store.applyRoute(makeRoute('/reader/help', 'reader', 'help'));
+  const readerWindowId = store.getSnapshot().focusedWindowId;
+  assert.ok(readerWindowId, 'expected reader window');
+  assert.notEqual(readerWindowId, peopleWindowId);
+
+  store.activateWindowFromSidebar(readerWindowId);
+  let snapshot = store.getSnapshot();
+  assert.equal(snapshot.windows[readerWindowId].isMinimized, true);
+  assert.equal(snapshot.focusedWindowId, peopleWindowId);
+
+  store.activateWindowFromSidebar(readerWindowId);
+  snapshot = store.getSnapshot();
+  assert.equal(snapshot.windows[readerWindowId].isMinimized, false);
+  assert.equal(snapshot.focusedWindowId, readerWindowId);
+});
+
+test('moveWindow clamps coordinates to workspace and no-ops for unchanged bounds', () => {
+  const store = createWindowManagerStore();
+  store.setWorkspaceRect({ width: 900, height: 600 });
+  store.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
+
+  const windowId = store.getSnapshot().focusedWindowId;
+  assert.ok(windowId, 'expected focused window');
+
+  store.moveWindow(windowId, { x: -200, y: 9999 });
+  const moved = store.getSnapshot();
+  const bounds = moved.windows[windowId].bounds;
+
+  assert.equal(bounds.x, 0);
+  assert.ok(bounds.y <= moved.workspaceRect.height - bounds.height);
+
+  store.moveWindow(windowId, { x: bounds.x, y: bounds.y });
+  const afterNoOp = store.getSnapshot();
+  assert.equal(afterNoOp, moved);
+});
+
+test('resizeWindow respects workspace boundaries and minimum dimensions', () => {
+  const store = createWindowManagerStore();
+  store.setWorkspaceRect({ width: 900, height: 600 });
+  store.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
+
+  const windowId = store.getSnapshot().focusedWindowId;
+  assert.ok(windowId, 'expected focused window');
+
+  const initial = store.getSnapshot().windows[windowId].bounds;
+  store.resizeWindow(windowId, {
+    edge: 'se',
+    deltaX: 5000,
+    deltaY: 5000,
+    startBounds: initial,
+  });
+
+  let snapshot = store.getSnapshot();
+  let bounds = snapshot.windows[windowId].bounds;
+  assert.ok(bounds.width <= snapshot.workspaceRect.width);
+  assert.ok(bounds.height <= snapshot.workspaceRect.height);
+
+  store.resizeWindow(windowId, {
+    edge: 'nw',
+    deltaX: 5000,
+    deltaY: 5000,
+    startBounds: bounds,
+  });
+
+  snapshot = store.getSnapshot();
+  bounds = snapshot.windows[windowId].bounds;
+  assert.ok(bounds.width >= 420);
+  assert.ok(bounds.height >= 280);
+  assert.ok(bounds.x >= 0);
+  assert.ok(bounds.y >= 0);
+});
+
+test('stepWindowHistory returns target paths and stops at boundaries', () => {
+  const store = createWindowManagerStore();
+
+  store.applyRoute(makeRoute('/reader/articles', 'reader', 'articles'));
+  const windowId = store.getSnapshot().focusedWindowId;
+  assert.ok(windowId, 'expected reader window');
+
+  store.applyRoute(makeRoute('/reader/help', 'reader', 'help'));
+  let snapshot = store.getSnapshot();
+  assert.equal(snapshot.windows[windowId].history.entries.length, 2);
+  assert.equal(snapshot.windows[windowId].history.index, 1);
+
+  const backPath = store.stepWindowHistory(windowId, 'back');
+  snapshot = store.getSnapshot();
+  assert.equal(backPath, '/reader/articles');
+  assert.equal(snapshot.windows[windowId].path, '/reader/articles');
+  assert.equal(snapshot.windows[windowId].history.index, 0);
+
+  const secondBackPath = store.stepWindowHistory(windowId, 'back');
+  assert.equal(secondBackPath, null);
+
+  const forwardPath = store.stepWindowHistory(windowId, 'forward');
+  snapshot = store.getSnapshot();
+  assert.equal(forwardPath, '/reader/help');
+  assert.equal(snapshot.windows[windowId].path, '/reader/help');
+  assert.equal(snapshot.windows[windowId].history.index, 1);
+
+  const secondForwardPath = store.stepWindowHistory(windowId, 'forward');
+  assert.equal(secondForwardPath, null);
+});
+
+test('toggleSidebar is a no-op for apps without sidebars', () => {
+  const store = createWindowManagerStore();
+  store.applyRoute(makeRoute('/home', 'home', ''));
+
+  const windowId = store.getSnapshot().focusedWindowId;
+  assert.ok(windowId, 'expected focused home window');
+
+  const before = store.getSnapshot();
+  store.toggleSidebar(windowId);
+  const after = store.getSnapshot();
+  assert.equal(after, before);
+});
