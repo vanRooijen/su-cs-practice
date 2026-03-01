@@ -11,7 +11,7 @@
   $: content = resolveContent('people', normalizedSubroute);
 </script>
 
-<div class="app-layout">
+<div class="app-layout" data-sidebar-collapsed={sidebarCollapsed}>
   {#if !sidebarCollapsed}
     <aside>
       <h3>People Sections</h3>
@@ -36,6 +36,10 @@
     display: grid;
     grid-template-columns: auto 1fr;
     min-height: 0;
+  }
+
+  .app-layout[data-sidebar-collapsed='true'] {
+    grid-template-columns: 1fr;
   }
 
   aside {
