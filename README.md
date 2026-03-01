@@ -36,6 +36,16 @@ npx wrangler login
 npx wrangler pages deploy dist --project-name su-cs-practice
 ```
 
+Project deploy scripts:
+
+```bash
+# Preview deploy (wrangler-smoke branch alias)
+npm run deploy:preview
+
+# Production deploy (master branch / su-cs-practice.pages.dev)
+npm run deploy:prod
+```
+
 ## Testing
 
 ```bash

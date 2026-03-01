@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "deploy:preview": "npm run build && npx wrangler pages deploy dist --project-name su-cs-practice --branch wrangler-smoke --commit-dirty=true",
+    "deploy:prod": "npm run build && npx wrangler pages deploy dist --project-name su-cs-practice --branch master --commit-dirty=true",
     "test": "npm run test:unit",
     "test:unit": "node --test \"tests/**/*.test.js\"",
     "test:component": "vitest run",
