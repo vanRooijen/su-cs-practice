@@ -17,7 +17,18 @@
     linkPath: null,
   };
 
-  $: sidebarWindowIds = [...$windowManager.windowOrder].reverse();
+  $: sidebarWindowIds = Object.values($windowManager.windows)
+    .sort((left, right) => {
+      const leftCreatedAt = Number.isFinite(left?.createdAt) ? left.createdAt : 0;
+      const rightCreatedAt = Number.isFinite(right?.createdAt) ? right.createdAt : 0;
+
+      if (leftCreatedAt !== rightCreatedAt) {
+        return leftCreatedAt - rightCreatedAt;
+      }
+
+      return left.windowId - right.windowId;
+    })
+    .map((windowState) => windowState.windowId);
 
   function openPath(path) {
     navigateTo(path, { forceEmit: true });
@@ -313,12 +324,14 @@
         {@const win = $windowManager.windows[windowId]}
         {@const appName = APP_REGISTRY[win.appId]?.title ?? win.appId}
 
-        <div class="sidebar-entry">
+        <div
+          class="sidebar-entry"
+          data-focused={$windowManager.focusedWindowId === windowId && !win.isMinimized}
+        >
           <button
             type="button"
             class="entry-main"
             data-context-path={win.path}
-            data-focused={$windowManager.focusedWindowId === windowId && !win.isMinimized}
             on:click={() => activateSidebarEntry(windowId)}
           >
             <strong>{appName}</strong>
@@ -326,6 +339,15 @@
             {#if win.isMinimized}
               <small>(minimized)</small>
             {/if}
+          </button>
+
+          <button
+            type="button"
+            class="entry-close"
+            aria-label={`Close ${appName}`}
+            on:click|stopPropagation={() => handleClose(windowId)}
+          >
+            x
           </button>
         </div>
       {/each}
@@ -462,8 +484,18 @@
   }
 
   .sidebar-entry {
-    display: block;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 1.7rem;
+    gap: 0.3rem;
+    align-items: stretch;
     margin-bottom: 0.3rem;
+    border: 1px solid transparent;
+    padding: 0.1rem;
+  }
+
+  .sidebar-entry[data-focused='true'] {
+    border-color: #2b62cf;
+    background: rgba(43, 98, 207, 0.08);
   }
 
   .sidebar-actions {
@@ -475,11 +507,23 @@
   .entry-main {
     width: 100%;
     text-align: left;
+    min-width: 0;
   }
 
   .entry-main strong,
   .entry-main small {
     display: block;
+  }
+
+  .entry-close {
+    width: 1.7rem;
+    height: 1.7rem;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    font-weight: 600;
   }
 
   .workspace {
