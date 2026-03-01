@@ -33,7 +33,7 @@ Optional direct deploy from CLI:
 
 ```bash
 npx wrangler login
-npx wrangler pages deploy dist --project-name <su-cs-practice>
+npx wrangler pages deploy dist --project-name su-cs-practice
 ```
 
 ## Testing
