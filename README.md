@@ -22,6 +22,23 @@ npm run build
 npm run preview
 ```
 
+## Testing
+
+```bash
+# existing Node unit tests
+npm run test:unit
+
+# Svelte component/integration tests via Vitest
+npm run test:component
+
+# GUI end-to-end tests via Playwright (Chromium)
+# first run only: npx playwright install --with-deps chromium
+npm run test:gui
+
+# run everything
+npm run test:all
+```
+
 ## URL and Window Behavior
 
 - Route format: `/{appId}/{subroute...}`
