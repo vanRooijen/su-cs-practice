@@ -267,6 +267,29 @@ test('toggleSidebar is a no-op for apps without sidebars', () => {
   assert.equal(after, before);
 });
 
+test('toggleMinimize minimizes unfocused windows without a focus-first click', () => {
+  const store = createWindowManagerStore();
+
+  store.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
+  const peopleWindowId = store.getSnapshot().focusedWindowId;
+  assert.ok(peopleWindowId, 'expected people window');
+
+  store.applyRoute(makeRoute('/reader/help', 'reader', 'help'));
+  const readerWindowId = store.getSnapshot().focusedWindowId;
+  assert.ok(readerWindowId, 'expected reader window');
+  assert.notEqual(peopleWindowId, readerWindowId);
+
+  store.toggleMinimize(peopleWindowId);
+  let snapshot = store.getSnapshot();
+  assert.equal(snapshot.windows[peopleWindowId].isMinimized, true);
+  assert.equal(snapshot.focusedWindowId, readerWindowId);
+
+  store.toggleMinimize(peopleWindowId);
+  snapshot = store.getSnapshot();
+  assert.equal(snapshot.windows[peopleWindowId].isMinimized, false);
+  assert.equal(snapshot.focusedWindowId, peopleWindowId);
+});
+
 test('hydratePersistedState restores z-order, focus, and window metadata', () => {
   const sourceStore = createWindowManagerStore();
   sourceStore.setWorkspaceRect({ width: 1400, height: 900 });

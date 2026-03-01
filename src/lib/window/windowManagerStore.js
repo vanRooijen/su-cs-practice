@@ -418,7 +418,40 @@ export function createWindowManagerStore() {
   }
 
   function toggleMinimize(windowId) {
-    activateWindowFromSidebar(windowId);
+    store.update((state) => {
+      const target = state.windows[windowId];
+
+      if (!target) {
+        return state;
+      }
+
+      const next = cloneState(state);
+      const current = next.windows[windowId];
+
+      if (current.isMinimized) {
+        focusWindow(next, windowId, { restoreMinimized: true });
+        return next;
+      }
+
+      next.windows[windowId] = {
+        ...current,
+        isMinimized: true,
+      };
+
+      if (next.focusedWindowId === windowId || !next.windows[next.focusedWindowId]) {
+        const nextVisibleWindowId = highestVisibleWindowId(next);
+        next.focusedWindowId = nextVisibleWindowId;
+
+        if (nextVisibleWindowId) {
+          next.windows[nextVisibleWindowId] = {
+            ...next.windows[nextVisibleWindowId],
+            lastFocusedAt: Date.now(),
+          };
+        }
+      }
+
+      return next;
+    });
   }
 
   function toggleMaximize(windowId) {
