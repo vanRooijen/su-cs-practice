@@ -20,6 +20,7 @@ const PRESENCE_SUSPECT_MS = 180000;
 const PRESENCE_CONFIRM_DOWN_MS = 600000;
 const PRESENCE_PROBE_INTERVAL_MS = 30000;
 const PRESENCE_MAX_PROBE_ATTEMPTS = 2;
+const DEFAULT_STARTUP_PEER_WAIT_MS = 1200;
 const DEFAULT_OWNER_RECLAIM_GRACE_MS = 700;
 const DEFAULT_SYNC_BROADCAST_DELAY_MS = 48;
 const IS_DEV = (() => {
@@ -857,6 +858,9 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   const ownerReclaimGraceMs = Number.isFinite(options.ownerReclaimGraceMs)
     ? Math.max(120, Math.floor(options.ownerReclaimGraceMs))
     : DEFAULT_OWNER_RECLAIM_GRACE_MS;
+  const startupPeerWaitMs = Number.isFinite(options.startupPeerWaitMs)
+    ? Math.max(200, Math.floor(options.startupPeerWaitMs))
+    : DEFAULT_STARTUP_PEER_WAIT_MS;
   const runtimeIdCandidate = typeof windowManager.getRuntimeId === 'function' ? windowManager.getRuntimeId() : '';
   const runtimeId =
     typeof runtimeIdCandidate === 'string' && runtimeIdCandidate.trim()
@@ -920,6 +924,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   let broadcastTimerId = 0;
   let presenceTickTimerId = 0;
   let ownerReclaimTimerId = 0;
+  let startupColdStartTimerId = 0;
   let pendingSnapshot = null;
   let flushInFlight = false;
   let unsubscribe = null;
@@ -995,6 +1000,79 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     }
 
     return activeIds;
+  }
+
+  function hasObservedPeerRuntime(now = Date.now()) {
+    for (const [candidateRuntimeId, seenAt] of activeRuntimeSeenAt.entries()) {
+      if (candidateRuntimeId === runtimeId) {
+        continue;
+      }
+
+      if (!Number.isFinite(seenAt) || seenAt <= 0) {
+        continue;
+      }
+
+      if (now - seenAt > presenceConfirmDownMs) {
+        continue;
+      }
+
+      return true;
+    }
+
+    return false;
+  }
+
+  function adoptOwnedWindowsForColdStart() {
+    const snapshot = serializeWindowManagerSnapshot(windowManager.getSnapshot());
+    let hasChanges = false;
+
+    for (const windowId of snapshot.windowOrder) {
+      const win = snapshot.windows[windowId];
+      if (!win) {
+        continue;
+      }
+
+      const ownerRuntimeId =
+        typeof win.ownerRuntimeId === 'string' && win.ownerRuntimeId.trim() ? win.ownerRuntimeId : null;
+      if (!ownerRuntimeId || ownerRuntimeId === runtimeId) {
+        continue;
+      }
+
+      snapshot.windows[windowId] = {
+        ...win,
+        ownerRuntimeId: runtimeId,
+      };
+      hasChanges = true;
+    }
+
+    if (!hasChanges) {
+      return;
+    }
+
+    suppressBroadcastOnce = true;
+    isHydratingRemote = true;
+    try {
+      windowManager.hydratePersistedState(snapshot);
+    } catch {
+      // Ignore cold-start adoption failures.
+    } finally {
+      isHydratingRemote = false;
+    }
+  }
+
+  function scheduleColdStartAdoptionCheck() {
+    if (isDestroyed || startupColdStartTimerId) {
+      return;
+    }
+
+    startupColdStartTimerId = window.setTimeout(() => {
+      startupColdStartTimerId = 0;
+      if (isDestroyed || hasObservedPeerRuntime()) {
+        return;
+      }
+
+      adoptOwnedWindowsForColdStart();
+    }, startupPeerWaitMs);
   }
 
   function reconcileOwnershipFromPresence() {
@@ -1558,15 +1636,12 @@ export async function createWindowSessionPersistence(windowManager, options = {}
 
       pruneStaleRuntimes(tickNow);
     }, presenceTickMs);
-  } else {
-    for (const ownerRuntimeId of collectForeignOwnerRuntimeIds(windowManager.getSnapshot())) {
-      reclaimableRuntimeIds.add(ownerRuntimeId);
-    }
   }
 
   if (syncChannel) {
     requestPeerState();
   }
+  scheduleColdStartAdoptionCheck();
 
   scheduleOrphanReclaim();
   reconcileOwnershipFromPresence();
@@ -1601,6 +1676,11 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     if (ownerReclaimTimerId) {
       window.clearTimeout(ownerReclaimTimerId);
       ownerReclaimTimerId = 0;
+    }
+
+    if (startupColdStartTimerId) {
+      window.clearTimeout(startupColdStartTimerId);
+      startupColdStartTimerId = 0;
     }
 
     flushSyncBroadcastNow({ allowWhenDestroyed: true });
