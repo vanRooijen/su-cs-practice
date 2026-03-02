@@ -205,6 +205,52 @@ test('claimWindowsOwnedByInactiveRuntimes preserves windows owned by active runt
   );
 });
 
+test('reconcileOwnership clears offline marker without auto-restoring minimized windows', () => {
+  const sourceStore = createWindowManagerStore();
+  sourceStore.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
+  sourceStore.applyRoute(makeRoute('/reader/help', 'reader', 'help', { openMode: 'new-window' }));
+
+  const persisted = sourceStore.getSnapshot();
+  const restoredStore = createWindowManagerStore();
+  restoredStore.hydratePersistedState(persisted);
+
+  const foreignOwnerRuntimeId = restoredStore.getSnapshot().windows[restoredStore.getSnapshot().windowOrder[0]]?.ownerRuntimeId;
+  assert.ok(foreignOwnerRuntimeId, 'expected foreign owner runtime id');
+
+  restoredStore.reconcileOwnership([]);
+  let snapshot = restoredStore.getSnapshot();
+  assert.ok(snapshot.windowOrder.every((windowId) => snapshot.windows[windowId]?.isMinimized === true));
+  assert.ok(snapshot.windowOrder.every((windowId) => snapshot.windows[windowId]?.minimizeReason === 'offline'));
+  assert.equal(snapshot.focusedWindowId, null);
+
+  restoredStore.reconcileOwnership([foreignOwnerRuntimeId]);
+  snapshot = restoredStore.getSnapshot();
+
+  assert.ok(snapshot.windowOrder.every((windowId) => snapshot.windows[windowId]?.isMinimized === true));
+  assert.ok(snapshot.windowOrder.every((windowId) => snapshot.windows[windowId]?.minimizeReason === null));
+  assert.equal(snapshot.focusedWindowId, null);
+});
+
+test('claimWindowsOwnedByInactiveRuntimes keeps reclaimed offline windows minimized', () => {
+  const sourceStore = createWindowManagerStore();
+  sourceStore.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
+  sourceStore.applyRoute(makeRoute('/reader/help', 'reader', 'help', { openMode: 'new-window' }));
+
+  const persisted = sourceStore.getSnapshot();
+  const restoredStore = createWindowManagerStore();
+  restoredStore.hydratePersistedState(persisted);
+  restoredStore.reconcileOwnership([]);
+  restoredStore.claimWindowsOwnedByInactiveRuntimes([]);
+
+  const snapshot = restoredStore.getSnapshot();
+  const localRuntimeId = restoredStore.getRuntimeId();
+
+  assert.ok(snapshot.windowOrder.every((windowId) => snapshot.windows[windowId]?.ownerRuntimeId === localRuntimeId));
+  assert.ok(snapshot.windowOrder.every((windowId) => snapshot.windows[windowId]?.isMinimized === true));
+  assert.ok(snapshot.windowOrder.every((windowId) => snapshot.windows[windowId]?.minimizeReason === null));
+  assert.equal(snapshot.focusedWindowId, null);
+});
+
 test('window history limit is isolated per window instance', () => {
   const store = createWindowManagerStore();
 

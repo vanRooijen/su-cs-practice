@@ -142,7 +142,13 @@
       markWindowSessionCleared();
       windowManager.closeAllWindowsGlobal();
       navigateToDesktop({ replace: true, forceEmit: true });
+
+      const writeFailuresBefore = persistenceController?.getHealth?.().writeFailures ?? 0;
       await persistenceController?.flush?.();
+      const writeFailuresAfter = persistenceController?.getHealth?.().writeFailures ?? writeFailuresBefore;
+      if (writeFailuresAfter > writeFailuresBefore) {
+        showCloseAllNotice('Close-all completed, but persistence write failed. Refresh may not reflect the latest state.');
+      }
     } finally {
       isClosingAll = false;
     }

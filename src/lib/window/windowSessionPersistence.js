@@ -17,6 +17,13 @@ const PRESENCE_HEARTBEAT_MS = 4000;
 const PRESENCE_STALE_MS = 12000;
 const DEFAULT_OWNER_RECLAIM_GRACE_MS = 700;
 const DEFAULT_SYNC_BROADCAST_DELAY_MS = 48;
+const IS_DEV = (() => {
+  try {
+    return Boolean(import.meta?.env?.DEV);
+  } catch {
+    return false;
+  }
+})();
 
 function isRecord(value) {
   return Boolean(value) && typeof value === 'object';
@@ -699,10 +706,20 @@ async function writeCheckpoint(db, revision, snapshot) {
 }
 
 function createNoopController() {
+  const health = {
+    restoreFailures: 0,
+    writeFailures: 0,
+    lastRestoreFailureAt: 0,
+    lastWriteFailureAt: 0,
+    lastRestoreFailureMessage: '',
+    lastWriteFailureMessage: '',
+  };
+
   return {
     restoredFocusedPath: null,
     flush: async () => {},
     destroy: async () => {},
+    getHealth: () => ({ ...health }),
   };
 }
 
@@ -762,6 +779,34 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   let suppressBroadcastOnce = false;
   let isDestroyed = false;
   let isHydratingRemote = false;
+  const health = {
+    restoreFailures: 0,
+    writeFailures: 0,
+    lastRestoreFailureAt: 0,
+    lastWriteFailureAt: 0,
+    lastRestoreFailureMessage: '',
+    lastWriteFailureMessage: '',
+  };
+
+  function noteRestoreFailure(error) {
+    health.restoreFailures += 1;
+    health.lastRestoreFailureAt = Date.now();
+    health.lastRestoreFailureMessage = error instanceof Error ? error.message : String(error ?? 'unknown-error');
+
+    if (IS_DEV && typeof console !== 'undefined') {
+      console.warn('[window-session] restore failed; continuing with in-memory state.', error);
+    }
+  }
+
+  function noteWriteFailure(error) {
+    health.writeFailures += 1;
+    health.lastWriteFailureAt = Date.now();
+    health.lastWriteFailureMessage = error instanceof Error ? error.message : String(error ?? 'unknown-error');
+
+    if (IS_DEV && typeof console !== 'undefined') {
+      console.warn('[window-session] write failed; continuing with in-memory state.', error);
+    }
+  }
 
   if (restoreOnStart) {
     try {
@@ -770,8 +815,8 @@ export async function createWindowSessionPersistence(windowManager, options = {}
         suppressBroadcastOnce = true;
         restoredFocusedPath = windowManager.hydratePersistedState(localizeSnapshotForHydration(restored.snapshot));
       }
-    } catch {
-      // Ignore restore failures and continue with in-memory state only.
+    } catch (error) {
+      noteRestoreFailure(error);
     }
   }
 
@@ -1080,8 +1125,8 @@ export async function createWindowSessionPersistence(windowManager, options = {}
         await writeCheckpoint(db, nextRevision, snapshotToPersist);
         lastPersistedSnapshot = snapshotToPersist;
       }
-    } catch {
-      // Ignore write failures and continue with in-memory state.
+    } catch (error) {
+      noteWriteFailure(error);
     } finally {
       flushInFlight = false;
     }
@@ -1328,5 +1373,6 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     restoredFocusedPath,
     flush: () => flushPending({ force: true }),
     destroy,
+    getHealth: () => ({ ...health }),
   };
 }

@@ -834,7 +834,7 @@ export function createWindowManagerStore() {
         next.windows[windowId] = {
           ...win,
           ownerRuntimeId: runtimeId,
-          isMinimized: win.minimizeReason === 'offline' ? false : win.isMinimized,
+          isMinimized: win.isMinimized || win.minimizeReason === 'offline',
           minimizeReason: win.minimizeReason === 'offline' ? null : win.minimizeReason,
         };
         hasChanges = true;
@@ -909,10 +909,9 @@ export function createWindowManagerStore() {
           continue;
         }
 
-        if (win.isMinimized && win.minimizeReason === 'offline') {
+        if (win.minimizeReason === 'offline') {
           next.windows[windowId] = {
             ...win,
-            isMinimized: false,
             minimizeReason: null,
           };
           hasChanges = true;
