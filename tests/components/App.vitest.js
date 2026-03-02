@@ -167,7 +167,27 @@ describe('App control-channel flows', () => {
     mocks.routeSubscribers.clear();
     MockBroadcastChannel.reset();
     vi.stubGlobal('BroadcastChannel', MockBroadcastChannel);
+    const localStorageMap = new Map();
+    const localStorageMock = {
+      getItem: vi.fn((key) => (localStorageMap.has(key) ? localStorageMap.get(key) : null)),
+      setItem: vi.fn((key, value) => {
+        localStorageMap.set(key, String(value));
+      }),
+      removeItem: vi.fn((key) => {
+        localStorageMap.delete(key);
+      }),
+      clear: vi.fn(() => {
+        localStorageMap.clear();
+      }),
+    };
+    vi.stubGlobal('localStorage', localStorageMock);
+    Object.defineProperty(window, 'localStorage', {
+      value: localStorageMock,
+      configurable: true,
+      writable: true,
+    });
     window.history.replaceState(null, '', '/home');
+    window.localStorage.removeItem('su-cs-home-auto-open-last-at');
   });
 
   afterEach(() => {
@@ -222,5 +242,30 @@ describe('App control-channel flows', () => {
     expect(mocks.markWindowSessionCleared).not.toHaveBeenCalled();
     expect(mocks.createWindowSessionPersistence).toHaveBeenCalledTimes(1);
     peer.close();
+  });
+
+  it('auto-opens home from root when no windows exist and cooldown elapsed', async () => {
+    window.history.replaceState(null, '', '/');
+
+    await renderApp();
+    await waitFor(() => expect(mocks.createWindowSessionPersistence).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(mocks.windowManager.applyRoute).toHaveBeenCalled());
+
+    expect(mocks.initHistoryRouter).toHaveBeenCalledWith({ openDefaultHomeOnRoot: false });
+    await waitFor(() =>
+      expect(mocks.navigateTo).toHaveBeenCalledWith('/home', { replace: true, forceEmit: true }),
+    );
+  });
+
+  it('does not auto-open home from root when within 24h cooldown', async () => {
+    window.history.replaceState(null, '', '/');
+    window.localStorage.setItem('su-cs-home-auto-open-last-at', String(Date.now()));
+
+    await renderApp();
+    await waitFor(() => expect(mocks.createWindowSessionPersistence).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(mocks.windowManager.applyRoute).toHaveBeenCalled());
+
+    expect(mocks.initHistoryRouter).toHaveBeenCalledWith({ openDefaultHomeOnRoot: false });
+    expect(mocks.navigateTo).not.toHaveBeenCalledWith('/home', { replace: true, forceEmit: true });
   });
 });

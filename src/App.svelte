@@ -11,6 +11,8 @@
   const WINDOW_CONTROL_TYPE_CLOSE_ALL = 'close-all-instances';
   const WINDOW_CONTROL_TYPE_CLOSE_OWNED = 'close-owned-windows';
   const GLOBAL_CLOSE_BROADCAST_GRACE_MS = 140;
+  const HOME_AUTO_OPEN_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+  const HOME_AUTO_OPEN_LAST_AT_KEY = 'su-cs-home-auto-open-last-at';
 
   let stopRouteSubscription = () => {};
   let persistenceController = null;
@@ -29,6 +31,55 @@
   function wait(delayMs) {
     return new Promise((resolve) => {
       window.setTimeout(resolve, delayMs);
+    });
+  }
+
+  function readHomeAutoOpenLastAt() {
+    try {
+      const value = Number(window.localStorage.getItem(HOME_AUTO_OPEN_LAST_AT_KEY) ?? '');
+      return Number.isFinite(value) && value > 0 ? value : 0;
+    } catch {
+      return 0;
+    }
+  }
+
+  function writeHomeAutoOpenLastAt(timestampMs = Date.now()) {
+    const safeTimestampMs = Number.isFinite(timestampMs) && timestampMs > 0 ? Math.floor(timestampMs) : Date.now();
+
+    try {
+      window.localStorage.setItem(HOME_AUTO_OPEN_LAST_AT_KEY, String(safeTimestampMs));
+    } catch {
+      // Ignore localStorage failures and continue without cooldown persistence.
+    }
+  }
+
+  function shouldAutoOpenHome() {
+    if (window.location.pathname !== '/') {
+      return false;
+    }
+
+    const snapshot = windowManager.getSnapshot();
+    if ((snapshot?.windowOrder?.length ?? 0) > 0) {
+      return false;
+    }
+
+    const lastOpenedAt = readHomeAutoOpenLastAt();
+    if (!lastOpenedAt) {
+      return true;
+    }
+
+    return Date.now() - lastOpenedAt >= HOME_AUTO_OPEN_COOLDOWN_MS;
+  }
+
+  function maybeAutoOpenHome() {
+    if (!shouldAutoOpenHome()) {
+      return;
+    }
+
+    writeHomeAutoOpenLastAt();
+    navigateTo('/home', {
+      replace: true,
+      forceEmit: true,
     });
   }
 
@@ -158,7 +209,9 @@
 
   onMount(() => {
     initialEntryPathname = window.location.pathname;
-    const stopRouter = initHistoryRouter();
+    const stopRouter = initHistoryRouter({
+      openDefaultHomeOnRoot: false,
+    });
     isDisposed = false;
     const onWindowControlMessage = (event) => {
       const message = event?.data;
@@ -216,6 +269,8 @@
       stopRouteSubscription = route.subscribe((currentRoute) => {
         windowManager.applyRoute(currentRoute);
       });
+
+      maybeAutoOpenHome();
     };
 
     void setup();

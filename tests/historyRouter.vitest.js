@@ -29,6 +29,15 @@ describe('historyRouter integration behavior', () => {
     expect(get(router.route).path).toBe('/home');
   });
 
+  it('can preserve root desktop route when default-home opening is disabled', async () => {
+    const router = await loadRouterModule();
+    stopRouter = router.initHistoryRouter({ openDefaultHomeOnRoot: false });
+
+    expect(window.location.pathname).toBe('/');
+    expect(get(router.route).path).toBe('/');
+    expect(get(router.route).appId).toBe(null);
+  });
+
   it('canonicalizes path during navigateTo and updates route store', async () => {
     const router = await loadRouterModule();
     stopRouter = router.initHistoryRouter();
