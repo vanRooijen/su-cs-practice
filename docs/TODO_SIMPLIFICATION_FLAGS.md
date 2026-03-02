@@ -21,6 +21,8 @@ Flag format:
 | TODO-RISK-010 | risk | src/lib/window/windowSessionPersistence.js:1052 | Persistence write failures are swallowed silently. |
 | TODO-RISK-011 | risk | src/App.svelte:142 | Close-all marker set in both initiator and remote tabs (redundant write pattern). |
 | TODO-RISK-012 | risk | src/lib/window/windowManagerStore.js:901 | Offline reconciliation auto-unminimizes windows when owner is seen active again. |
+| TODO-RISK-013 | risk | src/lib/window/windowSessionPersistence.js:923 | Runtime stale detection can misclassify throttled background tabs as offline. |
+| TODO-RISK-014 | risk | src/lib/window/windowManagerStore.js:364 | Route apply reuses foreign-owned windows and force-claims ownership (auto-steal). |
 
 ## Detailed Flags
 
@@ -102,3 +104,20 @@ Flag format:
 - Why risky: windows can reappear due to liveness transitions, which can feel unpredictable.
 - Recommended action: consider keeping offline windows minimized until explicit user activation/claim.
 
+### TODO-RISK-013
+- Location: `src/lib/window/windowSessionPersistence.js:752-757`, `:923-937`, `:1288-1304`
+- Why flagged: active-runtime liveness is heartbeat/timestamp based; browser timer throttling in background tabs can exceed stale thresholds.
+- Why risky: a background tab may be marked inactive and have windows reclaimed by another tab even though it was never actually closed.
+- Recommended action: tune liveness policy to be less destructive:
+  1. increase stale threshold materially, and/or
+  2. require an explicit absence confirmation cycle before reclaim, and/or
+  3. reclaim only on explicit `bye` + extended stale fallback.
+
+### TODO-RISK-014
+- Location: `src/lib/window/windowManagerStore.js:364-383`, `src/lib/window/windowManager/routing.js:89-118`
+- Why flagged: `applyRoute()` resolves an existing app/route window without ownership filtering, then `focusWindow(... ownerRuntimeId: runtimeId)` claims it.
+- Why risky: routine navigation in one tab can silently transfer ownership from other tabs, which users perceive as windows “disappearing” in passive tabs.
+- Recommended action: decide explicit policy:
+  1. owner-aware route resolution by default (prefer local-owned windows),
+  2. explicit steal only from sidebar click on stolen entry, or
+  3. configurable mode flag for prototyping (`autoStealOnRoute: true/false`).

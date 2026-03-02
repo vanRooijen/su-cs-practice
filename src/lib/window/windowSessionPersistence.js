@@ -998,8 +998,9 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     postSyncMessage('delta', { delta });
   }
 
-  function flushSyncBroadcast() {
-    if (isDestroyed || !syncChannel) {
+  function flushSyncBroadcast(options = {}) {
+    const allowWhenDestroyed = options.allowWhenDestroyed === true;
+    if ((!allowWhenDestroyed && isDestroyed) || !syncChannel) {
       return;
     }
 
@@ -1022,6 +1023,21 @@ export async function createWindowSessionPersistence(windowManager, options = {}
       broadcastTimerId = 0;
       flushSyncBroadcast();
     }, delay);
+  }
+
+  function flushSyncBroadcastNow(options = {}) {
+    const allowWhenDestroyed = options.allowWhenDestroyed === true;
+    if ((!allowWhenDestroyed && isDestroyed) || !syncChannel) {
+      return;
+    }
+
+    if (broadcastTimerId) {
+      window.clearTimeout(broadcastTimerId);
+      broadcastTimerId = 0;
+    }
+
+    latestLocalSnapshotForSync = serializeWindowManagerSnapshot(windowManager.getSnapshot());
+    flushSyncBroadcast({ allowWhenDestroyed });
   }
 
   function requestPeerState() {
@@ -1144,6 +1160,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   }
 
   function onPageHide() {
+    flushSyncBroadcastNow();
     postPresence('bye');
     void flushPending({ force: true });
   }
@@ -1162,6 +1179,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   }
 
   function onBeforeUnload() {
+    flushSyncBroadcastNow();
     postPresence('bye');
   }
 
@@ -1347,6 +1365,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
       ownerReclaimTimerId = 0;
     }
 
+    flushSyncBroadcastNow({ allowWhenDestroyed: true });
     postPresence('bye');
     window.removeEventListener('pagehide', onPageHide);
     window.removeEventListener('beforeunload', onBeforeUnload);
