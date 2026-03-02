@@ -12,6 +12,7 @@
   const WINDOW_CONTROL_CHANNEL_NAME = 'su-cs-window-control';
   const WINDOW_CONTROL_PROTOCOL = 'su-cs-window-control-v1';
   const WINDOW_CONTROL_TYPE_CLOSE_ALL = 'close-all-instances';
+  const WINDOW_CONTROL_TYPE_CLOSE_OWNED = 'close-owned-windows';
   const GLOBAL_CLOSE_BROADCAST_GRACE_MS = 140;
 
   let stopRouteSubscription = () => {};
@@ -79,33 +80,54 @@
     }
   }
 
-  function broadcastCloseAllInstances() {
+  function broadcastWindowControl(type) {
     if (!windowControlChannel) {
-      return;
+      return false;
     }
 
     try {
       windowControlChannel.postMessage({
         protocol: WINDOW_CONTROL_PROTOCOL,
-        type: WINDOW_CONTROL_TYPE_CLOSE_ALL,
+        type,
         sourceRuntimeId: runtimeId,
         sentAt: Date.now(),
       });
+      return true;
     } catch {
       // Ignore cross-tab control broadcast failures.
+      return false;
     }
   }
 
-  function requestGlobalCloseAllApplications() {
-    void closeAllApplications({
+  function requestCloseOwnedApplications() {
+    void closeOwnedApplications({
       initiatedByRemote: false,
-      broadcastToPeers: true,
+      clearPersistence: false,
+      broadcastType: null,
     });
   }
 
-  async function closeAllApplications(options = {}) {
+  function requestGlobalCloseAllApplications() {
+    void closeOwnedApplications({
+      initiatedByRemote: false,
+      clearPersistence: true,
+      broadcastType: WINDOW_CONTROL_TYPE_CLOSE_ALL,
+      restartPersistenceCycle: true,
+    });
+  }
+
+  function requestCloseOtherInstances() {
+    const didBroadcast = broadcastWindowControl(WINDOW_CONTROL_TYPE_CLOSE_OWNED);
+    if (!didBroadcast) {
+      showCloseAllNotice('Could not reach other tabs in this browser.');
+    }
+  }
+
+  async function closeOwnedApplications(options = {}) {
     const initiatedByRemote = options.initiatedByRemote === true;
-    const broadcastToPeers = options.broadcastToPeers !== false;
+    const clearPersistence = options.clearPersistence === true;
+    const broadcastType = typeof options.broadcastType === 'string' ? options.broadcastType : null;
+    const restartPersistenceCycle = options.restartPersistenceCycle === true;
 
     if (isClosingAll) {
       return;
@@ -114,9 +136,18 @@
     isClosingAll = true;
 
     try {
-      if (!initiatedByRemote && broadcastToPeers) {
-        broadcastCloseAllInstances();
+      if (!initiatedByRemote && broadcastType) {
+        const didBroadcast = broadcastWindowControl(broadcastType);
+        if (!didBroadcast) {
+          showCloseAllNotice('Could not reach other tabs in this browser.');
+        }
         await wait(GLOBAL_CLOSE_BROADCAST_GRACE_MS);
+      }
+
+      if (!clearPersistence && !restartPersistenceCycle) {
+        windowManager.closeAllWindows();
+        navigateToDesktop({ replace: true, forceEmit: true });
+        return;
       }
 
       try {
@@ -128,7 +159,7 @@
       persistenceController = null;
       let shouldRestoreOnStart = false;
 
-      if (!initiatedByRemote) {
+      if (clearPersistence && !initiatedByRemote) {
         let clearResult = { ok: false, reason: 'delete-error' };
 
         try {
@@ -167,7 +198,7 @@
         return;
       }
 
-      if (message.protocol !== WINDOW_CONTROL_PROTOCOL || message.type !== WINDOW_CONTROL_TYPE_CLOSE_ALL) {
+      if (message.protocol !== WINDOW_CONTROL_PROTOCOL) {
         return;
       }
 
@@ -177,9 +208,19 @@
         return;
       }
 
-      void closeAllApplications({
+      if (
+        message.type !== WINDOW_CONTROL_TYPE_CLOSE_ALL &&
+        message.type !== WINDOW_CONTROL_TYPE_CLOSE_OWNED
+      ) {
+        return;
+      }
+
+      const restartPersistenceForMessage = message.type === WINDOW_CONTROL_TYPE_CLOSE_ALL;
+      void closeOwnedApplications({
         initiatedByRemote: true,
-        broadcastToPeers: false,
+        clearPersistence: false,
+        broadcastType: null,
+        restartPersistenceCycle: restartPersistenceForMessage,
       });
     };
 
@@ -221,7 +262,11 @@
   });
 </script>
 
-<WindowManager onCloseAll={requestGlobalCloseAllApplications} />
+<WindowManager
+  onCloseOwned={requestCloseOwnedApplications}
+  onCloseAllInstances={requestGlobalCloseAllApplications}
+  onCloseOtherInstances={requestCloseOtherInstances}
+/>
 {#if closeAllNotice}
   <p class="session-warning" role="status" aria-live="polite">{closeAllNotice}</p>
 {/if}

@@ -6,7 +6,9 @@
   import { windowManager } from '../lib/window/windowManagerStore.js';
   import AppWindow from './AppWindow.svelte';
 
-  export let onCloseAll = null;
+  export let onCloseOwned = null;
+  export let onCloseAllInstances = null;
+  export let onCloseOtherInstances = null;
 
   const runtimeId = windowManager.getRuntimeId?.() ?? null;
 
@@ -156,12 +158,28 @@
     closeContextMenu();
   }
 
-  function handleCloseAll() {
-    if (typeof onCloseAll !== 'function') {
+  function handleCloseOwned() {
+    if (typeof onCloseOwned !== 'function') {
       return;
     }
 
-    onCloseAll();
+    onCloseOwned();
+  }
+
+  function handleCloseAllInstances() {
+    if (typeof onCloseAllInstances !== 'function') {
+      return;
+    }
+
+    onCloseAllInstances();
+  }
+
+  function handleCloseOtherInstances() {
+    if (typeof onCloseOtherInstances !== 'function') {
+      return;
+    }
+
+    onCloseOtherInstances();
   }
 
   function openContextLink() {
@@ -431,7 +449,9 @@
       {/each}
 
       <div class="sidebar-actions">
-        <button type="button" on:click={handleCloseAll}>Close All Instances</button>
+        <button type="button" on:click={handleCloseOwned}>Close My Windows</button>
+        <button type="button" on:click={handleCloseAllInstances}>Close All Instances</button>
+        <button type="button" on:click={handleCloseOtherInstances}>Close Other Instances</button>
       </div>
     </aside>
 
@@ -580,6 +600,8 @@
     margin-top: 0.6rem;
     padding-top: 0.4rem;
     border-top: 1px solid;
+    display: grid;
+    gap: 0.35rem;
   }
 
   .entry-main {
