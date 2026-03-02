@@ -9,6 +9,11 @@
   } from './lib/window/windowSessionPersistence.js';
   import { resolveRestoredFocusedPath } from './lib/window/restorePolicy.js';
 
+  const WINDOW_CONTROL_CHANNEL_NAME = 'su-cs-window-control';
+  const WINDOW_CONTROL_PROTOCOL = 'su-cs-window-control-v1';
+  const WINDOW_CONTROL_TYPE_CLOSE_ALL = 'close-all-instances';
+  const GLOBAL_CLOSE_BROADCAST_GRACE_MS = 140;
+
   let stopRouteSubscription = () => {};
   let persistenceController = null;
   let isDisposed = false;
@@ -16,6 +21,18 @@
   let initialEntryPathname = '/';
   let closeAllNotice = '';
   let closeAllNoticeTimerId = 0;
+  let windowControlChannel = null;
+  const runtimeId = windowManager.getRuntimeId?.() ?? null;
+
+  function hasBroadcastChannel() {
+    return typeof window !== 'undefined' && typeof window.BroadcastChannel === 'function';
+  }
+
+  function wait(delayMs) {
+    return new Promise((resolve) => {
+      window.setTimeout(resolve, delayMs);
+    });
+  }
 
   function showCloseAllNotice(message) {
     closeAllNotice = message;
@@ -62,7 +79,34 @@
     }
   }
 
-  async function closeAllApplications() {
+  function broadcastCloseAllInstances() {
+    if (!windowControlChannel) {
+      return;
+    }
+
+    try {
+      windowControlChannel.postMessage({
+        protocol: WINDOW_CONTROL_PROTOCOL,
+        type: WINDOW_CONTROL_TYPE_CLOSE_ALL,
+        sourceRuntimeId: runtimeId,
+        sentAt: Date.now(),
+      });
+    } catch {
+      // Ignore cross-tab control broadcast failures.
+    }
+  }
+
+  function requestGlobalCloseAllApplications() {
+    void closeAllApplications({
+      initiatedByRemote: false,
+      broadcastToPeers: true,
+    });
+  }
+
+  async function closeAllApplications(options = {}) {
+    const initiatedByRemote = options.initiatedByRemote === true;
+    const broadcastToPeers = options.broadcastToPeers !== false;
+
     if (isClosingAll) {
       return;
     }
@@ -70,6 +114,11 @@
     isClosingAll = true;
 
     try {
+      if (!initiatedByRemote && broadcastToPeers) {
+        broadcastCloseAllInstances();
+        await wait(GLOBAL_CLOSE_BROADCAST_GRACE_MS);
+      }
+
       try {
         await persistenceController?.destroy?.();
       } catch {
@@ -77,26 +126,32 @@
       }
 
       persistenceController = null;
-      let clearResult = { ok: false, reason: 'delete-error' };
+      let shouldRestoreOnStart = false;
 
-      try {
-        clearResult = await clearWindowSessionPersistence();
-      } catch {
-        clearResult = { ok: false, reason: 'delete-error' };
-      }
+      if (!initiatedByRemote) {
+        let clearResult = { ok: false, reason: 'delete-error' };
 
-      if (!clearResult?.ok) {
-        showCloseAllNotice(
-          clearResult?.reason === 'blocked'
-            ? 'Could not clear session storage. Close other tabs and try again.'
-            : 'Could not fully clear session storage. Try again.',
-        );
+        try {
+          clearResult = await clearWindowSessionPersistence();
+        } catch {
+          clearResult = { ok: false, reason: 'delete-error' };
+        }
+
+        if (!clearResult?.ok) {
+          showCloseAllNotice(
+            clearResult?.reason === 'blocked'
+              ? 'Could not clear session storage. Close other tabs and try again.'
+              : 'Could not fully clear session storage. Try again.',
+          );
+        }
+
+        shouldRestoreOnStart = clearResult?.ok === true;
       }
 
       windowManager.closeAllWindows();
       navigateToDesktop({ replace: true, forceEmit: true });
 
-      await startWindowSessionPersistence({ restoreOnStart: clearResult?.ok === true });
+      await startWindowSessionPersistence({ restoreOnStart: shouldRestoreOnStart });
     } finally {
       isClosingAll = false;
     }
@@ -106,6 +161,36 @@
     initialEntryPathname = window.location.pathname;
     const stopRouter = initHistoryRouter();
     isDisposed = false;
+    const onWindowControlMessage = (event) => {
+      const message = event?.data;
+      if (!message || typeof message !== 'object') {
+        return;
+      }
+
+      if (message.protocol !== WINDOW_CONTROL_PROTOCOL || message.type !== WINDOW_CONTROL_TYPE_CLOSE_ALL) {
+        return;
+      }
+
+      const sourceRuntimeId =
+        typeof message.sourceRuntimeId === 'string' && message.sourceRuntimeId.trim() ? message.sourceRuntimeId : null;
+      if (sourceRuntimeId && runtimeId && sourceRuntimeId === runtimeId) {
+        return;
+      }
+
+      void closeAllApplications({
+        initiatedByRemote: true,
+        broadcastToPeers: false,
+      });
+    };
+
+    if (hasBroadcastChannel()) {
+      try {
+        windowControlChannel = new window.BroadcastChannel(WINDOW_CONTROL_CHANNEL_NAME);
+        windowControlChannel.addEventListener('message', onWindowControlMessage);
+      } catch {
+        windowControlChannel = null;
+      }
+    }
 
     const setup = async () => {
       await startWindowSessionPersistence();
@@ -128,12 +213,15 @@
         window.clearTimeout(closeAllNoticeTimerId);
         closeAllNoticeTimerId = 0;
       }
+      windowControlChannel?.removeEventListener('message', onWindowControlMessage);
+      windowControlChannel?.close();
+      windowControlChannel = null;
       stopRouter();
     };
   });
 </script>
 
-<WindowManager onCloseAll={closeAllApplications} />
+<WindowManager onCloseAll={requestGlobalCloseAllApplications} />
 {#if closeAllNotice}
   <p class="session-warning" role="status" aria-live="polite">{closeAllNotice}</p>
 {/if}

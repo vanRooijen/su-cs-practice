@@ -431,7 +431,7 @@
       {/each}
 
       <div class="sidebar-actions">
-        <button type="button" on:click={handleCloseAll}>Close All</button>
+        <button type="button" on:click={handleCloseAll}>Close All Instances</button>
       </div>
     </aside>
 
