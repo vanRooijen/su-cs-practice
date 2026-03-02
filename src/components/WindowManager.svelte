@@ -34,7 +34,7 @@
 
   $: renderedWindowIds = $windowManager.windowOrder.filter((windowId) => {
     const win = $windowManager.windows[windowId];
-    return Boolean(win && !win.isMinimized && win.ownerRuntimeId === runtimeId);
+    return Boolean(win && win.ownerRuntimeId === runtimeId);
   });
 
   function isWindowStolen(win) {
