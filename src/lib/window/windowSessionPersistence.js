@@ -886,6 +886,7 @@ function createNoopController() {
 
   return {
     restoredFocusedPath: null,
+    waitForStartupOwnership: async () => {},
     flush: async () => {},
     destroy: async () => {},
     getHealth: () => ({ ...health }),
@@ -1033,7 +1034,23 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   let lastPresenceSentAt = 0;
   let startupProbeAckCount = 0;
   let startupProbeDetectedRuntimeCollision = false;
+  let hasResolvedStartupOwnershipReady = false;
+  let resolveStartupOwnershipReady = () => {};
+  const startupOwnershipReady = new Promise((resolve) => {
+    resolveStartupOwnershipReady = () => {
+      if (hasResolvedStartupOwnershipReady) {
+        return;
+      }
+
+      hasResolvedStartupOwnershipReady = true;
+      resolve();
+    };
+  });
   seedHydratedForeignOwners(lastPersistedSnapshot);
+
+  function finalizeStartupOwnershipCheck() {
+    resolveStartupOwnershipReady();
+  }
 
   function collectForeignOwnerRuntimeIds(snapshotLike) {
     const normalizedSnapshot = serializeWindowManagerSnapshot(snapshotLike ?? createEmptySnapshot());
@@ -1230,30 +1247,38 @@ export async function createWindowSessionPersistence(windowManager, options = {}
 
   function scheduleStartupOwnershipCheck() {
     if (isDestroyed || startupColdStartTimerId) {
+      if (isDestroyed) {
+        finalizeStartupOwnershipCheck();
+      }
       return;
     }
 
     startupColdStartTimerId = window.setTimeout(() => {
       startupColdStartTimerId = 0;
       if (isDestroyed) {
+        finalizeStartupOwnershipCheck();
         return;
       }
 
-      const hasObservedPeer = startupProbeAckCount > 0 || hasObservedPeerRuntime();
-      if (startupProbeDetectedRuntimeCollision) {
-        // Duplicate tab startup: clear inherited ownership cache and avoid reclaim.
-        writeRuntimeSessionState({
-          runtimeId,
-          ownedWindowIds: [],
-          updatedAt: Date.now(),
-        });
-        return;
-      }
+      try {
+        const hasObservedPeer = startupProbeAckCount > 0 || hasObservedPeerRuntime();
+        if (startupProbeDetectedRuntimeCollision) {
+          // Duplicate tab startup: clear inherited ownership cache and avoid reclaim.
+          writeRuntimeSessionState({
+            runtimeId,
+            ownedWindowIds: [],
+            updatedAt: Date.now(),
+          });
+          return;
+        }
 
-      reclaimCachedOwnedWindowsForRefresh();
+        reclaimCachedOwnedWindowsForRefresh();
 
-      if (!hasObservedPeer) {
-        adoptOwnedWindowsForColdStart();
+        if (!hasObservedPeer) {
+          adoptOwnedWindowsForColdStart();
+        }
+      } finally {
+        finalizeStartupOwnershipCheck();
       }
     }, startupPeerWaitMs);
   }
@@ -1911,6 +1936,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     if (startupColdStartTimerId) {
       window.clearTimeout(startupColdStartTimerId);
       startupColdStartTimerId = 0;
+      finalizeStartupOwnershipCheck();
     }
 
     flushSyncBroadcastNow({ allowWhenDestroyed: true });
@@ -1939,6 +1965,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
 
   return {
     restoredFocusedPath,
+    waitForStartupOwnership: () => startupOwnershipReady,
     flush: () => flushPending({ force: true }),
     destroy,
     getHealth: () => ({ ...health }),

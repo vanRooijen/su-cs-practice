@@ -122,6 +122,8 @@
         forceEmit: true,
       });
     }
+
+    await persistenceController?.waitForStartupOwnership?.();
   }
 
   function broadcastWindowControl(type) {
