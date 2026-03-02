@@ -147,10 +147,14 @@ export function createWindowManagerStore() {
       typeof windowLike?.routeKey === 'string' && windowLike.routeKey.trim()
         ? windowLike.routeKey
         : `${appId}::${path}`;
+    const hasOwnerRuntimeIdField =
+      Boolean(windowLike) && Object.prototype.hasOwnProperty.call(windowLike, 'ownerRuntimeId');
     const ownerRuntimeId =
       typeof windowLike?.ownerRuntimeId === 'string' && windowLike.ownerRuntimeId.trim()
         ? windowLike.ownerRuntimeId
-        : runtimeId;
+        : hasOwnerRuntimeIdField
+          ? null
+          : runtimeId;
     const isOwnedLocally = ownerRuntimeId === runtimeId;
 
     const nextBoundsCandidate =
@@ -171,8 +175,10 @@ export function createWindowManagerStore() {
 
     const isMaximized = Boolean(windowLike?.isMaximized);
     const history = sanitizeHistory(windowLike?.history, path, subroute, routeKey);
-    const minimizeReason =
+    const rawMinimizeReason =
       windowLike?.minimizeReason === 'user' || windowLike?.minimizeReason === 'offline' ? windowLike.minimizeReason : null;
+    const isMinimized = ownerRuntimeId ? Boolean(windowLike?.isMinimized) : true;
+    const minimizeReason = isMinimized ? (rawMinimizeReason ?? (!ownerRuntimeId ? 'user' : null)) : null;
 
     return {
       windowId,
@@ -185,7 +191,7 @@ export function createWindowManagerStore() {
       hasSidebar: Boolean(appDefinition.hasSidebar),
       showWindowHistoryNavigation: Boolean(appDefinition.enableWindowHistoryNavigation),
       isSidebarCollapsed: Boolean(windowLike?.isSidebarCollapsed) && Boolean(appDefinition.hasSidebar),
-      isMinimized: Boolean(windowLike?.isMinimized),
+      isMinimized,
       minimizeReason,
       ownerRuntimeId,
       isMaximized,
@@ -479,6 +485,7 @@ export function createWindowManagerStore() {
           ...target,
           isMinimized: true,
           minimizeReason: 'user',
+          ownerRuntimeId: null,
         };
 
         const nextVisibleWindowId = highestVisibleWindowId(next, runtimeId);
@@ -519,6 +526,7 @@ export function createWindowManagerStore() {
         ...current,
         isMinimized: true,
         minimizeReason: 'user',
+        ownerRuntimeId: null,
       };
 
       if (next.focusedWindowId === windowId || !next.windows[next.focusedWindowId]) {
@@ -858,9 +866,9 @@ export function createWindowManagerStore() {
 
         next.windows[windowId] = {
           ...win,
-          ownerRuntimeId: runtimeId,
-          isMinimized: win.isMinimized,
-          minimizeReason: win.minimizeReason === 'offline' ? null : win.minimizeReason,
+          ownerRuntimeId: null,
+          isMinimized: true,
+          minimizeReason: 'user',
         };
         hasChanges = true;
       }
@@ -914,12 +922,6 @@ export function createWindowManagerStore() {
       for (const windowId of next.windowOrder) {
         const win = next.windows[windowId];
         if (!win) {
-          continue;
-        }
-
-        const ownerRuntimeId =
-          typeof win.ownerRuntimeId === 'string' && win.ownerRuntimeId.trim() ? win.ownerRuntimeId : null;
-        if (!ownerRuntimeId) {
           continue;
         }
 
