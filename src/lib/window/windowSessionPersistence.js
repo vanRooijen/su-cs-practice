@@ -12,6 +12,7 @@ const SESSION_SYNC_CHANNEL_NAME = 'su-cs-window-sync';
 const PRESENCE_PROTOCOL = 'su-cs-owner-presence-v1';
 const PRESENCE_CHANNEL_NAME = 'su-cs-owner-presence';
 const SYNC_SCOPE_STORAGE_KEY = 'su-cs-window-sync-scope';
+const SESSION_CLEAR_MARKER_STORAGE_KEY = 'su-cs-window-session-cleared-at';
 const PRESENCE_HEARTBEAT_MS = 4000;
 const PRESENCE_STALE_MS = 12000;
 const DEFAULT_OWNER_RECLAIM_GRACE_MS = 700;
@@ -593,6 +594,46 @@ function resolveSyncScopeId() {
   }
 }
 
+function readSessionClearedAt() {
+  if (typeof window === 'undefined') {
+    return 0;
+  }
+
+  try {
+    const value = Number(window.localStorage.getItem(SESSION_CLEAR_MARKER_STORAGE_KEY) ?? '');
+    return Number.isFinite(value) && value > 0 ? value : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function shouldRestoreSnapshot(restoredSnapshot, sessionClearedAt) {
+  if (!restoredSnapshot?.snapshot) {
+    return false;
+  }
+
+  if (!Number.isFinite(sessionClearedAt) || sessionClearedAt <= 0) {
+    return true;
+  }
+
+  const persistedAt = Number(restoredSnapshot.writtenAt);
+  return Number.isFinite(persistedAt) && persistedAt > sessionClearedAt;
+}
+
+export function markWindowSessionCleared(clearedAt = Date.now()) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  const normalizedClearedAt = Number.isFinite(clearedAt) && clearedAt > 0 ? Math.floor(clearedAt) : Date.now();
+
+  try {
+    window.localStorage.setItem(SESSION_CLEAR_MARKER_STORAGE_KEY, String(normalizedClearedAt));
+  } catch {
+    // Ignore marker write failures and keep in-memory close-all semantics.
+  }
+}
+
 function openWindowSessionDb() {
   if (!hasIndexedDb()) {
     return Promise.resolve(null);
@@ -630,11 +671,13 @@ async function readPersistedSession(db) {
   if (!checkpoint?.snapshot) {
     return {
       snapshot: null,
+      writtenAt: 0,
     };
   }
 
   return {
     snapshot: serializeWindowManagerSnapshot(checkpoint.snapshot),
+    writtenAt: Number.isFinite(checkpoint.writtenAt) ? checkpoint.writtenAt : 0,
   };
 }
 
@@ -720,7 +763,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   if (restoreOnStart) {
     try {
       const restored = await readPersistedSession(db);
-      if (restored.snapshot) {
+      if (shouldRestoreSnapshot(restored, readSessionClearedAt())) {
         suppressBroadcastOnce = true;
         restoredFocusedPath = windowManager.hydratePersistedState(localizeSnapshotForHydration(restored.snapshot));
       }
@@ -1254,32 +1297,4 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     flush: () => flushPending({ force: true }),
     destroy,
   };
-}
-
-export async function clearWindowSessionPersistence() {
-  if (!hasIndexedDb()) {
-    return { ok: false, reason: 'unsupported' };
-  }
-
-  return new Promise((resolve) => {
-    const request = window.indexedDB.deleteDatabase(WINDOW_SESSION_DB_NAME);
-    let settled = false;
-
-    const settle = (result) => {
-      if (settled) {
-        return;
-      }
-
-      settled = true;
-      resolve(result);
-    };
-
-    request.onsuccess = () => settle({ ok: true });
-    request.onerror = () =>
-      settle({
-        ok: false,
-        reason: request.error?.message ?? 'delete-error',
-      });
-    request.onblocked = () => settle({ ok: false, reason: 'blocked' });
-  });
 }

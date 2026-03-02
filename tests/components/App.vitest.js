@@ -29,7 +29,7 @@ const mocks = vi.hoisted(() => {
       flush: async () => {},
       destroy: async () => {},
     })),
-    clearWindowSessionPersistence: vi.fn(async () => ({ ok: true })),
+    markWindowSessionCleared: vi.fn(),
     resolveRestoredFocusedPath: vi.fn(() => null),
     initHistoryRouter: vi.fn(() => () => {}),
     navigateTo: vi.fn(),
@@ -50,7 +50,7 @@ vi.mock('../../src/lib/window/windowManagerStore.js', () => ({
 
 vi.mock('../../src/lib/window/windowSessionPersistence.js', () => ({
   createWindowSessionPersistence: mocks.createWindowSessionPersistence,
-  clearWindowSessionPersistence: mocks.clearWindowSessionPersistence,
+  markWindowSessionCleared: mocks.markWindowSessionCleared,
 }));
 
 vi.mock('../../src/lib/window/restorePolicy.js', () => ({
@@ -201,6 +201,7 @@ describe('App control-channel flows', () => {
 
     await waitFor(() => expect(mocks.windowManager.closeOwnedWindows).toHaveBeenCalledTimes(1));
     expect(mocks.windowManager.closeAllWindowsGlobal).not.toHaveBeenCalled();
+    expect(mocks.markWindowSessionCleared).not.toHaveBeenCalled();
     expect(mocks.navigateToDesktop).toHaveBeenCalledWith({ replace: true, forceEmit: true });
     peer.close();
   });
@@ -218,7 +219,7 @@ describe('App control-channel flows', () => {
     });
 
     await waitFor(() => expect(mocks.windowManager.closeAllWindowsGlobal).toHaveBeenCalledTimes(1));
-    expect(mocks.clearWindowSessionPersistence).not.toHaveBeenCalled();
+    expect(mocks.markWindowSessionCleared).toHaveBeenCalledTimes(1);
     expect(mocks.createWindowSessionPersistence).toHaveBeenCalledTimes(1);
     peer.close();
   });

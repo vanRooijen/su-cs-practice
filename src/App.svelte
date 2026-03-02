@@ -3,7 +3,7 @@
   import WindowManager from './components/WindowManager.svelte';
   import { initHistoryRouter, navigateTo, navigateToDesktop, route } from './lib/navigation/historyRouter.js';
   import { windowManager } from './lib/window/windowManagerStore.js';
-  import { createWindowSessionPersistence } from './lib/window/windowSessionPersistence.js';
+  import { createWindowSessionPersistence, markWindowSessionCleared } from './lib/window/windowSessionPersistence.js';
   import { resolveRestoredFocusedPath } from './lib/window/restorePolicy.js';
 
   const WINDOW_CONTROL_CHANNEL_NAME = 'su-cs-window-control';
@@ -139,6 +139,7 @@
         await wait(GLOBAL_CLOSE_BROADCAST_GRACE_MS);
       }
 
+      markWindowSessionCleared();
       windowManager.closeAllWindowsGlobal();
       navigateToDesktop({ replace: true, forceEmit: true });
       await persistenceController?.flush?.();
