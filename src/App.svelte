@@ -51,10 +51,12 @@
 
   async function startWindowSessionPersistence(options = {}) {
     const shouldRestoreOnStart = options.restoreOnStart !== false;
+    const shouldRequestPeerStateOnStart = options.requestPeerStateOnStart !== false;
 
     try {
       persistenceController = await createWindowSessionPersistence(windowManager, {
         restoreOnStart: shouldRestoreOnStart,
+        requestPeerStateOnStart: shouldRequestPeerStateOnStart,
       });
     } catch {
       persistenceController = null;
@@ -158,6 +160,7 @@
 
       persistenceController = null;
       let shouldRestoreOnStart = false;
+      let shouldRequestPeerStateOnStart = true;
 
       if (clearPersistence && !initiatedByRemote) {
         let clearResult = { ok: false, reason: 'delete-error' };
@@ -176,13 +179,20 @@
           );
         }
 
-        shouldRestoreOnStart = clearResult?.ok === true;
+        shouldRestoreOnStart = false;
+      }
+
+      if (restartPersistenceCycle) {
+        shouldRequestPeerStateOnStart = false;
       }
 
       windowManager.closeAllWindows();
       navigateToDesktop({ replace: true, forceEmit: true });
 
-      await startWindowSessionPersistence({ restoreOnStart: shouldRestoreOnStart });
+      await startWindowSessionPersistence({
+        restoreOnStart: shouldRestoreOnStart,
+        requestPeerStateOnStart: shouldRequestPeerStateOnStart,
+      });
     } finally {
       isClosingAll = false;
     }

@@ -727,6 +727,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     ? Math.max(presenceHeartbeatMs + 300, Math.floor(options.presenceStaleMs))
     : PRESENCE_STALE_MS;
   const restoreOnStart = options.restoreOnStart !== false;
+  const requestPeerStateOnStart = options.requestPeerStateOnStart !== false;
   const runtimeIdCandidate = typeof windowManager.getRuntimeId === 'function' ? windowManager.getRuntimeId() : '';
   const runtimeId =
     typeof runtimeIdCandidate === 'string' && runtimeIdCandidate.trim()
@@ -1220,7 +1221,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     }, Math.max(500, Math.floor(presenceHeartbeatMs / 2)));
   }
 
-  if (syncChannel) {
+  if (syncChannel && requestPeerStateOnStart) {
     requestPeerState();
   }
 
