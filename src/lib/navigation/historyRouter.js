@@ -248,11 +248,12 @@ export function openInNewWindow(pathname, options = {}) {
   });
 }
 
-export function initHistoryRouter() {
+export function initHistoryRouter(options = {}) {
   if (hasInitialized) {
     return () => {};
   }
 
+  const openDefaultHomeOnRoot = options.openDefaultHomeOnRoot !== false;
   hasInitialized = true;
 
   const onPopState = () => {
@@ -282,7 +283,7 @@ export function initHistoryRouter() {
 
   const initialPath = window.location.pathname;
   const shouldOpenDefaultHome =
-    normalizePathname(initialPath) === '/' && !hasDesktopRootState(window.history.state);
+    openDefaultHomeOnRoot && normalizePathname(initialPath) === '/' && !hasDesktopRootState(window.history.state);
 
   syncRoute(shouldOpenDefaultHome ? buildAppPath(DEFAULT_APP_ID) : initialPath, {
     historyMode: 'replace',
