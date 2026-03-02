@@ -24,6 +24,7 @@ const PRESENCE_MAX_PROBE_ATTEMPTS = 2;
 const DEFAULT_STARTUP_PEER_WAIT_MS = 180;
 const DEFAULT_OWNER_RECLAIM_GRACE_MS = 700;
 const DEFAULT_SYNC_BROADCAST_DELAY_MS = 48;
+const REFRESH_OWNERSHIP_GUARD_MS = 1200;
 const IS_DEV = (() => {
   try {
     return Boolean(import.meta?.env?.DEV);
@@ -1034,6 +1035,8 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   let lastPresenceSentAt = 0;
   let startupProbeAckCount = 0;
   let startupProbeDetectedRuntimeCollision = false;
+  let startupOwnershipPending = true;
+  let refreshOwnershipGuardUntil = 0;
   let hasResolvedStartupOwnershipReady = false;
   let resolveStartupOwnershipReady = () => {};
   const startupOwnershipReady = new Promise((resolve) => {
@@ -1049,7 +1052,24 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   seedHydratedForeignOwners(lastPersistedSnapshot);
 
   function finalizeStartupOwnershipCheck() {
+    startupOwnershipPending = false;
     resolveStartupOwnershipReady();
+    requestPeerState();
+  }
+
+  function guardRefreshOwnership() {
+    const guardUntil = Date.now() + REFRESH_OWNERSHIP_GUARD_MS;
+    if (guardUntil > refreshOwnershipGuardUntil) {
+      refreshOwnershipGuardUntil = guardUntil;
+    }
+  }
+
+  function shouldDeferRemoteSyncApply(now = Date.now()) {
+    if (startupOwnershipPending) {
+      return true;
+    }
+
+    return now < refreshOwnershipGuardUntil;
   }
 
   function collectForeignOwnerRuntimeIds(snapshotLike) {
@@ -1193,17 +1213,14 @@ export async function createWindowSessionPersistence(windowManager, options = {}
       return false;
     }
 
-    suppressBroadcastOnce = true;
-    isHydratingRemote = true;
     try {
       windowManager.hydratePersistedState(snapshot);
     } catch {
       // Ignore refresh reclaim failures.
       return false;
-    } finally {
-      isHydratingRemote = false;
     }
 
+    guardRefreshOwnership();
     return true;
   }
 
@@ -1234,15 +1251,13 @@ export async function createWindowSessionPersistence(windowManager, options = {}
       return;
     }
 
-    suppressBroadcastOnce = true;
-    isHydratingRemote = true;
     try {
       windowManager.hydratePersistedState(snapshot);
     } catch {
       // Ignore cold-start adoption failures.
-    } finally {
-      isHydratingRemote = false;
     }
+
+    guardRefreshOwnership();
   }
 
   function scheduleStartupOwnershipCheck() {
@@ -1555,6 +1570,10 @@ export async function createWindowSessionPersistence(windowManager, options = {}
       return;
     }
 
+    if (shouldDeferRemoteSyncApply()) {
+      return;
+    }
+
     if (typeof sourceRuntimeId === 'string' && sourceRuntimeId.trim()) {
       touchRuntimePresence(sourceRuntimeId, Date.now());
     }
@@ -1578,6 +1597,10 @@ export async function createWindowSessionPersistence(windowManager, options = {}
 
   function applyRemoteDelta(deltaLike, sourceRuntimeId) {
     if (!deltaLike || isDestroyed) {
+      return;
+    }
+
+    if (shouldDeferRemoteSyncApply()) {
       return;
     }
 
