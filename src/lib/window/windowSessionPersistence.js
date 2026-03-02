@@ -16,6 +16,7 @@ const SESSION_CLEAR_MARKER_STORAGE_KEY = 'su-cs-window-session-cleared-at';
 const PRESENCE_HEARTBEAT_MS = 4000;
 const PRESENCE_STALE_MS = 12000;
 const DEFAULT_OWNER_RECLAIM_GRACE_MS = 700;
+const DEFAULT_SYNC_BROADCAST_DELAY_MS = 48;
 
 function isRecord(value) {
   return Boolean(value) && typeof value === 'object';
@@ -378,6 +379,10 @@ function sanitizeSharedDelta(deltaLike) {
   return hasChanges ? next : null;
 }
 
+function createSharedWindowSessionDelta(previousSnapshot, nextSnapshot) {
+  return sanitizeSharedDelta(createWindowSessionDelta(previousSnapshot, nextSnapshot));
+}
+
 export function createWindowSessionDelta(previousSnapshot, nextSnapshot) {
   const next = serializeWindowManagerSnapshot(nextSnapshot);
   if (!previousSnapshot) {
@@ -644,10 +649,6 @@ function openWindowSessionDb() {
   request.onupgradeneeded = () => {
     const database = request.result;
 
-    if (database.objectStoreNames.contains(CHECKPOINT_STORE)) {
-      database.deleteObjectStore(CHECKPOINT_STORE);
-    }
-
     if (database.objectStoreNames.contains(LEGACY_META_STORE)) {
       database.deleteObjectStore(LEGACY_META_STORE);
     }
@@ -656,7 +657,9 @@ function openWindowSessionDb() {
       database.deleteObjectStore(LEGACY_WORKSPACE_STORE);
     }
 
-    database.createObjectStore(CHECKPOINT_STORE, { keyPath: 'id' });
+    if (!database.objectStoreNames.contains(CHECKPOINT_STORE)) {
+      database.createObjectStore(CHECKPOINT_STORE, { keyPath: 'id' });
+    }
   };
 
   return requestToPromise(request);
@@ -775,6 +778,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   lastPersistedSnapshot = serializeWindowManagerSnapshot(windowManager.getSnapshot());
 
   let flushTimerId = 0;
+  let broadcastTimerId = 0;
   let heartbeatTimerId = 0;
   let staleSweepTimerId = 0;
   let ownerReclaimTimerId = 0;
@@ -785,7 +789,8 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   let presenceChannel = null;
   const activeRuntimeSeenAt = new Map([[runtimeId, Date.now()]]);
   const latestRemoteSequence = new Map();
-  let previousLocalSnapshotForSync = lastPersistedSnapshot;
+  let latestLocalSnapshotForSync = lastPersistedSnapshot;
+  let lastBroadcastSnapshotForSync = lastPersistedSnapshot;
 
   function localizeSnapshotForHydration(snapshotLike) {
     const normalized = serializeWindowManagerSnapshot(snapshotLike ?? createEmptySnapshot());
@@ -946,6 +951,32 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     }
 
     postSyncMessage('delta', { delta });
+  }
+
+  function flushSyncBroadcast() {
+    if (isDestroyed || !syncChannel) {
+      return;
+    }
+
+    const sharedDelta = createSharedWindowSessionDelta(lastBroadcastSnapshotForSync, latestLocalSnapshotForSync);
+    if (!sharedDelta) {
+      lastBroadcastSnapshotForSync = latestLocalSnapshotForSync;
+      return;
+    }
+
+    postDelta(sharedDelta);
+    lastBroadcastSnapshotForSync = latestLocalSnapshotForSync;
+  }
+
+  function scheduleSyncBroadcast(delay = DEFAULT_SYNC_BROADCAST_DELAY_MS) {
+    if (isDestroyed || !syncChannel || broadcastTimerId) {
+      return;
+    }
+
+    broadcastTimerId = window.setTimeout(() => {
+      broadcastTimerId = 0;
+      flushSyncBroadcast();
+    }, delay);
   }
 
   function requestPeerState() {
@@ -1170,28 +1201,24 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     }
 
     const normalizedSnapshot = serializeWindowManagerSnapshot(snapshot);
-    const localDelta = createWindowSessionDelta(previousLocalSnapshotForSync, normalizedSnapshot);
-    previousLocalSnapshotForSync = normalizedSnapshot;
     pendingSnapshot = normalizedSnapshot;
+    latestLocalSnapshotForSync = normalizedSnapshot;
     scheduleFlush();
 
     if (!hasSeenInitialSubscription) {
       hasSeenInitialSubscription = true;
       suppressBroadcastOnce = false;
+      lastBroadcastSnapshotForSync = normalizedSnapshot;
       return;
     }
 
     if (isHydratingRemote || suppressBroadcastOnce) {
       suppressBroadcastOnce = false;
+      lastBroadcastSnapshotForSync = normalizedSnapshot;
       return;
     }
 
-    const sharedDelta = sanitizeSharedDelta(localDelta);
-    if (!sharedDelta) {
-      return;
-    }
-
-    postDelta(sharedDelta);
+    scheduleSyncBroadcast();
   });
 
   if (hasBroadcastChannel()) {
@@ -1253,6 +1280,11 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     if (flushTimerId) {
       window.clearTimeout(flushTimerId);
       flushTimerId = 0;
+    }
+
+    if (broadcastTimerId) {
+      window.clearTimeout(broadcastTimerId);
+      broadcastTimerId = 0;
     }
 
     if (heartbeatTimerId) {
