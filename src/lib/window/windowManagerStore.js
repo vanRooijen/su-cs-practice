@@ -37,6 +37,18 @@ export function createWindowManagerStore() {
     return Number.isInteger(numeric) && numeric > 0 ? numeric : null;
   }
 
+  function toActiveRuntimeIdSet(activeRuntimeIdsLike) {
+    const activeRuntimeIds = new Set(
+      activeRuntimeIdsLike instanceof Set
+        ? [...activeRuntimeIdsLike]
+        : Array.isArray(activeRuntimeIdsLike)
+          ? activeRuntimeIdsLike
+          : [],
+    );
+    activeRuntimeIds.add(runtimeId);
+    return activeRuntimeIds;
+  }
+
   function isOwnedByRuntime(windowState) {
     return windowState?.ownerRuntimeId === runtimeId;
   }
@@ -727,14 +739,16 @@ export function createWindowManagerStore() {
     closeAllWindowsGlobal();
   }
 
-  function closeOwnedWindows() {
+  function closeWindowsMatchingOwnership(shouldClose, options = {}) {
+    const allowFocusCorrectionWithoutRemoval = options.allowFocusCorrectionWithoutRemoval === true;
+
     store.update((state) => {
       const next = cloneState(state);
       let removed = false;
 
       for (const windowId of state.windowOrder) {
         const win = state.windows[windowId];
-        if (!win || !isOwnedByRuntime(win)) {
+        if (!win || !shouldClose(win)) {
           continue;
         }
 
@@ -749,12 +763,18 @@ export function createWindowManagerStore() {
         }
       }
 
-      const focusedBefore = next.focusedWindowId;
-      ensureOwnedFocus(next);
-      const focusedChanged = next.focusedWindowId !== focusedBefore;
+      if (!removed) {
+        if (!allowFocusCorrectionWithoutRemoval) {
+          return state;
+        }
 
-      if (!removed && !focusedChanged) {
-        return state;
+        const focusedBefore = next.focusedWindowId;
+        ensureOwnedFocus(next);
+        if (next.focusedWindowId === focusedBefore) {
+          return state;
+        }
+      } else {
+        ensureOwnedFocus(next);
       }
 
       if (!next.windowOrder.length) {
@@ -765,37 +785,14 @@ export function createWindowManagerStore() {
     });
   }
 
-  function closeWindowsOwnedByOthers() {
-    store.update((state) => {
-      const next = cloneState(state);
-      let removed = false;
-
-      for (const windowId of state.windowOrder) {
-        const win = state.windows[windowId];
-        if (!win || isOwnedByRuntime(win)) {
-          continue;
-        }
-
-        delete next.windows[windowId];
-        removed = true;
-      }
-
-      if (!removed) {
-        return state;
-      }
-
-      next.windowOrder = next.windowOrder.filter((id) => Boolean(next.windows[id]));
-      if (next.focusedWindowId && !next.windows[next.focusedWindowId]) {
-        next.focusedWindowId = null;
-      }
-
-      ensureOwnedFocus(next);
-      if (!next.windowOrder.length) {
-        next.lastRoute = null;
-      }
-
-      return next;
+  function closeOwnedWindows() {
+    closeWindowsMatchingOwnership((win) => isOwnedByRuntime(win), {
+      allowFocusCorrectionWithoutRemoval: true,
     });
+  }
+
+  function closeWindowsOwnedByOthers() {
+    closeWindowsMatchingOwnership((win) => !isOwnedByRuntime(win));
   }
 
   function closeAllWindowsGlobal() {
@@ -816,14 +813,7 @@ export function createWindowManagerStore() {
   }
 
   function claimWindowsOwnedByInactiveRuntimes(activeRuntimeIdsLike) {
-    const activeRuntimeIds = new Set(
-      activeRuntimeIdsLike instanceof Set
-        ? [...activeRuntimeIdsLike]
-        : Array.isArray(activeRuntimeIdsLike)
-          ? activeRuntimeIdsLike
-          : [],
-    );
-    activeRuntimeIds.add(runtimeId);
+    const activeRuntimeIds = toActiveRuntimeIdSet(activeRuntimeIdsLike);
 
     store.update((state) => {
       const next = cloneState(state);
@@ -888,14 +878,7 @@ export function createWindowManagerStore() {
   }
 
   function reconcileOwnership(activeRuntimeIdsLike) {
-    const activeRuntimeIds = new Set(
-      activeRuntimeIdsLike instanceof Set
-        ? [...activeRuntimeIdsLike]
-        : Array.isArray(activeRuntimeIdsLike)
-          ? activeRuntimeIdsLike
-          : [],
-    );
-    activeRuntimeIds.add(runtimeId);
+    const activeRuntimeIds = toActiveRuntimeIdSet(activeRuntimeIdsLike);
 
     store.update((state) => {
       const next = cloneState(state);

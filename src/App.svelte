@@ -3,10 +3,7 @@
   import WindowManager from './components/WindowManager.svelte';
   import { initHistoryRouter, navigateTo, navigateToDesktop, route } from './lib/navigation/historyRouter.js';
   import { windowManager } from './lib/window/windowManagerStore.js';
-  import {
-    clearWindowSessionPersistence,
-    createWindowSessionPersistence,
-  } from './lib/window/windowSessionPersistence.js';
+  import { createWindowSessionPersistence } from './lib/window/windowSessionPersistence.js';
   import { resolveRestoredFocusedPath } from './lib/window/restorePolicy.js';
 
   const WINDOW_CONTROL_CHANNEL_NAME = 'su-cs-window-control';
@@ -49,15 +46,9 @@
     }, 5000);
   }
 
-  async function startWindowSessionPersistence(options = {}) {
-    const shouldRestoreOnStart = options.restoreOnStart !== false;
-    const shouldRequestPeerStateOnStart = options.requestPeerStateOnStart !== false;
-
+  async function startWindowSessionPersistence() {
     try {
-      persistenceController = await createWindowSessionPersistence(windowManager, {
-        restoreOnStart: shouldRestoreOnStart,
-        requestPeerStateOnStart: shouldRequestPeerStateOnStart,
-      });
+      persistenceController = await createWindowSessionPersistence(windowManager);
     } catch {
       persistenceController = null;
     }
@@ -148,38 +139,9 @@
         await wait(GLOBAL_CLOSE_BROADCAST_GRACE_MS);
       }
 
-      try {
-        await persistenceController?.destroy?.();
-      } catch {
-        // Ignore close errors and continue close-all flow.
-      }
-
-      persistenceController = null;
-      if (!initiatedByRemote) {
-        let clearResult = { ok: false, reason: 'delete-error' };
-
-        try {
-          clearResult = await clearWindowSessionPersistence();
-        } catch {
-          clearResult = { ok: false, reason: 'delete-error' };
-        }
-
-        if (!clearResult?.ok) {
-          showCloseAllNotice(
-            clearResult?.reason === 'blocked'
-              ? 'Could not clear session storage. Close other tabs and try again.'
-              : 'Could not fully clear session storage. Try again.',
-          );
-        }
-      }
-
       windowManager.closeAllWindowsGlobal();
       navigateToDesktop({ replace: true, forceEmit: true });
-
-      await startWindowSessionPersistence({
-        restoreOnStart: false,
-        requestPeerStateOnStart: false,
-      });
+      await persistenceController?.flush?.();
     } finally {
       isClosingAll = false;
     }

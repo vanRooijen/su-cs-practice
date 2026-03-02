@@ -205,7 +205,7 @@ describe('App control-channel flows', () => {
     peer.close();
   });
 
-  it('reacts to remote close-all by running global close flow without clearing DB locally', async () => {
+  it('reacts to remote close-all by running global close flow without restarting persistence', async () => {
     await renderApp();
     await waitFor(() => expect(mocks.createWindowSessionPersistence).toHaveBeenCalledTimes(1));
 
@@ -219,9 +219,7 @@ describe('App control-channel flows', () => {
 
     await waitFor(() => expect(mocks.windowManager.closeAllWindowsGlobal).toHaveBeenCalledTimes(1));
     expect(mocks.clearWindowSessionPersistence).not.toHaveBeenCalled();
-    await waitFor(() => expect(mocks.createWindowSessionPersistence).toHaveBeenCalledTimes(2));
-    const secondCallOptions = mocks.createWindowSessionPersistence.mock.calls[1][1];
-    expect(secondCallOptions).toEqual(expect.objectContaining({ restoreOnStart: false, requestPeerStateOnStart: false }));
+    expect(mocks.createWindowSessionPersistence).toHaveBeenCalledTimes(1);
     peer.close();
   });
 });

@@ -1,7 +1,6 @@
 const WINDOW_SESSION_DB_NAME = 'su-cs-practice-window-session';
 const WINDOW_SESSION_DB_VERSION = 4;
 const CHECKPOINT_STORE = 'checkpoint';
-const DELTA_STORE = 'deltas';
 const CHECKPOINT_ID = 'latest';
 const LEGACY_META_STORE = 'meta';
 const LEGACY_WORKSPACE_STORE = 'workspaces';
@@ -608,10 +607,6 @@ function openWindowSessionDb() {
       database.deleteObjectStore(CHECKPOINT_STORE);
     }
 
-    if (database.objectStoreNames.contains(DELTA_STORE)) {
-      database.deleteObjectStore(DELTA_STORE);
-    }
-
     if (database.objectStoreNames.contains(LEGACY_META_STORE)) {
       database.deleteObjectStore(LEGACY_META_STORE);
     }
@@ -621,7 +616,6 @@ function openWindowSessionDb() {
     }
 
     database.createObjectStore(CHECKPOINT_STORE, { keyPath: 'id' });
-    database.createObjectStore(DELTA_STORE, { keyPath: 'revision' });
   };
 
   return requestToPromise(request);
@@ -636,42 +630,17 @@ async function readPersistedSession(db) {
   if (!checkpoint?.snapshot) {
     return {
       snapshot: null,
-      revision: 0,
-      checkpointRevision: 0,
     };
   }
 
-  const checkpointRevision = Number.isInteger(checkpoint.revision) ? checkpoint.revision : 0;
-  let snapshot = serializeWindowManagerSnapshot(checkpoint.snapshot);
-  let revision = checkpointRevision;
-
-  const deltaTx = db.transaction(DELTA_STORE, 'readonly');
-  const deltaStore = deltaTx.objectStore(DELTA_STORE);
-  const range = IDBKeyRange.lowerBound(checkpointRevision + 1);
-  const deltaRecords = await requestToPromise(deltaStore.getAll(range));
-  await transactionToPromise(deltaTx);
-
-  for (const record of deltaRecords ?? []) {
-    const recordRevision = Number(record?.revision);
-    if (!Number.isInteger(recordRevision) || recordRevision <= revision) {
-      continue;
-    }
-
-    snapshot = applyWindowSessionDelta(snapshot, record.delta);
-    revision = recordRevision;
-  }
-
   return {
-    snapshot,
-    revision,
-    checkpointRevision,
+    snapshot: serializeWindowManagerSnapshot(checkpoint.snapshot),
   };
 }
 
 async function writeCheckpoint(db, revision, snapshot) {
-  const tx = db.transaction([CHECKPOINT_STORE, DELTA_STORE], 'readwrite');
+  const tx = db.transaction(CHECKPOINT_STORE, 'readwrite');
   const checkpointStore = tx.objectStore(CHECKPOINT_STORE);
-  const deltaStore = tx.objectStore(DELTA_STORE);
 
   checkpointStore.put({
     id: CHECKPOINT_ID,
@@ -679,7 +648,6 @@ async function writeCheckpoint(db, revision, snapshot) {
     snapshot,
     writtenAt: Date.now(),
   });
-  deltaStore.clear();
 
   await transactionToPromise(tx);
 }
@@ -718,9 +686,6 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   const idleTimeoutMs = Number.isFinite(options.idleTimeoutMs)
     ? Math.max(50, Math.floor(options.idleTimeoutMs))
     : DEFAULT_IDLE_TIMEOUT_MS;
-  const syncBroadcastDelayMs = Number.isFinite(options.syncBroadcastDelayMs)
-    ? Math.max(0, Math.floor(options.syncBroadcastDelayMs))
-    : 36;
   const presenceHeartbeatMs = Number.isFinite(options.presenceHeartbeatMs)
     ? Math.max(500, Math.floor(options.presenceHeartbeatMs))
     : PRESENCE_HEARTBEAT_MS;
@@ -737,7 +702,6 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     typeof runtimeIdCandidate === 'string' && runtimeIdCandidate.trim()
       ? runtimeIdCandidate
       : createOpaqueId('runtime');
-  const instanceId = createOpaqueId('instance');
   const syncScopeId = resolveSyncScopeId();
 
   const db = await openWindowSessionDb();
@@ -768,12 +732,10 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   lastPersistedSnapshot = serializeWindowManagerSnapshot(windowManager.getSnapshot());
 
   let flushTimerId = 0;
-  let broadcastTimerId = 0;
   let heartbeatTimerId = 0;
   let staleSweepTimerId = 0;
   let ownerReclaimTimerId = 0;
   let pendingSnapshot = null;
-  let pendingBroadcastDelta = null;
   let flushInFlight = false;
   let unsubscribe = null;
   let syncChannel = null;
@@ -898,7 +860,6 @@ export async function createWindowSessionPersistence(windowManager, options = {}
         type,
         scopeId: syncScopeId,
         runtimeId,
-        instanceId,
         sentAt: Date.now(),
       });
     } catch {
@@ -919,7 +880,6 @@ export async function createWindowSessionPersistence(windowManager, options = {}
         kind,
         scopeId: syncScopeId,
         runtimeId,
-        instanceId,
         sequence: localSyncSequence,
         sentAt: Date.now(),
         ...payload,
@@ -945,33 +905,6 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     postSyncMessage('delta', { delta });
   }
 
-  function scheduleBroadcast(delay = syncBroadcastDelayMs) {
-    if (isDestroyed || !syncChannel || broadcastTimerId) {
-      return;
-    }
-
-    broadcastTimerId = window.setTimeout(() => {
-      broadcastTimerId = 0;
-
-      if (!pendingBroadcastDelta || isDestroyed) {
-        return;
-      }
-
-      const delta = pendingBroadcastDelta;
-      pendingBroadcastDelta = null;
-      postDelta(delta);
-    }, delay);
-  }
-
-  function queueDeltaBroadcast(delta) {
-    if (!syncChannel || !delta || isDestroyed) {
-      return;
-    }
-
-    pendingBroadcastDelta = delta;
-    scheduleBroadcast();
-  }
-
   function requestPeerState() {
     if (!syncChannel || isDestroyed) {
       return;
@@ -983,7 +916,6 @@ export async function createWindowSessionPersistence(windowManager, options = {}
         kind: 'state-request',
         scopeId: syncScopeId,
         runtimeId,
-        instanceId,
         sentAt: Date.now(),
       });
     } catch {
@@ -1216,7 +1148,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
       return;
     }
 
-    queueDeltaBroadcast(sharedDelta);
+    postDelta(sharedDelta);
   });
 
   if (hasBroadcastChannel()) {
@@ -1278,11 +1210,6 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     if (flushTimerId) {
       window.clearTimeout(flushTimerId);
       flushTimerId = 0;
-    }
-
-    if (broadcastTimerId) {
-      window.clearTimeout(broadcastTimerId);
-      broadcastTimerId = 0;
     }
 
     if (heartbeatTimerId) {
