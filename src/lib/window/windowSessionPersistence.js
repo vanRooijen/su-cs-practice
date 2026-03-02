@@ -12,8 +12,14 @@ const SESSION_SYNC_CHANNEL_NAME = 'su-cs-window-sync';
 const PRESENCE_PROTOCOL = 'su-cs-owner-presence-v1';
 const PRESENCE_CHANNEL_NAME = 'su-cs-owner-presence';
 const SESSION_CLEAR_MARKER_STORAGE_KEY = 'su-cs-window-session-cleared-at';
-const PRESENCE_HEARTBEAT_MS = 4000;
-const PRESENCE_STALE_MS = 12000;
+const PRESENCE_BYE_STORAGE_KEY = 'su-cs-owner-presence-bye';
+const PRESENCE_HEARTBEAT_VISIBLE_MS = 15000;
+const PRESENCE_HEARTBEAT_HIDDEN_MS = 45000;
+const PRESENCE_TICK_MS = 5000;
+const PRESENCE_SUSPECT_MS = 180000;
+const PRESENCE_CONFIRM_DOWN_MS = 600000;
+const PRESENCE_PROBE_INTERVAL_MS = 30000;
+const PRESENCE_MAX_PROBE_ATTEMPTS = 2;
 const DEFAULT_OWNER_RECLAIM_GRACE_MS = 700;
 const DEFAULT_SYNC_BROADCAST_DELAY_MS = 48;
 const IS_DEV = (() => {
@@ -831,12 +837,31 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   const idleTimeoutMs = Number.isFinite(options.idleTimeoutMs)
     ? Math.max(50, Math.floor(options.idleTimeoutMs))
     : DEFAULT_IDLE_TIMEOUT_MS;
-  const presenceHeartbeatMs = Number.isFinite(options.presenceHeartbeatMs)
-    ? Math.max(500, Math.floor(options.presenceHeartbeatMs))
-    : PRESENCE_HEARTBEAT_MS;
-  const presenceStaleMs = Number.isFinite(options.presenceStaleMs)
-    ? Math.max(presenceHeartbeatMs + 300, Math.floor(options.presenceStaleMs))
-    : PRESENCE_STALE_MS;
+  const presenceHeartbeatVisibleMs = Number.isFinite(options.presenceHeartbeatVisibleMs)
+    ? Math.max(1000, Math.floor(options.presenceHeartbeatVisibleMs))
+    : Number.isFinite(options.presenceHeartbeatMs)
+      ? Math.max(1000, Math.floor(options.presenceHeartbeatMs))
+      : PRESENCE_HEARTBEAT_VISIBLE_MS;
+  const presenceHeartbeatHiddenMs = Number.isFinite(options.presenceHeartbeatHiddenMs)
+    ? Math.max(presenceHeartbeatVisibleMs, Math.floor(options.presenceHeartbeatHiddenMs))
+    : PRESENCE_HEARTBEAT_HIDDEN_MS;
+  const presenceTickMs = Number.isFinite(options.presenceTickMs)
+    ? Math.max(1000, Math.floor(options.presenceTickMs))
+    : PRESENCE_TICK_MS;
+  const presenceSuspectMs = Number.isFinite(options.presenceSuspectMs)
+    ? Math.max(presenceHeartbeatVisibleMs + 1000, Math.floor(options.presenceSuspectMs))
+    : Number.isFinite(options.presenceStaleMs)
+      ? Math.max(presenceHeartbeatVisibleMs + 1000, Math.floor(options.presenceStaleMs))
+      : PRESENCE_SUSPECT_MS;
+  const presenceConfirmDownMs = Number.isFinite(options.presenceConfirmDownMs)
+    ? Math.max(presenceSuspectMs + presenceTickMs, Math.floor(options.presenceConfirmDownMs))
+    : PRESENCE_CONFIRM_DOWN_MS;
+  const presenceProbeIntervalMs = Number.isFinite(options.presenceProbeIntervalMs)
+    ? Math.max(presenceTickMs, Math.floor(options.presenceProbeIntervalMs))
+    : PRESENCE_PROBE_INTERVAL_MS;
+  const presenceMaxProbeAttempts = Number.isFinite(options.presenceMaxProbeAttempts)
+    ? Math.max(1, Math.floor(options.presenceMaxProbeAttempts))
+    : PRESENCE_MAX_PROBE_ATTEMPTS;
   const ownerReclaimGraceMs = Number.isFinite(options.ownerReclaimGraceMs)
     ? Math.max(120, Math.floor(options.ownerReclaimGraceMs))
     : DEFAULT_OWNER_RECLAIM_GRACE_MS;
@@ -901,7 +926,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
 
   let flushTimerId = 0;
   let broadcastTimerId = 0;
-  let heartbeatTimerId = 0;
+  let presenceTickTimerId = 0;
   let ownerReclaimTimerId = 0;
   let pendingSnapshot = null;
   let flushInFlight = false;
@@ -909,10 +934,12 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   let syncChannel = null;
   let presenceChannel = null;
   const activeRuntimeSeenAt = new Map([[runtimeId, Date.now()]]);
+  const suspectRuntimeState = new Map();
   const reclaimableRuntimeIds = new Set();
   const latestRemoteSequence = new Map();
   let latestLocalSnapshotForSync = lastPersistedSnapshot;
   let lastBroadcastSnapshotForSync = lastPersistedSnapshot;
+  let lastPresenceSentAt = 0;
 
   function localizeSnapshotForHydration(snapshotLike) {
     const normalized = serializeWindowManagerSnapshot(snapshotLike ?? createEmptySnapshot());
@@ -925,15 +952,19 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     return normalized;
   }
 
-  function activeRuntimeIds(now = Date.now()) {
+  function resolvePresenceHeartbeatIntervalMs() {
+    if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
+      return presenceHeartbeatHiddenMs;
+    }
+
+    return presenceHeartbeatVisibleMs;
+  }
+
+  function activeRuntimeIds() {
     const activeIds = new Set([runtimeId]);
 
-    for (const [candidateRuntimeId, seenAt] of activeRuntimeSeenAt.entries()) {
+    for (const candidateRuntimeId of activeRuntimeSeenAt.keys()) {
       if (candidateRuntimeId === runtimeId) {
-        continue;
-      }
-
-      if (!Number.isFinite(seenAt) || now - seenAt > presenceStaleMs) {
         continue;
       }
 
@@ -955,6 +986,20 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     }
   }
 
+  function markRuntimeDown(otherRuntimeId) {
+    if (typeof otherRuntimeId !== 'string' || !otherRuntimeId.trim() || otherRuntimeId === runtimeId) {
+      return;
+    }
+
+    const existed = activeRuntimeSeenAt.delete(otherRuntimeId);
+    suspectRuntimeState.delete(otherRuntimeId);
+    reclaimableRuntimeIds.add(otherRuntimeId);
+    reclaimOrphanedWindows();
+    if (existed) {
+      reconcileOwnershipFromPresence();
+    }
+  }
+
   function touchRuntimePresence(otherRuntimeId, seenAt = Date.now()) {
     if (typeof otherRuntimeId !== 'string' || !otherRuntimeId.trim() || otherRuntimeId === runtimeId) {
       return;
@@ -966,6 +1011,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     }
 
     activeRuntimeSeenAt.set(otherRuntimeId, seenAt);
+    suspectRuntimeState.delete(otherRuntimeId);
     reclaimableRuntimeIds.delete(otherRuntimeId);
     reconcileOwnershipFromPresence();
   }
@@ -1002,29 +1048,9 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     }, ownerReclaimGraceMs);
   }
 
-  function pruneStaleRuntimes(now = Date.now()) {
-    let removed = false;
-
-    for (const [candidateRuntimeId, seenAt] of activeRuntimeSeenAt.entries()) {
-      if (candidateRuntimeId === runtimeId) {
-        continue;
-      }
-
-      if (!Number.isFinite(seenAt) || now - seenAt <= presenceStaleMs) {
-        continue;
-      }
-
-      activeRuntimeSeenAt.delete(candidateRuntimeId);
-      removed = true;
-    }
-
-    if (removed) {
-      reconcileOwnershipFromPresence();
-    }
-  }
-
-  function postPresence(type) {
-    if (!presenceChannel || isDestroyed) {
+  function postPresence(type, payload = {}, options = {}) {
+    const allowWhenDestroyed = options.allowWhenDestroyed === true;
+    if (!presenceChannel || (isDestroyed && !allowWhenDestroyed)) {
       return;
     }
 
@@ -1034,9 +1060,82 @@ export async function createWindowSessionPersistence(windowManager, options = {}
         type,
         runtimeId,
         sentAt: Date.now(),
+        ...payload,
       });
     } catch {
       // Ignore cross-tab presence send failures.
+    }
+  }
+
+  function emitByeSignal(options = {}) {
+    const sentAt = Date.now();
+    postPresence('bye', {}, options);
+
+    try {
+      window.localStorage.setItem(
+        PRESENCE_BYE_STORAGE_KEY,
+        JSON.stringify({
+          runtimeId,
+          sentAt,
+          nonce: createOpaqueId('bye'),
+        }),
+      );
+    } catch {
+      // Ignore localStorage bye signal failures.
+    }
+  }
+
+  function sendProbeToRuntime(targetRuntimeId, now = Date.now()) {
+    if (!presenceChannel || isDestroyed) {
+      return;
+    }
+
+    const existingState = suspectRuntimeState.get(targetRuntimeId) ?? {
+      lastProbeAt: 0,
+      probeAttempts: 0,
+    };
+
+    const probeId = createOpaqueId('probe');
+    suspectRuntimeState.set(targetRuntimeId, {
+      ...existingState,
+      lastProbeAt: now,
+      probeAttempts: existingState.probeAttempts + 1,
+    });
+    postPresence('probe', { targetRuntimeId, probeId });
+  }
+
+  function pruneStaleRuntimes(now = Date.now()) {
+    for (const [candidateRuntimeId, seenAt] of activeRuntimeSeenAt.entries()) {
+      if (candidateRuntimeId === runtimeId) {
+        continue;
+      }
+
+      if (!Number.isFinite(seenAt)) {
+        continue;
+      }
+
+      const ageMs = now - seenAt;
+      if (ageMs <= presenceSuspectMs) {
+        suspectRuntimeState.delete(candidateRuntimeId);
+        continue;
+      }
+
+      const suspectState = suspectRuntimeState.get(candidateRuntimeId) ?? {
+        lastProbeAt: 0,
+        probeAttempts: 0,
+      };
+      suspectRuntimeState.set(candidateRuntimeId, suspectState);
+
+      const shouldProbe =
+        suspectState.probeAttempts < presenceMaxProbeAttempts && now - suspectState.lastProbeAt >= presenceProbeIntervalMs;
+      if (shouldProbe) {
+        sendProbeToRuntime(candidateRuntimeId, now);
+      }
+
+      const latestSuspectState = suspectRuntimeState.get(candidateRuntimeId) ?? suspectState;
+      if (ageMs >= presenceConfirmDownMs && latestSuspectState.probeAttempts >= presenceMaxProbeAttempts) {
+        markRuntimeDown(candidateRuntimeId);
+      }
     }
   }
 
@@ -1234,7 +1333,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
 
   function onPageHide() {
     flushSyncBroadcastNow();
-    postPresence('bye');
+    emitByeSignal();
     void flushPending({ force: true });
   }
 
@@ -1244,16 +1343,19 @@ export async function createWindowSessionPersistence(windowManager, options = {}
       return;
     }
 
-    activeRuntimeSeenAt.set(runtimeId, Date.now());
+    const now = Date.now();
+    activeRuntimeSeenAt.set(runtimeId, now);
     postPresence('hello');
+    lastPresenceSentAt = now;
     requestPeerState();
     scheduleOrphanReclaim();
+    pruneStaleRuntimes(now);
     reconcileOwnershipFromPresence();
   }
 
   function onBeforeUnload() {
     flushSyncBroadcastNow();
-    postPresence('bye');
+    emitByeSignal();
   }
 
   function onSyncMessage(event) {
@@ -1310,22 +1412,58 @@ export async function createWindowSessionPersistence(windowManager, options = {}
       return;
     }
 
-    if (message.type === 'bye') {
-      const wasActive = activeRuntimeSeenAt.delete(sourceRuntimeId);
-      reclaimableRuntimeIds.add(sourceRuntimeId);
+    const sentAt = Number.isFinite(message.sentAt) ? message.sentAt : Date.now();
 
-      if (wasActive) {
-        reclaimOrphanedWindows();
-        reconcileOwnershipFromPresence();
+    if (message.type === 'probe') {
+      const targetRuntimeId =
+        typeof message.targetRuntimeId === 'string' && message.targetRuntimeId.trim() ? message.targetRuntimeId : null;
+      if (targetRuntimeId !== runtimeId) {
         return;
       }
 
-      reclaimOrphanedWindows();
+      postPresence('alive', {
+        targetRuntimeId: sourceRuntimeId,
+        probeId: typeof message.probeId === 'string' ? message.probeId : null,
+      });
       return;
     }
 
-    touchRuntimePresence(sourceRuntimeId, Number.isFinite(message.sentAt) ? message.sentAt : Date.now());
+    if (message.type === 'alive') {
+      const targetRuntimeId =
+        typeof message.targetRuntimeId === 'string' && message.targetRuntimeId.trim() ? message.targetRuntimeId : null;
+      if (targetRuntimeId !== runtimeId) {
+        return;
+      }
 
+      touchRuntimePresence(sourceRuntimeId, sentAt);
+      return;
+    }
+
+    if (message.type === 'bye') {
+      markRuntimeDown(sourceRuntimeId);
+      return;
+    }
+
+    touchRuntimePresence(sourceRuntimeId, sentAt);
+  }
+
+  function onPresenceByeStorage(event) {
+    if (event?.key !== PRESENCE_BYE_STORAGE_KEY || typeof event.newValue !== 'string' || !event.newValue) {
+      return;
+    }
+
+    try {
+      const payload = JSON.parse(event.newValue);
+      const sourceRuntimeId =
+        typeof payload?.runtimeId === 'string' && payload.runtimeId.trim() ? payload.runtimeId : null;
+      if (!sourceRuntimeId || sourceRuntimeId === runtimeId) {
+        return;
+      }
+
+      markRuntimeDown(sourceRuntimeId);
+    } catch {
+      // Ignore malformed bye storage payloads.
+    }
   }
 
   unsubscribe = windowManager.subscribe((snapshot) => {
@@ -1371,16 +1509,24 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   }
 
   if (presenceChannel) {
+    const now = Date.now();
+    activeRuntimeSeenAt.set(runtimeId, now);
     postPresence('hello');
-    heartbeatTimerId = window.setInterval(() => {
+    lastPresenceSentAt = now;
+    presenceTickTimerId = window.setInterval(() => {
       if (isDestroyed) {
         return;
       }
 
-      activeRuntimeSeenAt.set(runtimeId, Date.now());
-      postPresence('heartbeat');
-      pruneStaleRuntimes(Date.now());
-    }, presenceHeartbeatMs);
+      const tickNow = Date.now();
+      activeRuntimeSeenAt.set(runtimeId, tickNow);
+      if (tickNow - lastPresenceSentAt >= resolvePresenceHeartbeatIntervalMs()) {
+        postPresence('heartbeat');
+        lastPresenceSentAt = tickNow;
+      }
+
+      pruneStaleRuntimes(tickNow);
+    }, presenceTickMs);
   }
 
   if (syncChannel) {
@@ -1392,6 +1538,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
 
   window.addEventListener('pagehide', onPageHide);
   window.addEventListener('beforeunload', onBeforeUnload);
+  window.addEventListener('storage', onPresenceByeStorage);
   document.addEventListener('visibilitychange', onVisibilityChange);
 
   async function destroy() {
@@ -1411,9 +1558,9 @@ export async function createWindowSessionPersistence(windowManager, options = {}
       broadcastTimerId = 0;
     }
 
-    if (heartbeatTimerId) {
-      window.clearInterval(heartbeatTimerId);
-      heartbeatTimerId = 0;
+    if (presenceTickTimerId) {
+      window.clearInterval(presenceTickTimerId);
+      presenceTickTimerId = 0;
     }
 
     if (ownerReclaimTimerId) {
@@ -1422,9 +1569,10 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     }
 
     flushSyncBroadcastNow({ allowWhenDestroyed: true });
-    postPresence('bye');
+    emitByeSignal({ allowWhenDestroyed: true });
     window.removeEventListener('pagehide', onPageHide);
     window.removeEventListener('beforeunload', onBeforeUnload);
+    window.removeEventListener('storage', onPresenceByeStorage);
     document.removeEventListener('visibilitychange', onVisibilityChange);
 
     if (typeof unsubscribe === 'function') {
