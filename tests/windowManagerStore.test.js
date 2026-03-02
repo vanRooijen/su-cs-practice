@@ -235,50 +235,74 @@ test('claimWindowsOwnedByInactiveRuntimes can restrict claims to explicit runtim
   );
 });
 
-test('reconcileOwnership clears offline marker without auto-restoring minimized windows', () => {
+test('reconcileOwnership clears legacy offline minimize markers without changing minimize state', () => {
   const sourceStore = createWindowManagerStore();
   sourceStore.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
   sourceStore.applyRoute(makeRoute('/reader/help', 'reader', 'help', { openMode: 'new-window' }));
 
   const persisted = sourceStore.getSnapshot();
+  for (const windowId of persisted.windowOrder) {
+    persisted.windows[windowId] = {
+      ...persisted.windows[windowId],
+      isMinimized: true,
+      minimizeReason: 'offline',
+    };
+  }
+
   const restoredStore = createWindowManagerStore();
   restoredStore.hydratePersistedState(persisted);
 
   const foreignOwnerRuntimeId = restoredStore.getSnapshot().windows[restoredStore.getSnapshot().windowOrder[0]]?.ownerRuntimeId;
   assert.ok(foreignOwnerRuntimeId, 'expected foreign owner runtime id');
 
-  restoredStore.reconcileOwnership([]);
-  let snapshot = restoredStore.getSnapshot();
-  assert.ok(snapshot.windowOrder.every((windowId) => snapshot.windows[windowId]?.isMinimized === true));
-  assert.ok(snapshot.windowOrder.every((windowId) => snapshot.windows[windowId]?.minimizeReason === 'offline'));
-  assert.equal(snapshot.focusedWindowId, null);
-
   restoredStore.reconcileOwnership([foreignOwnerRuntimeId]);
-  snapshot = restoredStore.getSnapshot();
+  const snapshot = restoredStore.getSnapshot();
 
   assert.ok(snapshot.windowOrder.every((windowId) => snapshot.windows[windowId]?.isMinimized === true));
   assert.ok(snapshot.windowOrder.every((windowId) => snapshot.windows[windowId]?.minimizeReason === null));
   assert.equal(snapshot.focusedWindowId, null);
 });
 
-test('claimWindowsOwnedByInactiveRuntimes keeps reclaimed offline windows minimized', () => {
+test('claimWindowsOwnedByInactiveRuntimes preserves minimize state when reclaiming', () => {
   const sourceStore = createWindowManagerStore();
   sourceStore.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
   sourceStore.applyRoute(makeRoute('/reader/help', 'reader', 'help', { openMode: 'new-window' }));
+  const firstWindowId = sourceStore.getSnapshot().windowOrder[0];
+  sourceStore.toggleMinimize(firstWindowId);
 
   const persisted = sourceStore.getSnapshot();
   const restoredStore = createWindowManagerStore();
   restoredStore.hydratePersistedState(persisted);
-  restoredStore.reconcileOwnership([]);
+  const before = restoredStore.getSnapshot();
+
+  const minimizeStateBefore = new Map(
+    before.windowOrder.map((windowId) => [
+      windowId,
+      {
+        isMinimized: before.windows[windowId]?.isMinimized ?? false,
+        minimizeReason: before.windows[windowId]?.minimizeReason ?? null,
+      },
+    ]),
+  );
+
   restoredStore.claimWindowsOwnedByInactiveRuntimes([]);
 
   const snapshot = restoredStore.getSnapshot();
   const localRuntimeId = restoredStore.getRuntimeId();
 
   assert.ok(snapshot.windowOrder.every((windowId) => snapshot.windows[windowId]?.ownerRuntimeId === localRuntimeId));
-  assert.ok(snapshot.windowOrder.every((windowId) => snapshot.windows[windowId]?.isMinimized === true));
-  assert.ok(snapshot.windowOrder.every((windowId) => snapshot.windows[windowId]?.minimizeReason === null));
-  assert.equal(snapshot.focusedWindowId, null);
+  for (const windowId of snapshot.windowOrder) {
+    assert.equal(snapshot.windows[windowId]?.isMinimized, minimizeStateBefore.get(windowId)?.isMinimized ?? false);
+    assert.equal(
+      snapshot.windows[windowId]?.minimizeReason,
+      minimizeStateBefore.get(windowId)?.minimizeReason ?? null,
+    );
+  }
+  assert.ok(snapshot.focusedWindowId, 'expected a visible reclaimed window to be focused');
+  const focused = snapshot.windows[snapshot.focusedWindowId];
+  assert.ok(focused, 'expected focused window to exist');
+  assert.equal(focused.ownerRuntimeId, localRuntimeId);
+  assert.equal(focused.isMinimized, false);
 });
 
 test('window history limit is isolated per window instance', () => {

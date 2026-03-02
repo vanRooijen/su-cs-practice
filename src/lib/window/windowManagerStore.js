@@ -859,7 +859,7 @@ export function createWindowManagerStore() {
         next.windows[windowId] = {
           ...win,
           ownerRuntimeId: runtimeId,
-          isMinimized: win.isMinimized || win.minimizeReason === 'offline',
+          isMinimized: win.isMinimized,
           minimizeReason: win.minimizeReason === 'offline' ? null : win.minimizeReason,
         };
         hasChanges = true;
@@ -903,7 +903,9 @@ export function createWindowManagerStore() {
   }
 
   function reconcileOwnership(activeRuntimeIdsLike) {
-    const activeRuntimeIds = toActiveRuntimeIdSet(activeRuntimeIdsLike);
+    // Keep runtime normalization for API compatibility even though stale presence
+    // no longer mutates shared minimize state.
+    toActiveRuntimeIdSet(activeRuntimeIdsLike);
 
     store.update((state) => {
       const next = cloneState(state);
@@ -918,19 +920,6 @@ export function createWindowManagerStore() {
         const ownerRuntimeId =
           typeof win.ownerRuntimeId === 'string' && win.ownerRuntimeId.trim() ? win.ownerRuntimeId : null;
         if (!ownerRuntimeId) {
-          continue;
-        }
-
-        const ownerIsActive = activeRuntimeIds.has(ownerRuntimeId);
-        if (!ownerIsActive) {
-          if (!win.isMinimized || win.minimizeReason !== 'offline') {
-            next.windows[windowId] = {
-              ...win,
-              isMinimized: true,
-              minimizeReason: 'offline',
-            };
-            hasChanges = true;
-          }
           continue;
         }
 

@@ -1133,7 +1133,13 @@ export async function createWindowSessionPersistence(windowManager, options = {}
       }
 
       const latestSuspectState = suspectRuntimeState.get(candidateRuntimeId) ?? suspectState;
-      if (ageMs >= presenceConfirmDownMs && latestSuspectState.probeAttempts >= presenceMaxProbeAttempts) {
+      const hasProbeResponseWindowElapsed =
+        latestSuspectState.lastProbeAt > 0 && now - latestSuspectState.lastProbeAt >= presenceProbeIntervalMs;
+      if (
+        ageMs >= presenceConfirmDownMs &&
+        latestSuspectState.probeAttempts >= presenceMaxProbeAttempts &&
+        hasProbeResponseWindowElapsed
+      ) {
         markRuntimeDown(candidateRuntimeId);
       }
     }
@@ -1415,6 +1421,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     const sentAt = Number.isFinite(message.sentAt) ? message.sentAt : Date.now();
 
     if (message.type === 'probe') {
+      touchRuntimePresence(sourceRuntimeId, sentAt);
       const targetRuntimeId =
         typeof message.targetRuntimeId === 'string' && message.targetRuntimeId.trim() ? message.targetRuntimeId : null;
       if (targetRuntimeId !== runtimeId) {
