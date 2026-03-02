@@ -36,7 +36,7 @@
 
   $: renderedWindowIds = $windowManager.windowOrder.filter((windowId) => {
     const win = $windowManager.windows[windowId];
-    return Boolean(win && win.ownerRuntimeId === runtimeId);
+    return Boolean(win);
   });
 
   function isWindowStolen(win) {
@@ -205,7 +205,7 @@
       return true;
     }
 
-    let hasOwnedVisibleWindow = false;
+    let hasVisibleWindow = false;
     let hasUserMinimizedWindow = false;
 
     for (const windowId of snapshot.windowOrder) {
@@ -214,8 +214,8 @@
         continue;
       }
 
-      if (win.ownerRuntimeId === runtimeId && !win.isMinimized) {
-        hasOwnedVisibleWindow = true;
+      if (!win.isMinimized) {
+        hasVisibleWindow = true;
         break;
       }
 
@@ -224,7 +224,7 @@
       }
     }
 
-    if (hasOwnedVisibleWindow) {
+    if (hasVisibleWindow) {
       return false;
     }
 
@@ -269,8 +269,7 @@
       return;
     }
 
-    const isFocusedVisibleWindow =
-      snapshot.focusedWindowId === windowId && !target.isMinimized && target.ownerRuntimeId === runtimeId;
+    const isFocusedVisibleWindow = snapshot.focusedWindowId === windowId && !target.isMinimized;
     windowManager.activateWindowFromSidebar(windowId);
 
     // Pure compositor minimize: minimizing never mutates URL/history.
@@ -420,7 +419,7 @@
 
         <div
           class="sidebar-entry"
-          data-focused={$windowManager.focusedWindowId === windowId && !win.isMinimized && win.ownerRuntimeId === runtimeId}
+          data-focused={$windowManager.focusedWindowId === windowId && !win.isMinimized}
         >
           <button
             type="button"

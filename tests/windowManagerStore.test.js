@@ -333,8 +333,8 @@ test('hydratePersistedState restores z-order, focus, and window metadata', () =>
 
   assert.equal(restoredSnapshot.windowOrder.length, 2);
   assert.deepEqual(restoredSnapshot.windowOrder, persistedSnapshot.windowOrder);
-  assert.equal(restoredSnapshot.focusedWindowId, null);
-  assert.equal(restoredFocusedPath, null);
+  assert.equal(restoredSnapshot.focusedWindowId, readerWindowId);
+  assert.equal(restoredFocusedPath, '/reader/help');
   assert.equal(restoredSnapshot.windows[peopleWindowId].isMinimized, true);
   assert.equal(restoredSnapshot.windows[readerWindowId].path, '/reader/help');
   assert.equal(restoredSnapshot.windows[peopleWindowId].bounds.x, 128);

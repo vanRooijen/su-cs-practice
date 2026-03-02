@@ -240,10 +240,10 @@ export function createWindowManagerStore() {
 
     const focusedWindowId = toPositiveWindowId(persistedState?.focusedWindowId);
     const focusedWindow = focusedWindowId ? next.windows[focusedWindowId] : null;
-    if (focusedWindow && !focusedWindow.isMinimized && isOwnedByRuntime(focusedWindow)) {
+    if (focusedWindow && !focusedWindow.isMinimized) {
       next.focusedWindowId = focusedWindowId;
     } else {
-      next.focusedWindowId = highestVisibleWindowId(next, runtimeId);
+      next.focusedWindowId = highestVisibleWindowId(next);
     }
 
     if (next.focusedWindowId && next.windows[next.focusedWindowId]) {
@@ -275,13 +275,13 @@ export function createWindowManagerStore() {
 
   function ensureOwnedFocus(next) {
     const focusedWindow = next.focusedWindowId ? next.windows[next.focusedWindowId] : null;
-    const focusedVisibleOwned = Boolean(focusedWindow && !focusedWindow.isMinimized && isOwnedByRuntime(focusedWindow));
+    const focusedVisibleOwned = Boolean(focusedWindow && !focusedWindow.isMinimized);
 
     if (focusedVisibleOwned) {
       return;
     }
 
-    next.focusedWindowId = highestVisibleWindowId(next, runtimeId);
+    next.focusedWindowId = highestVisibleWindowId(next);
     if (!next.focusedWindowId) {
       return;
     }
@@ -451,7 +451,7 @@ export function createWindowManagerStore() {
         return state;
       }
 
-      const isFocused = state.focusedWindowId === windowId && !target.isMinimized && isOwnedByRuntime(target);
+      const isFocused = state.focusedWindowId === windowId && !target.isMinimized;
       const next = cloneState(state);
 
       if (isFocused) {
@@ -461,7 +461,7 @@ export function createWindowManagerStore() {
           minimizeReason: 'user',
         };
 
-        const nextVisibleWindowId = highestVisibleWindowId(next, runtimeId);
+        const nextVisibleWindowId = highestVisibleWindowId(next);
         next.focusedWindowId = nextVisibleWindowId;
 
         if (nextVisibleWindowId) {
@@ -502,7 +502,7 @@ export function createWindowManagerStore() {
       };
 
       if (next.focusedWindowId === windowId || !next.windows[next.focusedWindowId]) {
-        const nextVisibleWindowId = highestVisibleWindowId(next, runtimeId);
+        const nextVisibleWindowId = highestVisibleWindowId(next);
         next.focusedWindowId = nextVisibleWindowId;
 
         if (nextVisibleWindowId) {
@@ -697,7 +697,7 @@ export function createWindowManagerStore() {
       next.windowOrder = next.windowOrder.filter((id) => id !== windowId);
 
       if (wasFocused || next.focusedWindowId && !next.windows[next.focusedWindowId]) {
-        next.focusedWindowId = highestVisibleWindowId(next, runtimeId);
+        next.focusedWindowId = highestVisibleWindowId(next);
       }
       ensureOwnedFocus(next);
 
