@@ -120,6 +120,8 @@ function cloneWindow(windowLike, fallbackWindowId) {
   const bounds = cloneBounds(windowLike?.bounds);
   const restoreBounds = cloneBounds(windowLike?.restoreBounds, bounds);
   const history = cloneHistory(windowLike?.history, path, subroute, routeKey);
+  // TODO (suggested): Remove legacy 'offline' minimize reason support after
+  // old persisted snapshots are no longer part of supported upgrade paths.
   const minimizeReason =
     windowLike?.minimizeReason === 'user' || windowLike?.minimizeReason === 'offline' ? windowLike.minimizeReason : null;
   const ownerRuntimeId =
@@ -1017,6 +1019,8 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   }
 
   function reclaimOrphanedWindows() {
+    // TODO (suggested): Store API name is legacy; reclaim currently releases
+    // windows to unowned/minimized state rather than taking ownership.
     if (typeof windowManager.claimWindowsOwnedByInactiveRuntimes !== 'function') {
       return;
     }

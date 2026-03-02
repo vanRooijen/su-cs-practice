@@ -175,6 +175,8 @@ export function createWindowManagerStore() {
 
     const isMaximized = Boolean(windowLike?.isMaximized);
     const history = sanitizeHistory(windowLike?.history, path, subroute, routeKey);
+    // TODO (suggested): Remove legacy 'offline' minimize reason support after
+    // one persistence epoch where old snapshots are no longer expected.
     const rawMinimizeReason =
       windowLike?.minimizeReason === 'user' || windowLike?.minimizeReason === 'offline' ? windowLike.minimizeReason : null;
     const isMinimized = ownerRuntimeId ? Boolean(windowLike?.isMinimized) : true;
@@ -841,6 +843,8 @@ export function createWindowManagerStore() {
   }
 
   function claimWindowsOwnedByInactiveRuntimes(activeRuntimeIdsLike, reclaimableRuntimeIdsLike = null) {
+    // TODO (suggested): Rename this API to reflect current semantics:
+    // inactive ownership is released to unowned/minimized (not claimed).
     const activeRuntimeIds = toActiveRuntimeIdSet(activeRuntimeIdsLike);
     const reclaimableRuntimeIds = toReclaimableRuntimeIdSet(reclaimableRuntimeIdsLike);
 
@@ -911,6 +915,8 @@ export function createWindowManagerStore() {
   }
 
   function reconcileOwnership(activeRuntimeIdsLike) {
+    // TODO (suggested): Remove this argument and no-op normalization once all
+    // callers are migrated; it exists only for API compatibility.
     // Keep runtime normalization for API compatibility even though stale presence
     // no longer mutates shared minimize state.
     toActiveRuntimeIdSet(activeRuntimeIdsLike);

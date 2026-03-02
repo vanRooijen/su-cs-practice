@@ -11,6 +11,7 @@
   export let onCloseOtherInstances = null;
 
   const runtimeId = windowManager.getRuntimeId?.() ?? null;
+  let localKeepAliveMinimizedWindowIds = new Set();
 
   let workspaceElement;
   let contextMenuElement;
@@ -20,6 +21,58 @@
     y: 0,
     linkPath: null,
   };
+
+  function setsEqual(left, right) {
+    if (left.size !== right.size) {
+      return false;
+    }
+
+    for (const value of left) {
+      if (!right.has(value)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  function trackLocalMinimizedWindow(windowId) {
+    if (!Number.isInteger(windowId) || windowId <= 0 || localKeepAliveMinimizedWindowIds.has(windowId)) {
+      return;
+    }
+
+    const next = new Set(localKeepAliveMinimizedWindowIds);
+    next.add(windowId);
+    localKeepAliveMinimizedWindowIds = next;
+  }
+
+  function untrackLocalMinimizedWindow(windowId) {
+    if (!localKeepAliveMinimizedWindowIds.has(windowId)) {
+      return;
+    }
+
+    const next = new Set(localKeepAliveMinimizedWindowIds);
+    next.delete(windowId);
+    localKeepAliveMinimizedWindowIds = next;
+  }
+
+  $: {
+    if (localKeepAliveMinimizedWindowIds.size === 0) {
+      // No local minimized windows are currently being preserved.
+    } else {
+      const next = new Set();
+      for (const windowId of localKeepAliveMinimizedWindowIds) {
+        const win = $windowManager.windows[windowId];
+        if (win && win.ownerRuntimeId === null && win.isMinimized) {
+          next.add(windowId);
+        }
+      }
+
+      if (!setsEqual(next, localKeepAliveMinimizedWindowIds)) {
+        localKeepAliveMinimizedWindowIds = next;
+      }
+    }
+  }
 
   $: sidebarWindowIds = Object.values($windowManager.windows)
     .sort((left, right) => {
@@ -36,7 +89,17 @@
 
   $: renderedWindowIds = $windowManager.windowOrder.filter((windowId) => {
     const win = $windowManager.windows[windowId];
-    return Boolean(win && win.ownerRuntimeId === runtimeId);
+    if (!win) {
+      return false;
+    }
+
+    if (win.ownerRuntimeId === runtimeId) {
+      return true;
+    }
+
+    return Boolean(
+      win.ownerRuntimeId === null && win.isMinimized && localKeepAliveMinimizedWindowIds.has(windowId),
+    );
   });
 
   function isWindowStolen(win) {
@@ -271,6 +334,11 @@
 
     const isFocusedVisibleWindow =
       snapshot.focusedWindowId === windowId && !target.isMinimized && target.ownerRuntimeId === runtimeId;
+    if (isFocusedVisibleWindow) {
+      trackLocalMinimizedWindow(windowId);
+    } else {
+      untrackLocalMinimizedWindow(windowId);
+    }
     windowManager.activateWindowFromSidebar(windowId);
 
     // Pure compositor minimize: minimizing never mutates URL/history.
@@ -282,6 +350,16 @@
   }
 
   function handleMinimize(windowId) {
+    const snapshot = windowManager.getSnapshot();
+    const target = snapshot.windows[windowId];
+    if (target) {
+      if (target.ownerRuntimeId === runtimeId && !target.isMinimized) {
+        trackLocalMinimizedWindow(windowId);
+      } else if (target.isMinimized) {
+        untrackLocalMinimizedWindow(windowId);
+      }
+    }
+
     windowManager.toggleMinimize(windowId);
   }
 
@@ -323,6 +401,7 @@
   }
 
   function handleClose(windowId) {
+    untrackLocalMinimizedWindow(windowId);
     const suggestedPath = windowManager.closeWindow(windowId, $route.path);
 
     if (suggestedPath === '/' && $route.path !== '/') {
