@@ -219,7 +219,7 @@ describe('App control-channel flows', () => {
     });
 
     await waitFor(() => expect(mocks.windowManager.closeAllWindowsGlobal).toHaveBeenCalledTimes(1));
-    expect(mocks.markWindowSessionCleared).toHaveBeenCalledTimes(1);
+    expect(mocks.markWindowSessionCleared).not.toHaveBeenCalled();
     expect(mocks.createWindowSessionPersistence).toHaveBeenCalledTimes(1);
     peer.close();
   });

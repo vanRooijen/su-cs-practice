@@ -11,7 +11,6 @@ const SESSION_SYNC_PROTOCOL = 'su-cs-window-sync-v1';
 const SESSION_SYNC_CHANNEL_NAME = 'su-cs-window-sync';
 const PRESENCE_PROTOCOL = 'su-cs-owner-presence-v1';
 const PRESENCE_CHANNEL_NAME = 'su-cs-owner-presence';
-const SYNC_SCOPE_STORAGE_KEY = 'su-cs-window-sync-scope';
 const SESSION_CLEAR_MARKER_STORAGE_KEY = 'su-cs-window-session-cleared-at';
 const PRESENCE_HEARTBEAT_MS = 4000;
 const PRESENCE_STALE_MS = 12000;
@@ -387,7 +386,109 @@ function sanitizeSharedDelta(deltaLike) {
 }
 
 function createSharedWindowSessionDelta(previousSnapshot, nextSnapshot) {
-  return sanitizeSharedDelta(createWindowSessionDelta(previousSnapshot, nextSnapshot));
+  const previous = serializeWindowManagerSnapshot(previousSnapshot ?? createEmptySnapshot());
+  const next = serializeWindowManagerSnapshot(nextSnapshot ?? createEmptySnapshot());
+  const delta = { kind: 'patch' };
+  let hasChanges = false;
+
+  if (previous.nextWindowId !== next.nextWindowId) {
+    delta.nextWindowId = next.nextWindowId;
+    hasChanges = true;
+  }
+
+  if (!arraysEqual(previous.windowOrder, next.windowOrder)) {
+    delta.windowOrder = [...next.windowOrder];
+    hasChanges = true;
+  }
+
+  const upsertedWindows = {};
+  for (const [windowId, nextWindow] of Object.entries(next.windows)) {
+    const previousWindow = previous.windows[windowId];
+    if (!previousWindow || !windowsEqual(previousWindow, nextWindow)) {
+      upsertedWindows[windowId] = cloneWindow(nextWindow, Number(windowId));
+    }
+  }
+
+  if (Object.keys(upsertedWindows).length) {
+    delta.upsertedWindows = upsertedWindows;
+    hasChanges = true;
+  }
+
+  const removedWindowIds = Object.keys(previous.windows)
+    .map((windowId) => Number(windowId))
+    .filter((windowId) => !next.windows[windowId] && !next.windows[String(windowId)]);
+
+  if (removedWindowIds.length) {
+    delta.removedWindowIds = removedWindowIds;
+    hasChanges = true;
+  }
+
+  return hasChanges ? delta : null;
+}
+
+function applySharedWindowSessionDelta(snapshotLike, deltaLike) {
+  const delta = sanitizeSharedDelta(deltaLike);
+  if (!delta) {
+    return serializeWindowManagerSnapshot(snapshotLike ?? createEmptySnapshot());
+  }
+
+  const next = serializeWindowManagerSnapshot(snapshotLike ?? createEmptySnapshot());
+
+  if ('nextWindowId' in delta) {
+    const nextWindowId = toPositiveWindowId(delta.nextWindowId);
+    if (nextWindowId) {
+      next.nextWindowId = nextWindowId;
+    }
+  }
+
+  if (Array.isArray(delta.windowOrder)) {
+    next.windowOrder = sanitizeWindowIdList(delta.windowOrder);
+  }
+
+  if (isRecord(delta.upsertedWindows)) {
+    for (const [rawWindowId, rawWindow] of Object.entries(delta.upsertedWindows)) {
+      const windowId = toPositiveWindowId(rawWindowId);
+      if (!windowId) {
+        continue;
+      }
+
+      const cloned = cloneWindow(rawWindow, windowId);
+      if (!cloned) {
+        continue;
+      }
+
+      next.windows[windowId] = cloned;
+      if (!next.windowOrder.includes(windowId)) {
+        next.windowOrder.push(windowId);
+      }
+    }
+  }
+
+  if (Array.isArray(delta.removedWindowIds)) {
+    for (const rawWindowId of delta.removedWindowIds) {
+      const windowId = toPositiveWindowId(rawWindowId);
+      if (!windowId) {
+        continue;
+      }
+
+      delete next.windows[windowId];
+      next.windowOrder = next.windowOrder.filter((id) => id !== windowId);
+      if (next.focusedWindowId === windowId) {
+        next.focusedWindowId = null;
+      }
+    }
+  }
+
+  next.windowOrder = next.windowOrder.filter((windowId) => Boolean(next.windows[windowId]));
+
+  const maxWindowId = next.windowOrder.reduce((highest, id) => Math.max(highest, id), 0);
+  next.nextWindowId = Math.max(next.nextWindowId, maxWindowId + 1);
+
+  if (next.focusedWindowId && !next.windows[next.focusedWindowId]) {
+    next.focusedWindowId = null;
+  }
+
+  return next;
 }
 
 export function createWindowSessionDelta(previousSnapshot, nextSnapshot) {
@@ -587,25 +688,6 @@ function createOpaqueId(prefix) {
   return `${prefix}-${timestamp}-${randomPart}`;
 }
 
-function resolveSyncScopeId() {
-  if (typeof window === 'undefined') {
-    return 'scope-server';
-  }
-
-  try {
-    const existing = window.localStorage.getItem(SYNC_SCOPE_STORAGE_KEY);
-    if (typeof existing === 'string' && existing.trim()) {
-      return existing;
-    }
-
-    const created = createOpaqueId('scope');
-    window.localStorage.setItem(SYNC_SCOPE_STORAGE_KEY, created);
-    return created;
-  } catch {
-    return 'scope-fallback';
-  }
-}
-
 function readSessionClearedAt() {
   if (typeof window === 'undefined') {
     return 0;
@@ -758,14 +840,11 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   const ownerReclaimGraceMs = Number.isFinite(options.ownerReclaimGraceMs)
     ? Math.max(120, Math.floor(options.ownerReclaimGraceMs))
     : DEFAULT_OWNER_RECLAIM_GRACE_MS;
-  const restoreOnStart = options.restoreOnStart !== false;
-  const requestPeerStateOnStart = options.requestPeerStateOnStart !== false;
   const runtimeIdCandidate = typeof windowManager.getRuntimeId === 'function' ? windowManager.getRuntimeId() : '';
   const runtimeId =
     typeof runtimeIdCandidate === 'string' && runtimeIdCandidate.trim()
       ? runtimeIdCandidate
       : createOpaqueId('runtime');
-  const syncScopeId = resolveSyncScopeId();
 
   const db = await openWindowSessionDb();
   if (!db) {
@@ -808,16 +887,14 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     }
   }
 
-  if (restoreOnStart) {
-    try {
-      const restored = await readPersistedSession(db);
-      if (shouldRestoreSnapshot(restored, readSessionClearedAt())) {
-        suppressBroadcastOnce = true;
-        restoredFocusedPath = windowManager.hydratePersistedState(localizeSnapshotForHydration(restored.snapshot));
-      }
-    } catch (error) {
-      noteRestoreFailure(error);
+  try {
+    const restored = await readPersistedSession(db);
+    if (shouldRestoreSnapshot(restored, readSessionClearedAt())) {
+      suppressBroadcastOnce = true;
+      restoredFocusedPath = windowManager.hydratePersistedState(localizeSnapshotForHydration(restored.snapshot));
     }
+  } catch (error) {
+    noteRestoreFailure(error);
   }
 
   lastPersistedSnapshot = serializeWindowManagerSnapshot(windowManager.getSnapshot());
@@ -825,7 +902,6 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   let flushTimerId = 0;
   let broadcastTimerId = 0;
   let heartbeatTimerId = 0;
-  let staleSweepTimerId = 0;
   let ownerReclaimTimerId = 0;
   let pendingSnapshot = null;
   let flushInFlight = false;
@@ -956,7 +1032,6 @@ export async function createWindowSessionPersistence(windowManager, options = {}
       presenceChannel.postMessage({
         protocol: PRESENCE_PROTOCOL,
         type,
-        scopeId: syncScopeId,
         runtimeId,
         sentAt: Date.now(),
       });
@@ -976,7 +1051,6 @@ export async function createWindowSessionPersistence(windowManager, options = {}
       syncChannel.postMessage({
         protocol: SESSION_SYNC_PROTOCOL,
         kind,
-        scopeId: syncScopeId,
         runtimeId,
         sequence: localSyncSequence,
         sentAt: Date.now(),
@@ -1054,7 +1128,6 @@ export async function createWindowSessionPersistence(windowManager, options = {}
       syncChannel.postMessage({
         protocol: SESSION_SYNC_PROTOCOL,
         kind: 'state-request',
-        scopeId: syncScopeId,
         runtimeId,
         sentAt: Date.now(),
       });
@@ -1098,13 +1171,8 @@ export async function createWindowSessionPersistence(windowManager, options = {}
       touchRuntimePresence(sourceRuntimeId, Date.now());
     }
 
-    const sharedDelta = sanitizeSharedDelta(deltaLike);
-    if (!sharedDelta) {
-      return;
-    }
-
     const currentSnapshot = windowManager.getSnapshot();
-    const mergedSnapshot = applyWindowSessionDelta(currentSnapshot, sharedDelta);
+    const mergedSnapshot = applySharedWindowSessionDelta(currentSnapshot, deltaLike);
     if (isRecord(currentSnapshot?.workspaceRect)) {
       mergedSnapshot.workspaceRect = cloneWorkspaceRect(currentSnapshot.workspaceRect);
     }
@@ -1193,9 +1261,6 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     if (!isRecord(message) || message.protocol !== SESSION_SYNC_PROTOCOL) {
       return;
     }
-    if (message.scopeId !== syncScopeId) {
-      return;
-    }
 
     const sourceRuntimeId =
       typeof message.runtimeId === 'string' && message.runtimeId.trim() ? message.runtimeId : null;
@@ -1238,9 +1303,6 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     if (!isRecord(message) || message.protocol !== PRESENCE_PROTOCOL) {
       return;
     }
-    if (message.scopeId !== syncScopeId) {
-      return;
-    }
 
     const sourceRuntimeId =
       typeof message.runtimeId === 'string' && message.runtimeId.trim() ? message.runtimeId : null;
@@ -1264,9 +1326,6 @@ export async function createWindowSessionPersistence(windowManager, options = {}
 
     touchRuntimePresence(sourceRuntimeId, Number.isFinite(message.sentAt) ? message.sentAt : Date.now());
 
-    if (message.type === 'probe') {
-      postPresence('heartbeat');
-    }
   }
 
   unsubscribe = windowManager.subscribe((snapshot) => {
@@ -1313,7 +1372,6 @@ export async function createWindowSessionPersistence(windowManager, options = {}
 
   if (presenceChannel) {
     postPresence('hello');
-    postPresence('probe');
     heartbeatTimerId = window.setInterval(() => {
       if (isDestroyed) {
         return;
@@ -1323,17 +1381,9 @@ export async function createWindowSessionPersistence(windowManager, options = {}
       postPresence('heartbeat');
       pruneStaleRuntimes(Date.now());
     }, presenceHeartbeatMs);
-
-    staleSweepTimerId = window.setInterval(() => {
-      if (isDestroyed) {
-        return;
-      }
-
-      pruneStaleRuntimes(Date.now());
-    }, Math.max(500, Math.floor(presenceHeartbeatMs / 2)));
   }
 
-  if (syncChannel && requestPeerStateOnStart) {
+  if (syncChannel) {
     requestPeerState();
   }
 
@@ -1364,11 +1414,6 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     if (heartbeatTimerId) {
       window.clearInterval(heartbeatTimerId);
       heartbeatTimerId = 0;
-    }
-
-    if (staleSweepTimerId) {
-      window.clearInterval(staleSweepTimerId);
-      staleSweepTimerId = 0;
     }
 
     if (ownerReclaimTimerId) {

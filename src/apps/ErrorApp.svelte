@@ -8,12 +8,10 @@
   } from '../lib/navigation/historyRouter.js';
 
   export let subroute = '';
-  export let windowId = null;
 
   $: normalizedSubroute = subroute.replace(/^\/+|\/+$/g, '');
   $: content = resolveContent('error', normalizedSubroute);
   $: errorHistoryEntries = [...$navigationErrorHistory].reverse();
-  $: contentCacheScope = `error:${windowId ?? 'default'}`;
 </script>
 
 <div class="error-layout">
@@ -52,7 +50,7 @@
   </section>
 
   <div class="content-slot">
-    <ContentRegion artifact={content} cacheLimit={5} cacheScope={contentCacheScope} />
+    <ContentRegion artifact={content} cacheLimit={5} />
   </div>
 </div>
 

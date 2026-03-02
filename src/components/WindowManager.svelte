@@ -507,7 +507,6 @@
             <svelte:component
               this={appConfig.component}
               appId={windowState.appId}
-              windowId={windowId}
               path={windowState.path}
               subroute={windowState.subroute}
               sidebarCollapsed={windowState.isSidebarCollapsed}

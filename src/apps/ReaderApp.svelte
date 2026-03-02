@@ -5,14 +5,12 @@
 
   export let subroute = '';
   export let sidebarCollapsed = false;
-  export let windowId = null;
 
   const articleEntries = listReaderArticles();
 
   $: normalizedSubroute = subroute.replace(/^\/+|\/+$/g, '');
   $: activePath = normalizedSubroute ? `/reader/${normalizedSubroute}` : '/reader';
   $: content = resolveContent('reader', normalizedSubroute);
-  $: contentCacheScope = `reader:${windowId ?? 'default'}`;
 </script>
 
 <div class="app-layout" data-sidebar-collapsed={sidebarCollapsed}>
@@ -41,7 +39,7 @@
   {/if}
 
   <div class="content-slot">
-    <ContentRegion artifact={content} cacheScope={contentCacheScope} />
+    <ContentRegion artifact={content} />
   </div>
 </div>
 

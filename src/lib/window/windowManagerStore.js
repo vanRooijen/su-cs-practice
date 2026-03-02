@@ -743,10 +743,6 @@ export function createWindowManagerStore() {
     return suggestedPath;
   }
 
-  function closeAllWindows() {
-    closeAllWindowsGlobal();
-  }
-
   function closeWindowsMatchingOwnership(shouldClose, options = {}) {
     const allowFocusCorrectionWithoutRemoval = options.allowFocusCorrectionWithoutRemoval === true;
 
@@ -978,7 +974,6 @@ export function createWindowManagerStore() {
     closeWindowsOwnedByOthers,
     claimWindowsOwnedByInactiveRuntimes,
     closeAllWindowsGlobal,
-    closeAllWindows,
     getDefaultPathForApp,
     getSnapshot,
     hydratePersistedState,

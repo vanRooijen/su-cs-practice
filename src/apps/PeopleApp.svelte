@@ -5,12 +5,10 @@
 
   export let subroute = '';
   export let sidebarCollapsed = false;
-  export let windowId = null;
 
   $: normalizedSubroute = subroute.replace(/^\/+|\/+$/g, '');
   $: activePath = normalizedSubroute ? `/people/${normalizedSubroute}` : '/people';
   $: content = resolveContent('people', normalizedSubroute);
-  $: contentCacheScope = `people:${windowId ?? 'default'}`;
 </script>
 
 <div class="app-layout" data-sidebar-collapsed={sidebarCollapsed}>
@@ -28,7 +26,7 @@
   {/if}
 
   <div class="content-slot">
-    <ContentRegion artifact={content} cacheScope={contentCacheScope} />
+    <ContentRegion artifact={content} />
   </div>
 </div>
 

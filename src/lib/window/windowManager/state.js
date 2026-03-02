@@ -93,9 +93,7 @@ export function highestVisibleWindowId(state, ownerRuntimeId = null) {
       continue;
     }
 
-    if (!windowState.isMinimized) {
-      return id;
-    }
+    return id;
   }
 
   return null;

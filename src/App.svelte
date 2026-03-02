@@ -139,7 +139,9 @@
         await wait(GLOBAL_CLOSE_BROADCAST_GRACE_MS);
       }
 
-      markWindowSessionCleared();
+      if (!initiatedByRemote) {
+        markWindowSessionCleared();
+      }
       windowManager.closeAllWindowsGlobal();
       navigateToDesktop({ replace: true, forceEmit: true });
 

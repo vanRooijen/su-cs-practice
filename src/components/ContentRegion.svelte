@@ -1,31 +1,8 @@
 <script>
-  import { onDestroy, tick } from 'svelte';
+  import { tick } from 'svelte';
 
   export let artifact;
   export let cacheLimit = 10;
-  export let cacheScope = 'default';
-
-  const scopeStateById = new Map();
-
-  function createScopeState() {
-    return {
-      cachedArtifacts: [],
-      activeKey: '',
-      scrollByKey: {},
-    };
-  }
-
-  function getScopeState(scopeId) {
-    if (!scopeStateById.has(scopeId)) {
-      scopeStateById.set(scopeId, createScopeState());
-    }
-
-    return scopeStateById.get(scopeId);
-  }
-
-  function toScopeId(value) {
-    return value && value.trim() ? value.trim() : 'default';
-  }
 
   function trimCache(entries, limit, scrollByKey) {
     if (entries.length <= limit) {
@@ -44,37 +21,10 @@
     return trimmed;
   }
 
-  function restoreScope(scopeId) {
-    const scopeState = getScopeState(scopeId);
-    cachedArtifacts = [...scopeState.cachedArtifacts];
-    activeKey = scopeState.activeKey;
-    scrollByKey = { ...scopeState.scrollByKey };
-    currentScopeId = scopeId;
-  }
-
-  function persistScope() {
-    const scopeState = getScopeState(currentScopeId);
-    scopeState.cachedArtifacts = [...cachedArtifacts];
-    scopeState.activeKey = activeKey;
-    scopeState.scrollByKey = { ...scrollByKey };
-  }
-
-  let currentScopeId = toScopeId(cacheScope);
   let cachedArtifacts = [];
   let activeKey = '';
   let scrollByKey = {};
-
-  restoreScope(currentScopeId);
-
-  onDestroy(() => {
-    scopeStateById.delete(currentScopeId);
-  });
-
-  $: normalizedScopeId = toScopeId(cacheScope);
-
-  $: if (normalizedScopeId !== currentScopeId) {
-    restoreScope(normalizedScopeId);
-  }
+  $: normalizedCacheLimit = Number.isFinite(cacheLimit) ? Math.max(1, Math.floor(cacheLimit)) : 10;
 
   $: if (artifact?.key) {
     const existingIndex = cachedArtifacts.findIndex((entry) => entry.key === artifact.key);
@@ -83,11 +33,14 @@
       cachedArtifacts = cachedArtifacts.map((entry, index) => (index === existingIndex ? artifact : entry));
     } else {
       cachedArtifacts = [...cachedArtifacts, artifact];
-      cachedArtifacts = trimCache(cachedArtifacts, cacheLimit, scrollByKey);
+      cachedArtifacts = trimCache(cachedArtifacts, normalizedCacheLimit, scrollByKey);
     }
 
     activeKey = artifact.key;
-    persistScope();
+  }
+
+  $: if (cachedArtifacts.length > normalizedCacheLimit) {
+    cachedArtifacts = trimCache(cachedArtifacts, normalizedCacheLimit, scrollByKey);
   }
 
   function captureScroll(key, node) {
@@ -98,7 +51,6 @@
         left: node.scrollLeft,
       },
     };
-    persistScope();
   }
 
   async function restoreScroll(key, node) {
