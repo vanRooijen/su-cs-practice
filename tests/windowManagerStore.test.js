@@ -530,6 +530,29 @@ test('toggleMinimize minimizes unfocused windows without a focus-first click', (
   assert.equal(snapshot.focusedWindowId, peopleWindowId);
 });
 
+test('route navigation reuses matching unowned minimized window instead of creating duplicate', () => {
+  const store = createWindowManagerStore();
+  const localRuntimeId = store.getRuntimeId();
+
+  store.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
+  const originalWindowId = store.getSnapshot().focusedWindowId;
+  assert.ok(originalWindowId, 'expected initial people window');
+
+  store.toggleMinimize(originalWindowId);
+  let snapshot = store.getSnapshot();
+  assert.equal(snapshot.windowOrder.length, 1);
+  assert.equal(snapshot.windows[originalWindowId].isMinimized, true);
+  assert.equal(snapshot.windows[originalWindowId].ownerRuntimeId, null);
+
+  store.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
+  snapshot = store.getSnapshot();
+
+  assert.equal(snapshot.windowOrder.length, 1, 'expected existing void window to be reused');
+  assert.equal(snapshot.focusedWindowId, originalWindowId);
+  assert.equal(snapshot.windows[originalWindowId].isMinimized, false);
+  assert.equal(snapshot.windows[originalWindowId].ownerRuntimeId, localRuntimeId);
+});
+
 test('hydratePersistedState restores z-order, focus, and window metadata', () => {
   const sourceStore = createWindowManagerStore();
   sourceStore.setWorkspaceRect({ width: 1400, height: 900 });

@@ -325,6 +325,7 @@ export function createWindowManagerStore() {
         ? null
         : resolveNavigationWindowForApp(state, route, APP_DEFINITIONS, {
             ownerRuntimeId: runtimeId,
+            includeVoidWindows: true,
             allowForeignFallback: false,
           });
       const preselectedWindow = preselectedWindowId ? state.windows[preselectedWindowId] : null;
@@ -376,6 +377,7 @@ export function createWindowManagerStore() {
         ? null
         : resolveNavigationWindowForApp(next, route, APP_DEFINITIONS, {
             ownerRuntimeId: runtimeId,
+            includeVoidWindows: true,
             allowForeignFallback: false,
           });
 

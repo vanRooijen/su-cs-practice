@@ -60,6 +60,13 @@ function listWindowsForAppOwnedByRuntime(state, appWindowIds, ownerRuntimeId) {
   return appWindowIds.filter((windowId) => state.windows[windowId]?.ownerRuntimeId === ownerRuntimeId);
 }
 
+function listUnownedMinimizedWindowsForApp(state, appWindowIds) {
+  return appWindowIds.filter((windowId) => {
+    const windowState = state.windows[windowId];
+    return Boolean(windowState && windowState.ownerRuntimeId === null && windowState.isMinimized);
+  });
+}
+
 function resolveExactRouteWindowId(state, appWindowIds, route) {
   if (!appWindowIds.length) {
     return null;
@@ -97,6 +104,7 @@ function resolveExactRouteWindowId(state, appWindowIds, route) {
 export function resolveNavigationWindowForApp(state, route, appDefinitions, options = {}) {
   const ownerRuntimeId =
     typeof options.ownerRuntimeId === 'string' && options.ownerRuntimeId.trim() ? options.ownerRuntimeId : null;
+  const includeVoidWindows = options.includeVoidWindows === true;
   const allowForeignFallback = options.allowForeignFallback !== false;
   const appConfig = appDefinitions[route.appId];
   const appWindowIds = listWindowsForApp(state, route.appId);
@@ -111,23 +119,42 @@ export function resolveNavigationWindowForApp(state, route, appDefinitions, opti
     return exactRouteWindowId;
   }
 
-  if (ownerScopedWindowIds.length && typeof appConfig?.resolveNavigationWindowId === 'function') {
+  const voidWindowIds = includeVoidWindows ? listUnownedMinimizedWindowsForApp(state, appWindowIds) : [];
+  const exactVoidRouteWindowId = resolveExactRouteWindowId(state, voidWindowIds, route);
+  if (exactVoidRouteWindowId) {
+    return exactVoidRouteWindowId;
+  }
+
+  const localWindowIds = appWindowIds.filter((windowId) => {
+    const win = state.windows[windowId];
+    if (!win) {
+      return false;
+    }
+
+    if (ownerRuntimeId && win.ownerRuntimeId === ownerRuntimeId) {
+      return true;
+    }
+
+    return includeVoidWindows && win.ownerRuntimeId === null && win.isMinimized;
+  });
+
+  if (localWindowIds.length && typeof appConfig?.resolveNavigationWindowId === 'function') {
     const selected = appConfig.resolveNavigationWindowId({
       appId: route.appId,
-      appWindowIds: ownerScopedWindowIds,
+      appWindowIds: localWindowIds,
       focusedWindowId: state.focusedWindowId,
       windowOrder: state.windowOrder,
       windows: state.windows,
       route,
     });
 
-    if (selected && state.windows[selected]?.appId === route.appId) {
+    if (selected && localWindowIds.includes(selected) && state.windows[selected]?.appId === route.appId) {
       return selected;
     }
   }
 
-  if (ownerScopedWindowIds.length) {
-    return ownerScopedWindowIds.at(-1) ?? null;
+  if (localWindowIds.length) {
+    return localWindowIds.at(-1) ?? null;
   }
 
   if (!allowForeignFallback) {
