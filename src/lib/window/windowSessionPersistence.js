@@ -781,7 +781,6 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   const activeRuntimeSeenAt = new Map([[runtimeId, Date.now()]]);
   const latestRemoteSequence = new Map();
   let previousLocalSnapshotForSync = lastPersistedSnapshot;
-  let hasSeenRemoteRuntime = false;
 
   function localizeSnapshotForHydration(snapshotLike) {
     const normalized = serializeWindowManagerSnapshot(snapshotLike ?? createEmptySnapshot());
@@ -829,7 +828,6 @@ export async function createWindowSessionPersistence(windowManager, options = {}
       return;
     }
 
-    hasSeenRemoteRuntime = true;
     const previous = activeRuntimeSeenAt.get(otherRuntimeId);
     if (Number.isFinite(previous) && previous >= seenAt) {
       return;
@@ -858,7 +856,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
 
     ownerReclaimTimerId = window.setTimeout(() => {
       ownerReclaimTimerId = 0;
-      if (isDestroyed || hasSeenRemoteRuntime) {
+      if (isDestroyed) {
         return;
       }
 
@@ -884,6 +882,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     }
 
     if (removed) {
+      reclaimOrphanedWindows();
       reconcileOwnershipFromPresence();
     }
   }
@@ -1177,6 +1176,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
 
     if (message.type === 'bye') {
       if (activeRuntimeSeenAt.delete(sourceRuntimeId)) {
+        reclaimOrphanedWindows();
         reconcileOwnershipFromPresence();
       }
       return;

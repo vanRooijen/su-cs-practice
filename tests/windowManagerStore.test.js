@@ -180,6 +180,31 @@ test('claimWindowsOwnedByInactiveRuntimes reclaims orphaned windows after hydrat
   assert.equal(after.windows[after.focusedWindowId].ownerRuntimeId, localRuntimeId);
 });
 
+test('claimWindowsOwnedByInactiveRuntimes preserves windows owned by active runtimes', () => {
+  const sourceStore = createWindowManagerStore();
+  sourceStore.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
+  sourceStore.applyRoute(makeRoute('/reader/help', 'reader', 'help', { openMode: 'new-window' }));
+
+  const persisted = sourceStore.getSnapshot();
+  const restoredStore = createWindowManagerStore();
+  restoredStore.hydratePersistedState(persisted);
+
+  const before = restoredStore.getSnapshot();
+  const localRuntimeId = restoredStore.getRuntimeId();
+  const foreignOwnerRuntimeId = before.windows[before.windowOrder[0]]?.ownerRuntimeId;
+  assert.ok(foreignOwnerRuntimeId, 'expected hydrated windows to have a foreign owner runtime id');
+  assert.notEqual(foreignOwnerRuntimeId, localRuntimeId);
+
+  restoredStore.claimWindowsOwnedByInactiveRuntimes([foreignOwnerRuntimeId]);
+  const after = restoredStore.getSnapshot();
+
+  assert.equal(after.focusedWindowId, null);
+  assert.ok(
+    after.windowOrder.every((windowId) => after.windows[windowId]?.ownerRuntimeId === foreignOwnerRuntimeId),
+    'expected windows to remain foreign-owned while owner runtime is active',
+  );
+});
+
 test('window history limit is isolated per window instance', () => {
   const store = createWindowManagerStore();
 
