@@ -815,6 +815,50 @@ export function createWindowManagerStore() {
     });
   }
 
+  function claimWindowsOwnedByInactiveRuntimes(activeRuntimeIdsLike) {
+    const activeRuntimeIds = new Set(
+      activeRuntimeIdsLike instanceof Set
+        ? [...activeRuntimeIdsLike]
+        : Array.isArray(activeRuntimeIdsLike)
+          ? activeRuntimeIdsLike
+          : [],
+    );
+    activeRuntimeIds.add(runtimeId);
+
+    store.update((state) => {
+      const next = cloneState(state);
+      let hasChanges = false;
+
+      for (const windowId of next.windowOrder) {
+        const win = next.windows[windowId];
+        if (!win) {
+          continue;
+        }
+
+        const ownerRuntimeId =
+          typeof win.ownerRuntimeId === 'string' && win.ownerRuntimeId.trim() ? win.ownerRuntimeId : null;
+        if (!ownerRuntimeId || ownerRuntimeId === runtimeId || activeRuntimeIds.has(ownerRuntimeId)) {
+          continue;
+        }
+
+        next.windows[windowId] = {
+          ...win,
+          ownerRuntimeId: runtimeId,
+          isMinimized: win.minimizeReason === 'offline' ? false : win.isMinimized,
+          minimizeReason: win.minimizeReason === 'offline' ? null : win.minimizeReason,
+        };
+        hasChanges = true;
+      }
+
+      if (!hasChanges) {
+        return state;
+      }
+
+      ensureOwnedFocus(next);
+      return next;
+    });
+  }
+
   function getDefaultPathForApp(appId) {
     const app = APP_DEFINITIONS[appId] ?? APP_DEFINITIONS[DEFAULT_APP_ID];
     const subroute = app.defaultSubroute ?? '';
@@ -921,6 +965,7 @@ export function createWindowManagerStore() {
     closeWindow,
     closeOwnedWindows,
     closeWindowsOwnedByOthers,
+    claimWindowsOwnedByInactiveRuntimes,
     closeAllWindowsGlobal,
     closeAllWindows,
     getDefaultPathForApp,

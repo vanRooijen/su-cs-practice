@@ -121,12 +121,13 @@
       return;
     }
 
-    windowManager.closeWindowsOwnedByOthers();
-
     const didBroadcast = broadcastWindowControl(WINDOW_CONTROL_TYPE_CLOSE_OWNED);
     if (!didBroadcast) {
       showCloseAllNotice('Could not reach other tabs in this browser.');
+      return;
     }
+
+    windowManager.closeWindowsOwnedByOthers();
   }
 
   async function closeAllInstances(options = {}) {

@@ -15,6 +15,7 @@ const PRESENCE_CHANNEL_NAME = 'su-cs-owner-presence';
 const SYNC_SCOPE_STORAGE_KEY = 'su-cs-window-sync-scope';
 const PRESENCE_HEARTBEAT_MS = 4000;
 const PRESENCE_STALE_MS = 12000;
+const DEFAULT_OWNER_RECLAIM_GRACE_MS = 700;
 
 function isRecord(value) {
   return Boolean(value) && typeof value === 'object';
@@ -726,6 +727,9 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   const presenceStaleMs = Number.isFinite(options.presenceStaleMs)
     ? Math.max(presenceHeartbeatMs + 300, Math.floor(options.presenceStaleMs))
     : PRESENCE_STALE_MS;
+  const ownerReclaimGraceMs = Number.isFinite(options.ownerReclaimGraceMs)
+    ? Math.max(120, Math.floor(options.ownerReclaimGraceMs))
+    : DEFAULT_OWNER_RECLAIM_GRACE_MS;
   const restoreOnStart = options.restoreOnStart !== false;
   const requestPeerStateOnStart = options.requestPeerStateOnStart !== false;
   const runtimeIdCandidate = typeof windowManager.getRuntimeId === 'function' ? windowManager.getRuntimeId() : '';
@@ -767,6 +771,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   let broadcastTimerId = 0;
   let heartbeatTimerId = 0;
   let staleSweepTimerId = 0;
+  let ownerReclaimTimerId = 0;
   let pendingSnapshot = null;
   let pendingBroadcastDelta = null;
   let flushInFlight = false;
@@ -776,6 +781,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   const activeRuntimeSeenAt = new Map([[runtimeId, Date.now()]]);
   const latestRemoteSequence = new Map();
   let previousLocalSnapshotForSync = lastPersistedSnapshot;
+  let hasSeenRemoteRuntime = false;
 
   function localizeSnapshotForHydration(snapshotLike) {
     const normalized = serializeWindowManagerSnapshot(snapshotLike ?? createEmptySnapshot());
@@ -823,6 +829,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
       return;
     }
 
+    hasSeenRemoteRuntime = true;
     const previous = activeRuntimeSeenAt.get(otherRuntimeId);
     if (Number.isFinite(previous) && previous >= seenAt) {
       return;
@@ -830,6 +837,34 @@ export async function createWindowSessionPersistence(windowManager, options = {}
 
     activeRuntimeSeenAt.set(otherRuntimeId, seenAt);
     reconcileOwnershipFromPresence();
+  }
+
+  function reclaimOrphanedWindows() {
+    if (typeof windowManager.claimWindowsOwnedByInactiveRuntimes !== 'function') {
+      return;
+    }
+
+    try {
+      windowManager.claimWindowsOwnedByInactiveRuntimes(activeRuntimeIds());
+    } catch {
+      // Ignore orphan-claim failures.
+    }
+  }
+
+  function scheduleOrphanReclaim() {
+    if (isDestroyed || ownerReclaimTimerId) {
+      return;
+    }
+
+    ownerReclaimTimerId = window.setTimeout(() => {
+      ownerReclaimTimerId = 0;
+      if (isDestroyed || hasSeenRemoteRuntime) {
+        return;
+      }
+
+      reclaimOrphanedWindows();
+      reconcileOwnershipFromPresence();
+    }, ownerReclaimGraceMs);
   }
 
   function pruneStaleRuntimes(now = Date.now()) {
@@ -1072,6 +1107,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     activeRuntimeSeenAt.set(runtimeId, Date.now());
     postPresence('hello');
     requestPeerState();
+    scheduleOrphanReclaim();
     reconcileOwnershipFromPresence();
   }
 
@@ -1225,6 +1261,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     requestPeerState();
   }
 
+  scheduleOrphanReclaim();
   reconcileOwnershipFromPresence();
 
   window.addEventListener('pagehide', onPageHide);
@@ -1256,6 +1293,11 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     if (staleSweepTimerId) {
       window.clearInterval(staleSweepTimerId);
       staleSweepTimerId = 0;
+    }
+
+    if (ownerReclaimTimerId) {
+      window.clearTimeout(ownerReclaimTimerId);
+      ownerReclaimTimerId = 0;
     }
 
     postPresence('bye');

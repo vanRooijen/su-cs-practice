@@ -152,6 +152,34 @@ test('closeWindowsOwnedByOthers removes foreign windows while keeping local wind
   assert.equal(after.windows[after.focusedWindowId].ownerRuntimeId, localRuntimeId);
 });
 
+test('claimWindowsOwnedByInactiveRuntimes reclaims orphaned windows after hydrate', () => {
+  const sourceStore = createWindowManagerStore();
+  sourceStore.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
+  sourceStore.applyRoute(makeRoute('/reader/help', 'reader', 'help', { openMode: 'new-window' }));
+
+  const persisted = sourceStore.getSnapshot();
+  const restoredStore = createWindowManagerStore();
+  restoredStore.hydratePersistedState(persisted);
+
+  const before = restoredStore.getSnapshot();
+  const localRuntimeId = restoredStore.getRuntimeId();
+  assert.equal(before.focusedWindowId, null);
+  assert.ok(
+    before.windowOrder.every((windowId) => before.windows[windowId]?.ownerRuntimeId !== localRuntimeId),
+    'expected all hydrated windows to be foreign-owned before reclaim',
+  );
+
+  restoredStore.claimWindowsOwnedByInactiveRuntimes([]);
+  const after = restoredStore.getSnapshot();
+
+  assert.ok(
+    after.windowOrder.every((windowId) => after.windows[windowId]?.ownerRuntimeId === localRuntimeId),
+    'expected all windows to be locally owned after reclaim',
+  );
+  assert.ok(after.focusedWindowId, 'expected focus to be restored after reclaim');
+  assert.equal(after.windows[after.focusedWindowId].ownerRuntimeId, localRuntimeId);
+});
+
 test('window history limit is isolated per window instance', () => {
   const store = createWindowManagerStore();
 
