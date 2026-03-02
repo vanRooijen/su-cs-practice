@@ -282,7 +282,7 @@
         break;
       }
 
-      if (win.ownerRuntimeId === runtimeId && win.isMinimized && win.minimizeReason === 'user') {
+      if (win.ownerRuntimeId === runtimeId && win.isMinimized) {
         hasUserMinimizedWindow = true;
       }
     }

@@ -120,10 +120,6 @@ function cloneWindow(windowLike, fallbackWindowId) {
   const bounds = cloneBounds(windowLike?.bounds);
   const restoreBounds = cloneBounds(windowLike?.restoreBounds, bounds);
   const history = cloneHistory(windowLike?.history, path, subroute, routeKey);
-  // TODO (suggested): Remove legacy 'offline' minimize reason support after
-  // old persisted snapshots are no longer part of supported upgrade paths.
-  const minimizeReason =
-    windowLike?.minimizeReason === 'user' || windowLike?.minimizeReason === 'offline' ? windowLike.minimizeReason : null;
   const ownerRuntimeId =
     typeof windowLike?.ownerRuntimeId === 'string' && windowLike.ownerRuntimeId.trim() ? windowLike.ownerRuntimeId : null;
 
@@ -139,7 +135,6 @@ function cloneWindow(windowLike, fallbackWindowId) {
     showWindowHistoryNavigation: Boolean(windowLike?.showWindowHistoryNavigation),
     isSidebarCollapsed: Boolean(windowLike?.isSidebarCollapsed),
     isMinimized: Boolean(windowLike?.isMinimized),
-    minimizeReason,
     ownerRuntimeId,
     isMaximized: Boolean(windowLike?.isMaximized),
     bounds,
@@ -226,7 +221,6 @@ function windowsEqual(left, right) {
     left.showWindowHistoryNavigation === right.showWindowHistoryNavigation &&
     left.isSidebarCollapsed === right.isSidebarCollapsed &&
     left.isMinimized === right.isMinimized &&
-    left.minimizeReason === right.minimizeReason &&
     left.ownerRuntimeId === right.ownerRuntimeId &&
     left.isMaximized === right.isMaximized &&
     left.createdAt === right.createdAt &&

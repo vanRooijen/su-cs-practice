@@ -67,22 +67,38 @@ function listUnownedMinimizedWindowsForApp(state, appWindowIds) {
   });
 }
 
+function prioritizeWindowIds(state, appWindowIds) {
+  if (!appWindowIds.length) {
+    return [];
+  }
+
+  const prioritizedWindowIds = [];
+  const seenWindowIds = new Set();
+
+  if (state.focusedWindowId && appWindowIds.includes(state.focusedWindowId)) {
+    prioritizedWindowIds.push(state.focusedWindowId);
+    seenWindowIds.add(state.focusedWindowId);
+  }
+
+  for (let index = appWindowIds.length - 1; index >= 0; index -= 1) {
+    const windowId = appWindowIds[index];
+    if (seenWindowIds.has(windowId)) {
+      continue;
+    }
+
+    prioritizedWindowIds.push(windowId);
+    seenWindowIds.add(windowId);
+  }
+
+  return prioritizedWindowIds;
+}
+
 function resolveExactRouteWindowId(state, appWindowIds, route) {
   if (!appWindowIds.length) {
     return null;
   }
 
-  const prioritizedWindowIds = [];
-  if (state.focusedWindowId && appWindowIds.includes(state.focusedWindowId)) {
-    prioritizedWindowIds.push(state.focusedWindowId);
-  }
-
-  for (let index = appWindowIds.length - 1; index >= 0; index -= 1) {
-    const windowId = appWindowIds[index];
-    if (!prioritizedWindowIds.includes(windowId)) {
-      prioritizedWindowIds.push(windowId);
-    }
-  }
+  const prioritizedWindowIds = prioritizeWindowIds(state, appWindowIds);
 
   for (const windowId of prioritizedWindowIds) {
     const win = state.windows[windowId];
@@ -99,6 +115,52 @@ function resolveExactRouteWindowId(state, appWindowIds, route) {
   }
 
   return null;
+}
+
+function normalizeComparableSubroute(value = '') {
+  return value
+    .toLowerCase()
+    .replace(/^\/+|\/+$/g, '')
+    .split('/')
+    .filter(Boolean)
+    .join('/');
+}
+
+function resolveSubstringRouteWindowId(state, appWindowIds, route) {
+  if (!appWindowIds.length) {
+    return null;
+  }
+
+  const targetSubroute = normalizeComparableSubroute(route.subroute);
+  if (!targetSubroute) {
+    return null;
+  }
+
+  const prioritizedWindowIds = prioritizeWindowIds(state, appWindowIds);
+  let bestWindowId = null;
+  let bestScore = 0;
+
+  for (const windowId of prioritizedWindowIds) {
+    const windowSubroute = normalizeComparableSubroute(state.windows[windowId]?.subroute);
+    if (!windowSubroute) {
+      continue;
+    }
+
+    const sharesSubstring =
+      targetSubroute.includes(windowSubroute) || windowSubroute.includes(targetSubroute);
+
+    if (!sharesSubstring) {
+      continue;
+    }
+
+    const score = Math.min(targetSubroute.length, windowSubroute.length);
+    if (score > bestScore) {
+      bestScore = score;
+      bestWindowId = windowId;
+    }
+  }
+
+  return bestWindowId;
 }
 
 export function resolveNavigationWindowForApp(state, route, appDefinitions, options = {}) {
@@ -123,6 +185,11 @@ export function resolveNavigationWindowForApp(state, route, appDefinitions, opti
   const exactVoidRouteWindowId = resolveExactRouteWindowId(state, voidWindowIds, route);
   if (exactVoidRouteWindowId) {
     return exactVoidRouteWindowId;
+  }
+
+  const substringVoidRouteWindowId = resolveSubstringRouteWindowId(state, voidWindowIds, route);
+  if (substringVoidRouteWindowId) {
+    return substringVoidRouteWindowId;
   }
 
   const localWindowIds = appWindowIds.filter((windowId) => {

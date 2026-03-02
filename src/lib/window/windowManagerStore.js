@@ -175,12 +175,7 @@ export function createWindowManagerStore() {
 
     const isMaximized = Boolean(windowLike?.isMaximized);
     const history = sanitizeHistory(windowLike?.history, path, subroute, routeKey);
-    // TODO (suggested): Remove legacy 'offline' minimize reason support after
-    // one persistence epoch where old snapshots are no longer expected.
-    const rawMinimizeReason =
-      windowLike?.minimizeReason === 'user' || windowLike?.minimizeReason === 'offline' ? windowLike.minimizeReason : null;
     const isMinimized = ownerRuntimeId ? Boolean(windowLike?.isMinimized) : true;
-    const minimizeReason = isMinimized ? (rawMinimizeReason ?? (!ownerRuntimeId ? 'user' : null)) : null;
 
     return {
       windowId,
@@ -194,7 +189,6 @@ export function createWindowManagerStore() {
       showWindowHistoryNavigation: Boolean(appDefinition.enableWindowHistoryNavigation),
       isSidebarCollapsed: Boolean(windowLike?.isSidebarCollapsed) && Boolean(appDefinition.hasSidebar),
       isMinimized,
-      minimizeReason,
       ownerRuntimeId,
       isMaximized,
       bounds: isMaximized && isOwnedLocally
@@ -362,7 +356,6 @@ export function createWindowManagerStore() {
           next.windows[windowId] = {
             ...win,
             isMinimized: true,
-            minimizeReason: 'user',
           };
         }
 
@@ -488,7 +481,6 @@ export function createWindowManagerStore() {
         next.windows[windowId] = {
           ...target,
           isMinimized: true,
-          minimizeReason: 'user',
           ownerRuntimeId: null,
         };
 
@@ -529,7 +521,6 @@ export function createWindowManagerStore() {
       next.windows[windowId] = {
         ...current,
         isMinimized: true,
-        minimizeReason: 'user',
         ownerRuntimeId: null,
       };
 
@@ -845,8 +836,6 @@ export function createWindowManagerStore() {
   }
 
   function claimWindowsOwnedByInactiveRuntimes(activeRuntimeIdsLike, reclaimableRuntimeIdsLike = null) {
-    // TODO (suggested): Rename this API to reflect current semantics:
-    // inactive ownership is released to unowned/minimized (not claimed).
     const activeRuntimeIds = toActiveRuntimeIdSet(activeRuntimeIdsLike);
     const reclaimableRuntimeIds = toReclaimableRuntimeIdSet(reclaimableRuntimeIdsLike);
 
@@ -874,7 +863,6 @@ export function createWindowManagerStore() {
           ...win,
           ownerRuntimeId: null,
           isMinimized: true,
-          minimizeReason: 'user',
         };
         hasChanges = true;
       }
@@ -917,38 +905,13 @@ export function createWindowManagerStore() {
   }
 
   function reconcileOwnership(activeRuntimeIdsLike) {
-    // TODO (suggested): Remove this argument and no-op normalization once all
-    // callers are migrated; it exists only for API compatibility.
-    // Keep runtime normalization for API compatibility even though stale presence
-    // no longer mutates shared minimize state.
     toActiveRuntimeIdSet(activeRuntimeIdsLike);
 
     store.update((state) => {
       const next = cloneState(state);
-      let hasChanges = false;
-
-      for (const windowId of next.windowOrder) {
-        const win = next.windows[windowId];
-        if (!win) {
-          continue;
-        }
-
-        if (win.minimizeReason === 'offline') {
-          next.windows[windowId] = {
-            ...win,
-            minimizeReason: null,
-          };
-          hasChanges = true;
-        }
-      }
-
       const focusedBefore = next.focusedWindowId;
       ensureOwnedFocus(next);
-      if (next.focusedWindowId !== focusedBefore) {
-        hasChanges = true;
-      }
-
-      return hasChanges ? next : state;
+      return next.focusedWindowId !== focusedBefore ? next : state;
     });
   }
 
