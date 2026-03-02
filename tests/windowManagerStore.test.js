@@ -95,7 +95,7 @@ test('closeAllWindows clears every window and focus while preserving workspace b
   assert.equal(after.windowOrder.length, 0);
   assert.equal(Object.keys(after.windows).length, 0);
   assert.equal(after.focusedWindowId, null);
-  assert.equal(after.nextWindowId, 1);
+  assert.equal(after.nextWindowId, before.nextWindowId);
   assert.deepEqual(after.workspaceRect, before.workspaceRect);
 });
 

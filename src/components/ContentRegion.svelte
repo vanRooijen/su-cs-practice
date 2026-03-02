@@ -1,5 +1,5 @@
 <script>
-  import { tick } from 'svelte';
+  import { onDestroy, tick } from 'svelte';
 
   export let artifact;
   export let cacheLimit = 10;
@@ -65,6 +65,10 @@
   let scrollByKey = {};
 
   restoreScope(currentScopeId);
+
+  onDestroy(() => {
+    scopeStateById.delete(currentScopeId);
+  });
 
   $: normalizedScopeId = toScopeId(cacheScope);
 

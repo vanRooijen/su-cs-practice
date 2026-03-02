@@ -726,6 +726,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   const presenceStaleMs = Number.isFinite(options.presenceStaleMs)
     ? Math.max(presenceHeartbeatMs + 300, Math.floor(options.presenceStaleMs))
     : PRESENCE_STALE_MS;
+  const restoreOnStart = options.restoreOnStart !== false;
   const runtimeIdCandidate = typeof windowManager.getRuntimeId === 'function' ? windowManager.getRuntimeId() : '';
   const runtimeId =
     typeof runtimeIdCandidate === 'string' && runtimeIdCandidate.trim()
@@ -747,14 +748,16 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   let isDestroyed = false;
   let isHydratingRemote = false;
 
-  try {
-    const restored = await readPersistedSession(db);
-    if (restored.snapshot) {
-      suppressBroadcastOnce = true;
-      restoredFocusedPath = windowManager.hydratePersistedState(localizeSnapshotForHydration(restored.snapshot));
+  if (restoreOnStart) {
+    try {
+      const restored = await readPersistedSession(db);
+      if (restored.snapshot) {
+        suppressBroadcastOnce = true;
+        restoredFocusedPath = windowManager.hydratePersistedState(localizeSnapshotForHydration(restored.snapshot));
+      }
+    } catch {
+      // Ignore restore failures and continue with in-memory state only.
     }
-  } catch {
-    // Ignore restore failures and continue with in-memory state only.
   }
 
   lastPersistedSnapshot = serializeWindowManagerSnapshot(windowManager.getSnapshot());

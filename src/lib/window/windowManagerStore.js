@@ -733,7 +733,7 @@ export function createWindowManagerStore() {
         windows: {},
         windowOrder: [],
         focusedWindowId: null,
-        nextWindowId: 1,
+        nextWindowId: state.nextWindowId,
         workspaceRect: { ...state.workspaceRect },
         lastRoute: null,
       };
