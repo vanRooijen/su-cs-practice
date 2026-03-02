@@ -126,13 +126,29 @@ function normalizeComparableSubroute(value = '') {
     .join('/');
 }
 
+function toComparableSubrouteSegments(value = '') {
+  const comparable = normalizeComparableSubroute(value);
+  return comparable ? comparable.split('/') : [];
+}
+
+function hasSegmentPrefixRelation(targetSegments, windowSegments) {
+  const isTargetPrefixOfWindow =
+    targetSegments.length <= windowSegments.length &&
+    targetSegments.every((segment, index) => windowSegments[index] === segment);
+  const isWindowPrefixOfTarget =
+    windowSegments.length <= targetSegments.length &&
+    windowSegments.every((segment, index) => targetSegments[index] === segment);
+
+  return isTargetPrefixOfWindow || isWindowPrefixOfTarget;
+}
+
 function resolveSubstringRouteWindowId(state, appWindowIds, route) {
   if (!appWindowIds.length) {
     return null;
   }
 
-  const targetSubroute = normalizeComparableSubroute(route.subroute);
-  if (!targetSubroute) {
+  const targetSubrouteSegments = toComparableSubrouteSegments(route.subroute);
+  if (!targetSubrouteSegments.length) {
     return null;
   }
 
@@ -141,19 +157,16 @@ function resolveSubstringRouteWindowId(state, appWindowIds, route) {
   let bestScore = 0;
 
   for (const windowId of prioritizedWindowIds) {
-    const windowSubroute = normalizeComparableSubroute(state.windows[windowId]?.subroute);
-    if (!windowSubroute) {
+    const windowSubrouteSegments = toComparableSubrouteSegments(state.windows[windowId]?.subroute);
+    if (!windowSubrouteSegments.length) {
       continue;
     }
 
-    const sharesSubstring =
-      targetSubroute.includes(windowSubroute) || windowSubroute.includes(targetSubroute);
-
-    if (!sharesSubstring) {
+    if (!hasSegmentPrefixRelation(targetSubrouteSegments, windowSubrouteSegments)) {
       continue;
     }
 
-    const score = Math.min(targetSubroute.length, windowSubroute.length);
+    const score = Math.min(targetSubrouteSegments.length, windowSubrouteSegments.length);
     if (score > bestScore) {
       bestScore = score;
       bestWindowId = windowId;

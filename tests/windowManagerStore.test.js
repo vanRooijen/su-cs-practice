@@ -152,7 +152,7 @@ test('closeWindowsOwnedByOthers removes foreign windows while keeping local wind
   assert.equal(after.windows[after.focusedWindowId].ownerRuntimeId, localRuntimeId);
 });
 
-test('claimWindowsOwnedByInactiveRuntimes releases orphaned windows to global minimized state', () => {
+test('releaseWindowsOwnedByInactiveRuntimes releases orphaned windows to global minimized state', () => {
   const sourceStore = createWindowManagerStore();
   sourceStore.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
   sourceStore.applyRoute(makeRoute('/reader/help', 'reader', 'help', { openMode: 'new-window' }));
@@ -169,7 +169,7 @@ test('claimWindowsOwnedByInactiveRuntimes releases orphaned windows to global mi
     'expected all hydrated windows to be foreign-owned before reclaim',
   );
 
-  restoredStore.claimWindowsOwnedByInactiveRuntimes([]);
+  restoredStore.releaseWindowsOwnedByInactiveRuntimes([]);
   const after = restoredStore.getSnapshot();
 
   assert.ok(
@@ -183,7 +183,7 @@ test('claimWindowsOwnedByInactiveRuntimes releases orphaned windows to global mi
   assert.equal(after.focusedWindowId, null);
 });
 
-test('claimWindowsOwnedByInactiveRuntimes preserves windows owned by active runtimes', () => {
+test('releaseWindowsOwnedByInactiveRuntimes preserves windows owned by active runtimes', () => {
   const sourceStore = createWindowManagerStore();
   sourceStore.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
   sourceStore.applyRoute(makeRoute('/reader/help', 'reader', 'help', { openMode: 'new-window' }));
@@ -198,7 +198,7 @@ test('claimWindowsOwnedByInactiveRuntimes preserves windows owned by active runt
   assert.ok(foreignOwnerRuntimeId, 'expected hydrated windows to have a foreign owner runtime id');
   assert.notEqual(foreignOwnerRuntimeId, localRuntimeId);
 
-  restoredStore.claimWindowsOwnedByInactiveRuntimes([foreignOwnerRuntimeId]);
+  restoredStore.releaseWindowsOwnedByInactiveRuntimes([foreignOwnerRuntimeId]);
   const after = restoredStore.getSnapshot();
 
   assert.equal(after.focusedWindowId, null);
@@ -208,7 +208,7 @@ test('claimWindowsOwnedByInactiveRuntimes preserves windows owned by active runt
   );
 });
 
-test('claimWindowsOwnedByInactiveRuntimes can restrict orphan release to explicit runtime ids', () => {
+test('releaseWindowsOwnedByInactiveRuntimes can restrict orphan release to explicit runtime ids', () => {
   const sourceStore = createWindowManagerStore();
   sourceStore.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
   sourceStore.applyRoute(makeRoute('/reader/help', 'reader', 'help', { openMode: 'new-window' }));
@@ -221,7 +221,7 @@ test('claimWindowsOwnedByInactiveRuntimes can restrict orphan release to explici
   const foreignOwnerRuntimeId = before.windows[before.windowOrder[0]]?.ownerRuntimeId;
   assert.ok(foreignOwnerRuntimeId, 'expected foreign owner runtime id');
 
-  restoredStore.claimWindowsOwnedByInactiveRuntimes([], []);
+  restoredStore.releaseWindowsOwnedByInactiveRuntimes([], []);
   let after = restoredStore.getSnapshot();
   assert.equal(after.focusedWindowId, null);
   assert.ok(
@@ -229,7 +229,7 @@ test('claimWindowsOwnedByInactiveRuntimes can restrict orphan release to explici
     'expected no claim when reclaimable set is empty',
   );
 
-  restoredStore.claimWindowsOwnedByInactiveRuntimes([], [foreignOwnerRuntimeId]);
+  restoredStore.releaseWindowsOwnedByInactiveRuntimes([], [foreignOwnerRuntimeId]);
   after = restoredStore.getSnapshot();
   assert.ok(
     after.windowOrder.every((windowId) => after.windows[windowId]?.ownerRuntimeId === null),
@@ -258,7 +258,7 @@ test('reconcileOwnership is a no-op when no local-focus correction is needed', (
   assert.equal(after.focusedWindowId, null);
 });
 
-test('claimWindowsOwnedByInactiveRuntimes normalizes released windows to unowned minimized state', () => {
+test('releaseWindowsOwnedByInactiveRuntimes normalizes released windows to unowned minimized state', () => {
   const sourceStore = createWindowManagerStore();
   sourceStore.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
   sourceStore.applyRoute(makeRoute('/reader/help', 'reader', 'help', { openMode: 'new-window' }));
@@ -268,7 +268,7 @@ test('claimWindowsOwnedByInactiveRuntimes normalizes released windows to unowned
   const persisted = sourceStore.getSnapshot();
   const restoredStore = createWindowManagerStore();
   restoredStore.hydratePersistedState(persisted);
-  restoredStore.claimWindowsOwnedByInactiveRuntimes([]);
+  restoredStore.releaseWindowsOwnedByInactiveRuntimes([]);
 
   const snapshot = restoredStore.getSnapshot();
   assert.ok(snapshot.windowOrder.every((windowId) => snapshot.windows[windowId]?.ownerRuntimeId === null));
@@ -573,6 +573,32 @@ test('route navigation prefers substring-matching unowned minimized window', () 
   assert.equal(snapshot.windows[articlesWindowId].path, '/reader/articles/hackathon-2026');
   assert.equal(snapshot.windows[helpWindowId].ownerRuntimeId, null);
   assert.equal(snapshot.windows[helpWindowId].isMinimized, true);
+});
+
+test('substring reuse ignores non-segment matches and falls back to app strategy', () => {
+  const store = createWindowManagerStore();
+  const localRuntimeId = store.getRuntimeId();
+
+  store.applyRoute(makeRoute('/reader/pha', 'reader', 'pha'));
+  const partialWindowId = store.getSnapshot().focusedWindowId;
+  assert.ok(partialWindowId, 'expected partial reader window');
+
+  store.applyRoute(makeRoute('/reader/help', 'reader', 'help', { openMode: 'new-window' }));
+  const helpWindowId = store.getSnapshot().focusedWindowId;
+  assert.ok(helpWindowId, 'expected help reader window');
+  assert.notEqual(helpWindowId, partialWindowId);
+
+  store.toggleMinimize(partialWindowId);
+  store.toggleMinimize(helpWindowId);
+
+  store.applyRoute(makeRoute('/reader/alpha/beta', 'reader', 'alpha/beta'));
+  const snapshot = store.getSnapshot();
+
+  assert.equal(snapshot.focusedWindowId, helpWindowId, 'expected app fallback selection, not partial-string match');
+  assert.equal(snapshot.windows[helpWindowId].ownerRuntimeId, localRuntimeId);
+  assert.equal(snapshot.windows[helpWindowId].path, '/reader/alpha/beta');
+  assert.equal(snapshot.windows[partialWindowId].ownerRuntimeId, null);
+  assert.equal(snapshot.windows[partialWindowId].isMinimized, true);
 });
 
 test('hydratePersistedState restores z-order, focus, and window metadata', () => {

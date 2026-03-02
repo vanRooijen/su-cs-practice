@@ -932,6 +932,37 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   let latestLocalSnapshotForSync = lastPersistedSnapshot;
   let lastBroadcastSnapshotForSync = lastPersistedSnapshot;
   let lastPresenceSentAt = 0;
+  seedHydratedForeignOwners(lastPersistedSnapshot);
+
+  function collectForeignOwnerRuntimeIds(snapshotLike) {
+    const normalizedSnapshot = serializeWindowManagerSnapshot(snapshotLike ?? createEmptySnapshot());
+    const ownerRuntimeIds = new Set();
+
+    for (const windowState of Object.values(normalizedSnapshot.windows)) {
+      const ownerRuntimeId =
+        typeof windowState?.ownerRuntimeId === 'string' && windowState.ownerRuntimeId.trim()
+          ? windowState.ownerRuntimeId
+          : null;
+      if (!ownerRuntimeId || ownerRuntimeId === runtimeId) {
+        continue;
+      }
+
+      ownerRuntimeIds.add(ownerRuntimeId);
+    }
+
+    return ownerRuntimeIds;
+  }
+
+  function seedHydratedForeignOwners(snapshotLike) {
+    for (const ownerRuntimeId of collectForeignOwnerRuntimeIds(snapshotLike)) {
+      if (activeRuntimeSeenAt.has(ownerRuntimeId)) {
+        continue;
+      }
+
+      // Unknown historical owners must prove liveness before retaining ownership.
+      activeRuntimeSeenAt.set(ownerRuntimeId, 0);
+    }
+  }
 
   function localizeSnapshotForHydration(snapshotLike) {
     const normalized = serializeWindowManagerSnapshot(snapshotLike ?? createEmptySnapshot());
@@ -1009,7 +1040,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   }
 
   function reclaimOrphanedWindows() {
-    if (typeof windowManager.claimWindowsOwnedByInactiveRuntimes !== 'function') {
+    if (typeof windowManager.releaseWindowsOwnedByInactiveRuntimes !== 'function') {
       return;
     }
 
@@ -1018,7 +1049,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     }
 
     try {
-      windowManager.claimWindowsOwnedByInactiveRuntimes(activeRuntimeIds(), reclaimableRuntimeIds);
+      windowManager.releaseWindowsOwnedByInactiveRuntimes(activeRuntimeIds(), reclaimableRuntimeIds);
     } catch {
       // Ignore orphan-claim failures.
     }
@@ -1512,6 +1543,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     activeRuntimeSeenAt.set(runtimeId, now);
     postPresence('hello');
     lastPresenceSentAt = now;
+    pruneStaleRuntimes(now);
     presenceTickTimerId = window.setInterval(() => {
       if (isDestroyed) {
         return;
@@ -1526,6 +1558,10 @@ export async function createWindowSessionPersistence(windowManager, options = {}
 
       pruneStaleRuntimes(tickNow);
     }, presenceTickMs);
+  } else {
+    for (const ownerRuntimeId of collectForeignOwnerRuntimeIds(windowManager.getSnapshot())) {
+      reclaimableRuntimeIds.add(ownerRuntimeId);
+    }
   }
 
   if (syncChannel) {

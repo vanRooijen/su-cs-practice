@@ -833,7 +833,7 @@ export function createWindowManagerStore() {
     return reclaimableRuntimeIds;
   }
 
-  function claimWindowsOwnedByInactiveRuntimes(activeRuntimeIdsLike, reclaimableRuntimeIdsLike = null) {
+  function releaseWindowsOwnedByInactiveRuntimes(activeRuntimeIdsLike, reclaimableRuntimeIdsLike = null) {
     const activeRuntimeIds = toActiveRuntimeIdSet(activeRuntimeIdsLike);
     const reclaimableRuntimeIds = toReclaimableRuntimeIdSet(reclaimableRuntimeIdsLike);
 
@@ -915,8 +915,8 @@ export function createWindowManagerStore() {
     return runtimeId;
   }
 
-  return {
-    subscribe: store.subscribe,
+    return {
+      subscribe: store.subscribe,
     applyRoute,
     setWorkspaceRect,
     focusExistingWindow,
@@ -930,7 +930,7 @@ export function createWindowManagerStore() {
     closeWindow,
     closeOwnedWindows,
     closeWindowsOwnedByOthers,
-    claimWindowsOwnedByInactiveRuntimes,
+    releaseWindowsOwnedByInactiveRuntimes,
     closeAllWindowsGlobal,
     getDefaultPathForApp,
     getSnapshot,
