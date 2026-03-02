@@ -835,9 +835,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     : DEFAULT_IDLE_TIMEOUT_MS;
   const presenceHeartbeatVisibleMs = Number.isFinite(options.presenceHeartbeatVisibleMs)
     ? Math.max(1000, Math.floor(options.presenceHeartbeatVisibleMs))
-    : Number.isFinite(options.presenceHeartbeatMs)
-      ? Math.max(1000, Math.floor(options.presenceHeartbeatMs))
-      : PRESENCE_HEARTBEAT_VISIBLE_MS;
+    : PRESENCE_HEARTBEAT_VISIBLE_MS;
   const presenceHeartbeatHiddenMs = Number.isFinite(options.presenceHeartbeatHiddenMs)
     ? Math.max(presenceHeartbeatVisibleMs, Math.floor(options.presenceHeartbeatHiddenMs))
     : PRESENCE_HEARTBEAT_HIDDEN_MS;
@@ -846,9 +844,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     : PRESENCE_TICK_MS;
   const presenceSuspectMs = Number.isFinite(options.presenceSuspectMs)
     ? Math.max(presenceHeartbeatVisibleMs + 1000, Math.floor(options.presenceSuspectMs))
-    : Number.isFinite(options.presenceStaleMs)
-      ? Math.max(presenceHeartbeatVisibleMs + 1000, Math.floor(options.presenceStaleMs))
-      : PRESENCE_SUSPECT_MS;
+    : PRESENCE_SUSPECT_MS;
   const presenceConfirmDownMs = Number.isFinite(options.presenceConfirmDownMs)
     ? Math.max(presenceSuspectMs + presenceTickMs, Math.floor(options.presenceConfirmDownMs))
     : PRESENCE_CONFIRM_DOWN_MS;
@@ -976,7 +972,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     }
 
     try {
-      windowManager.reconcileOwnership(activeRuntimeIds());
+      windowManager.reconcileOwnership();
     } catch {
       // Ignore runtime reconciliation failures.
     }
@@ -1013,8 +1009,6 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   }
 
   function reclaimOrphanedWindows() {
-    // TODO (suggested): Store API name is legacy; reclaim currently releases
-    // windows to unowned/minimized state rather than taking ownership.
     if (typeof windowManager.claimWindowsOwnedByInactiveRuntimes !== 'function') {
       return;
     }

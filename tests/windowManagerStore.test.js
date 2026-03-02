@@ -251,10 +251,7 @@ test('reconcileOwnership is a no-op when no local-focus correction is needed', (
   restoredStore.hydratePersistedState(persisted);
 
   const before = restoredStore.getSnapshot();
-  const foreignOwnerRuntimeId = before.windows[before.windowOrder[0]]?.ownerRuntimeId;
-  assert.ok(foreignOwnerRuntimeId, 'expected foreign owner runtime id');
-
-  restoredStore.reconcileOwnership([foreignOwnerRuntimeId]);
+  restoredStore.reconcileOwnership();
   const after = restoredStore.getSnapshot();
 
   assert.equal(after, before);

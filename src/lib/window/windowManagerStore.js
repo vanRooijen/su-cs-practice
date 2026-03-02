@@ -320,7 +320,6 @@ export function createWindowManagerStore() {
         : resolveNavigationWindowForApp(state, route, APP_DEFINITIONS, {
             ownerRuntimeId: runtimeId,
             includeVoidWindows: true,
-            allowForeignFallback: false,
           });
       const preselectedWindow = preselectedWindowId ? state.windows[preselectedWindowId] : null;
       const isStrictNoOp =
@@ -371,7 +370,6 @@ export function createWindowManagerStore() {
         : resolveNavigationWindowForApp(next, route, APP_DEFINITIONS, {
             ownerRuntimeId: runtimeId,
             includeVoidWindows: true,
-            allowForeignFallback: false,
           });
 
       if (!targetWindowId) {
@@ -904,9 +902,7 @@ export function createWindowManagerStore() {
     return focusedPath;
   }
 
-  function reconcileOwnership(activeRuntimeIdsLike) {
-    toActiveRuntimeIdSet(activeRuntimeIdsLike);
-
+  function reconcileOwnership() {
     store.update((state) => {
       const next = cloneState(state);
       const focusedBefore = next.focusedWindowId;

@@ -167,7 +167,6 @@ export function resolveNavigationWindowForApp(state, route, appDefinitions, opti
   const ownerRuntimeId =
     typeof options.ownerRuntimeId === 'string' && options.ownerRuntimeId.trim() ? options.ownerRuntimeId : null;
   const includeVoidWindows = options.includeVoidWindows === true;
-  const allowForeignFallback = options.allowForeignFallback !== false;
   const appConfig = appDefinitions[route.appId];
   const appWindowIds = listWindowsForApp(state, route.appId);
 
@@ -223,30 +222,5 @@ export function resolveNavigationWindowForApp(state, route, appDefinitions, opti
   if (localWindowIds.length) {
     return localWindowIds.at(-1) ?? null;
   }
-
-  if (!allowForeignFallback) {
-    return null;
-  }
-
-  const foreignExactRouteWindowId = resolveExactRouteWindowId(state, appWindowIds, route);
-  if (foreignExactRouteWindowId) {
-    return foreignExactRouteWindowId;
-  }
-
-  if (typeof appConfig?.resolveNavigationWindowId === 'function') {
-    const selected = appConfig.resolveNavigationWindowId({
-      appId: route.appId,
-      appWindowIds,
-      focusedWindowId: state.focusedWindowId,
-      windowOrder: state.windowOrder,
-      windows: state.windows,
-      route,
-    });
-
-    if (selected && state.windows[selected]?.appId === route.appId) {
-      return selected;
-    }
-  }
-
-  return appWindowIds.at(-1) ?? null;
+  return null;
 }
