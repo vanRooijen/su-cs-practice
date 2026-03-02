@@ -240,10 +240,10 @@ export function createWindowManagerStore() {
 
     const focusedWindowId = toPositiveWindowId(persistedState?.focusedWindowId);
     const focusedWindow = focusedWindowId ? next.windows[focusedWindowId] : null;
-    if (focusedWindow && !focusedWindow.isMinimized) {
+    if (focusedWindow && !focusedWindow.isMinimized && isOwnedByRuntime(focusedWindow)) {
       next.focusedWindowId = focusedWindowId;
     } else {
-      next.focusedWindowId = highestVisibleWindowId(next);
+      next.focusedWindowId = highestVisibleWindowId(next, runtimeId);
     }
 
     if (next.focusedWindowId && next.windows[next.focusedWindowId]) {
@@ -275,13 +275,13 @@ export function createWindowManagerStore() {
 
   function ensureOwnedFocus(next) {
     const focusedWindow = next.focusedWindowId ? next.windows[next.focusedWindowId] : null;
-    const focusedVisibleOwned = Boolean(focusedWindow && !focusedWindow.isMinimized);
+    const focusedVisibleOwned = Boolean(focusedWindow && !focusedWindow.isMinimized && isOwnedByRuntime(focusedWindow));
 
     if (focusedVisibleOwned) {
       return;
     }
 
-    next.focusedWindowId = highestVisibleWindowId(next);
+    next.focusedWindowId = highestVisibleWindowId(next, runtimeId);
     if (!next.focusedWindowId) {
       return;
     }
@@ -331,7 +331,7 @@ export function createWindowManagerStore() {
         for (const windowId of next.windowOrder) {
           const win = next.windows[windowId];
 
-          if (!win || win.isMinimized) {
+          if (!win || !isOwnedByRuntime(win) || win.isMinimized) {
             continue;
           }
 
@@ -451,7 +451,7 @@ export function createWindowManagerStore() {
         return state;
       }
 
-      const isFocused = state.focusedWindowId === windowId && !target.isMinimized;
+      const isFocused = state.focusedWindowId === windowId && !target.isMinimized && isOwnedByRuntime(target);
       const next = cloneState(state);
 
       if (isFocused) {
@@ -461,7 +461,7 @@ export function createWindowManagerStore() {
           minimizeReason: 'user',
         };
 
-        const nextVisibleWindowId = highestVisibleWindowId(next);
+        const nextVisibleWindowId = highestVisibleWindowId(next, runtimeId);
         next.focusedWindowId = nextVisibleWindowId;
 
         if (nextVisibleWindowId) {
@@ -502,7 +502,7 @@ export function createWindowManagerStore() {
       };
 
       if (next.focusedWindowId === windowId || !next.windows[next.focusedWindowId]) {
-        const nextVisibleWindowId = highestVisibleWindowId(next);
+        const nextVisibleWindowId = highestVisibleWindowId(next, runtimeId);
         next.focusedWindowId = nextVisibleWindowId;
 
         if (nextVisibleWindowId) {
@@ -697,7 +697,7 @@ export function createWindowManagerStore() {
       next.windowOrder = next.windowOrder.filter((id) => id !== windowId);
 
       if (wasFocused || next.focusedWindowId && !next.windows[next.focusedWindowId]) {
-        next.focusedWindowId = highestVisibleWindowId(next);
+        next.focusedWindowId = highestVisibleWindowId(next, runtimeId);
       }
       ensureOwnedFocus(next);
 
@@ -724,6 +724,81 @@ export function createWindowManagerStore() {
   }
 
   function closeAllWindows() {
+    closeAllWindowsGlobal();
+  }
+
+  function closeOwnedWindows() {
+    store.update((state) => {
+      const next = cloneState(state);
+      let removed = false;
+
+      for (const windowId of state.windowOrder) {
+        const win = state.windows[windowId];
+        if (!win || !isOwnedByRuntime(win)) {
+          continue;
+        }
+
+        delete next.windows[windowId];
+        removed = true;
+      }
+
+      if (removed) {
+        next.windowOrder = next.windowOrder.filter((id) => Boolean(next.windows[id]));
+        if (next.focusedWindowId && !next.windows[next.focusedWindowId]) {
+          next.focusedWindowId = null;
+        }
+      }
+
+      const focusedBefore = next.focusedWindowId;
+      ensureOwnedFocus(next);
+      const focusedChanged = next.focusedWindowId !== focusedBefore;
+
+      if (!removed && !focusedChanged) {
+        return state;
+      }
+
+      if (!next.windowOrder.length) {
+        next.lastRoute = null;
+      }
+
+      return next;
+    });
+  }
+
+  function closeWindowsOwnedByOthers() {
+    store.update((state) => {
+      const next = cloneState(state);
+      let removed = false;
+
+      for (const windowId of state.windowOrder) {
+        const win = state.windows[windowId];
+        if (!win || isOwnedByRuntime(win)) {
+          continue;
+        }
+
+        delete next.windows[windowId];
+        removed = true;
+      }
+
+      if (!removed) {
+        return state;
+      }
+
+      next.windowOrder = next.windowOrder.filter((id) => Boolean(next.windows[id]));
+      if (next.focusedWindowId && !next.windows[next.focusedWindowId]) {
+        next.focusedWindowId = null;
+      }
+
+      ensureOwnedFocus(next);
+      if (!next.windowOrder.length) {
+        next.lastRoute = null;
+      }
+
+      return next;
+    });
+  }
+
+  function closeAllWindowsGlobal() {
     store.update((state) => {
       if (state.windowOrder.length === 0 && !state.focusedWindowId) {
         return state;
@@ -844,6 +919,9 @@ export function createWindowManagerStore() {
     resizeWindow,
     stepWindowHistory,
     closeWindow,
+    closeOwnedWindows,
+    closeWindowsOwnedByOthers,
+    closeAllWindowsGlobal,
     closeAllWindows,
     getDefaultPathForApp,
     getSnapshot,

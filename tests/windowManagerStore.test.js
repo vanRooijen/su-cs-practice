@@ -80,7 +80,7 @@ test('closing the final focused window suggests desktop root path', () => {
   assert.equal(store.getSnapshot().focusedWindowId, null);
 });
 
-test('closeAllWindows clears every window and focus while preserving workspace bounds', () => {
+test('closeAllWindowsGlobal clears every window and focus while preserving workspace bounds', () => {
   const store = createWindowManagerStore();
   store.setWorkspaceRect({ width: 1333, height: 777 });
   store.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
@@ -89,7 +89,7 @@ test('closeAllWindows clears every window and focus while preserving workspace b
   const before = store.getSnapshot();
   assert.equal(before.windowOrder.length, 2);
 
-  store.closeAllWindows();
+  store.closeAllWindowsGlobal();
   const after = store.getSnapshot();
 
   assert.equal(after.windowOrder.length, 0);
@@ -97,6 +97,59 @@ test('closeAllWindows clears every window and focus while preserving workspace b
   assert.equal(after.focusedWindowId, null);
   assert.equal(after.nextWindowId, before.nextWindowId);
   assert.deepEqual(after.workspaceRect, before.workspaceRect);
+});
+
+test('closeOwnedWindows only removes windows owned by this runtime', () => {
+  const sourceStore = createWindowManagerStore();
+  sourceStore.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
+  sourceStore.applyRoute(makeRoute('/reader/help', 'reader', 'help', { openMode: 'new-window' }));
+
+  const restoredStore = createWindowManagerStore();
+  restoredStore.hydratePersistedState(sourceStore.getSnapshot());
+  restoredStore.applyRoute(makeRoute('/home', 'home', '', { openMode: 'new-window' }));
+
+  const before = restoredStore.getSnapshot();
+  const localRuntimeId = restoredStore.getRuntimeId();
+  const ownedIdsBefore = before.windowOrder.filter((windowId) => before.windows[windowId]?.ownerRuntimeId === localRuntimeId);
+  const foreignIdsBefore = before.windowOrder.filter((windowId) => before.windows[windowId]?.ownerRuntimeId !== localRuntimeId);
+  assert.ok(ownedIdsBefore.length > 0, 'expected at least one local window');
+  assert.ok(foreignIdsBefore.length > 0, 'expected at least one foreign window');
+
+  restoredStore.closeOwnedWindows();
+  const after = restoredStore.getSnapshot();
+
+  const ownedIdsAfter = after.windowOrder.filter((windowId) => after.windows[windowId]?.ownerRuntimeId === localRuntimeId);
+  const foreignIdsAfter = after.windowOrder.filter((windowId) => after.windows[windowId]?.ownerRuntimeId !== localRuntimeId);
+  assert.equal(ownedIdsAfter.length, 0);
+  assert.equal(foreignIdsAfter.length, foreignIdsBefore.length);
+  assert.equal(after.focusedWindowId, null);
+});
+
+test('closeWindowsOwnedByOthers removes foreign windows while keeping local windows', () => {
+  const sourceStore = createWindowManagerStore();
+  sourceStore.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
+  sourceStore.applyRoute(makeRoute('/reader/help', 'reader', 'help', { openMode: 'new-window' }));
+
+  const restoredStore = createWindowManagerStore();
+  restoredStore.hydratePersistedState(sourceStore.getSnapshot());
+  restoredStore.applyRoute(makeRoute('/home', 'home', '', { openMode: 'new-window' }));
+
+  const before = restoredStore.getSnapshot();
+  const localRuntimeId = restoredStore.getRuntimeId();
+  const ownedIdsBefore = before.windowOrder.filter((windowId) => before.windows[windowId]?.ownerRuntimeId === localRuntimeId);
+  const foreignIdsBefore = before.windowOrder.filter((windowId) => before.windows[windowId]?.ownerRuntimeId !== localRuntimeId);
+  assert.ok(ownedIdsBefore.length > 0, 'expected at least one local window');
+  assert.ok(foreignIdsBefore.length > 0, 'expected at least one foreign window');
+
+  restoredStore.closeWindowsOwnedByOthers();
+  const after = restoredStore.getSnapshot();
+
+  const ownedIdsAfter = after.windowOrder.filter((windowId) => after.windows[windowId]?.ownerRuntimeId === localRuntimeId);
+  const foreignIdsAfter = after.windowOrder.filter((windowId) => after.windows[windowId]?.ownerRuntimeId !== localRuntimeId);
+  assert.equal(ownedIdsAfter.length, ownedIdsBefore.length);
+  assert.equal(foreignIdsAfter.length, 0);
+  assert.ok(after.focusedWindowId, 'expected a focused local window');
+  assert.equal(after.windows[after.focusedWindowId].ownerRuntimeId, localRuntimeId);
 });
 
 test('window history limit is isolated per window instance', () => {
@@ -333,8 +386,8 @@ test('hydratePersistedState restores z-order, focus, and window metadata', () =>
 
   assert.equal(restoredSnapshot.windowOrder.length, 2);
   assert.deepEqual(restoredSnapshot.windowOrder, persistedSnapshot.windowOrder);
-  assert.equal(restoredSnapshot.focusedWindowId, readerWindowId);
-  assert.equal(restoredFocusedPath, '/reader/help');
+  assert.equal(restoredSnapshot.focusedWindowId, null);
+  assert.equal(restoredFocusedPath, null);
   assert.equal(restoredSnapshot.windows[peopleWindowId].isMinimized, true);
   assert.equal(restoredSnapshot.windows[readerWindowId].path, '/reader/help');
   assert.equal(restoredSnapshot.windows[peopleWindowId].bounds.x, 128);

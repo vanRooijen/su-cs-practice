@@ -102,34 +102,35 @@
   }
 
   function requestCloseOwnedApplications() {
-    void closeOwnedApplications({
-      initiatedByRemote: false,
-      clearPersistence: false,
-      broadcastType: null,
-    });
+    if (isClosingAll) {
+      return;
+    }
+
+    windowManager.closeOwnedWindows();
+    navigateToDesktop({ replace: true, forceEmit: true });
   }
 
   function requestGlobalCloseAllApplications() {
-    void closeOwnedApplications({
+    void closeAllInstances({
       initiatedByRemote: false,
-      clearPersistence: true,
-      broadcastType: WINDOW_CONTROL_TYPE_CLOSE_ALL,
-      restartPersistenceCycle: true,
     });
   }
 
   function requestCloseOtherInstances() {
+    if (isClosingAll) {
+      return;
+    }
+
+    windowManager.closeWindowsOwnedByOthers();
+
     const didBroadcast = broadcastWindowControl(WINDOW_CONTROL_TYPE_CLOSE_OWNED);
     if (!didBroadcast) {
       showCloseAllNotice('Could not reach other tabs in this browser.');
     }
   }
 
-  async function closeOwnedApplications(options = {}) {
+  async function closeAllInstances(options = {}) {
     const initiatedByRemote = options.initiatedByRemote === true;
-    const clearPersistence = options.clearPersistence === true;
-    const broadcastType = typeof options.broadcastType === 'string' ? options.broadcastType : null;
-    const restartPersistenceCycle = options.restartPersistenceCycle === true;
 
     if (isClosingAll) {
       return;
@@ -138,18 +139,12 @@
     isClosingAll = true;
 
     try {
-      if (!initiatedByRemote && broadcastType) {
-        const didBroadcast = broadcastWindowControl(broadcastType);
+      if (!initiatedByRemote) {
+        const didBroadcast = broadcastWindowControl(WINDOW_CONTROL_TYPE_CLOSE_ALL);
         if (!didBroadcast) {
           showCloseAllNotice('Could not reach other tabs in this browser.');
         }
         await wait(GLOBAL_CLOSE_BROADCAST_GRACE_MS);
-      }
-
-      if (!clearPersistence && !restartPersistenceCycle) {
-        windowManager.closeAllWindows();
-        navigateToDesktop({ replace: true, forceEmit: true });
-        return;
       }
 
       try {
@@ -159,10 +154,7 @@
       }
 
       persistenceController = null;
-      let shouldRestoreOnStart = false;
-      let shouldRequestPeerStateOnStart = true;
-
-      if (clearPersistence && !initiatedByRemote) {
+      if (!initiatedByRemote) {
         let clearResult = { ok: false, reason: 'delete-error' };
 
         try {
@@ -178,20 +170,14 @@
               : 'Could not fully clear session storage. Try again.',
           );
         }
-
-        shouldRestoreOnStart = false;
       }
 
-      if (restartPersistenceCycle) {
-        shouldRequestPeerStateOnStart = false;
-      }
-
-      windowManager.closeAllWindows();
+      windowManager.closeAllWindowsGlobal();
       navigateToDesktop({ replace: true, forceEmit: true });
 
       await startWindowSessionPersistence({
-        restoreOnStart: shouldRestoreOnStart,
-        requestPeerStateOnStart: shouldRequestPeerStateOnStart,
+        restoreOnStart: false,
+        requestPeerStateOnStart: false,
       });
     } finally {
       isClosingAll = false;
@@ -225,13 +211,19 @@
         return;
       }
 
-      const restartPersistenceForMessage = message.type === WINDOW_CONTROL_TYPE_CLOSE_ALL;
-      void closeOwnedApplications({
-        initiatedByRemote: true,
-        clearPersistence: false,
-        broadcastType: null,
-        restartPersistenceCycle: restartPersistenceForMessage,
-      });
+      if (message.type === WINDOW_CONTROL_TYPE_CLOSE_ALL) {
+        void closeAllInstances({
+          initiatedByRemote: true,
+        });
+        return;
+      }
+
+      if (isClosingAll) {
+        return;
+      }
+
+      windowManager.closeOwnedWindows();
+      navigateToDesktop({ replace: true, forceEmit: true });
     };
 
     if (hasBroadcastChannel()) {
