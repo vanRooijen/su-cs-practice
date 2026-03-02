@@ -12,6 +12,7 @@ const SESSION_SYNC_CHANNEL_NAME = 'su-cs-window-sync';
 const PRESENCE_PROTOCOL = 'su-cs-owner-presence-v1';
 const PRESENCE_CHANNEL_NAME = 'su-cs-owner-presence';
 const SESSION_CLEAR_MARKER_STORAGE_KEY = 'su-cs-window-session-cleared-at';
+const RUNTIME_SESSION_STATE_STORAGE_KEY = 'su-cs-runtime-session-state-v1';
 const PRESENCE_BYE_STORAGE_KEY = 'su-cs-owner-presence-bye';
 const PRESENCE_HEARTBEAT_VISIBLE_MS = 15000;
 const PRESENCE_HEARTBEAT_HIDDEN_MS = 45000;
@@ -704,6 +705,89 @@ function readSessionClearedAt() {
   }
 }
 
+function sanitizeOwnedWindowIdList(rawWindowIds) {
+  if (!Array.isArray(rawWindowIds)) {
+    return [];
+  }
+
+  const ownedWindowIds = [];
+  const seenWindowIds = new Set();
+
+  for (const rawWindowId of rawWindowIds) {
+    const windowId = toPositiveWindowId(rawWindowId);
+    if (!windowId || seenWindowIds.has(windowId)) {
+      continue;
+    }
+
+    ownedWindowIds.push(windowId);
+    seenWindowIds.add(windowId);
+  }
+
+  return ownedWindowIds;
+}
+
+function readRuntimeSessionState() {
+  if (typeof window === 'undefined' || typeof window.sessionStorage === 'undefined') {
+    return {
+      runtimeId: null,
+      ownedWindowIds: [],
+      updatedAt: 0,
+    };
+  }
+
+  try {
+    const raw = window.sessionStorage.getItem(RUNTIME_SESSION_STATE_STORAGE_KEY);
+    if (!raw) {
+      return {
+        runtimeId: null,
+        ownedWindowIds: [],
+        updatedAt: 0,
+      };
+    }
+
+    const parsed = JSON.parse(raw);
+    const runtimeId = typeof parsed?.runtimeId === 'string' && parsed.runtimeId.trim() ? parsed.runtimeId : null;
+    const ownedWindowIds = sanitizeOwnedWindowIdList(parsed?.ownedWindowIds);
+    const updatedAt = Number.isFinite(parsed?.updatedAt) && parsed.updatedAt > 0 ? parsed.updatedAt : 0;
+
+    return {
+      runtimeId,
+      ownedWindowIds,
+      updatedAt,
+    };
+  } catch {
+    return {
+      runtimeId: null,
+      ownedWindowIds: [],
+      updatedAt: 0,
+    };
+  }
+}
+
+function writeRuntimeSessionState(stateLike) {
+  if (typeof window === 'undefined' || typeof window.sessionStorage === 'undefined') {
+    return;
+  }
+
+  const runtimeId = typeof stateLike?.runtimeId === 'string' && stateLike.runtimeId.trim() ? stateLike.runtimeId : null;
+  const ownedWindowIds = sanitizeOwnedWindowIdList(stateLike?.ownedWindowIds);
+  const updatedAt =
+    Number.isFinite(stateLike?.updatedAt) && stateLike.updatedAt > 0 ? Math.floor(stateLike.updatedAt) : Date.now();
+
+  try {
+    window.sessionStorage.setItem(
+      RUNTIME_SESSION_STATE_STORAGE_KEY,
+      JSON.stringify({
+        runtimeId,
+        ownedWindowIds,
+        updatedAt,
+      }),
+    );
+  } catch {
+    // Ignore sessionStorage failures and continue with in-memory runtime state.
+  }
+}
+
 function shouldRestoreSnapshot(restoredSnapshot, sessionClearedAt) {
   if (!restoredSnapshot?.snapshot) {
     return false;
@@ -866,6 +950,16 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     typeof runtimeIdCandidate === 'string' && runtimeIdCandidate.trim()
       ? runtimeIdCandidate
       : createOpaqueId('runtime');
+  const runtimeSessionState = readRuntimeSessionState();
+  const previousRuntimeIdFromSession =
+    typeof runtimeSessionState.runtimeId === 'string' &&
+    runtimeSessionState.runtimeId &&
+    runtimeSessionState.runtimeId !== runtimeId
+      ? runtimeSessionState.runtimeId
+      : null;
+  const cachedOwnedWindowIdsFromSession = runtimeSessionState.ownedWindowIds;
+  const hadPriorRuntimeSession = Boolean(previousRuntimeIdFromSession);
+  const startupProbeId = createOpaqueId('startup-probe');
 
   const db = await openWindowSessionDb();
   if (!db) {
@@ -937,6 +1031,8 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   let latestLocalSnapshotForSync = lastPersistedSnapshot;
   let lastBroadcastSnapshotForSync = lastPersistedSnapshot;
   let lastPresenceSentAt = 0;
+  let startupProbeAckCount = 0;
+  let startupProbeDetectedRuntimeCollision = false;
   seedHydratedForeignOwners(lastPersistedSnapshot);
 
   function collectForeignOwnerRuntimeIds(snapshotLike) {
@@ -967,6 +1063,32 @@ export async function createWindowSessionPersistence(windowManager, options = {}
       // Unknown historical owners must prove liveness before retaining ownership.
       activeRuntimeSeenAt.set(ownerRuntimeId, 0);
     }
+  }
+
+  function listOwnedWindowIdsForRuntime(snapshotLike, ownerRuntimeId) {
+    if (typeof ownerRuntimeId !== 'string' || !ownerRuntimeId.trim()) {
+      return [];
+    }
+
+    const normalizedSnapshot = serializeWindowManagerSnapshot(snapshotLike ?? createEmptySnapshot());
+    const ownedWindowIds = [];
+
+    for (const windowId of normalizedSnapshot.windowOrder) {
+      const win = normalizedSnapshot.windows[windowId];
+      if (win?.ownerRuntimeId === ownerRuntimeId) {
+        ownedWindowIds.push(windowId);
+      }
+    }
+
+    return ownedWindowIds;
+  }
+
+  function persistRuntimeOwnedWindowIds(snapshotLike) {
+    writeRuntimeSessionState({
+      runtimeId,
+      ownedWindowIds: listOwnedWindowIdsForRuntime(snapshotLike, runtimeId),
+      updatedAt: Date.now(),
+    });
   }
 
   function localizeSnapshotForHydration(snapshotLike) {
@@ -1022,6 +1144,52 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     return false;
   }
 
+  function reclaimCachedOwnedWindowsForRefresh() {
+    if (!hadPriorRuntimeSession || !cachedOwnedWindowIdsFromSession.length) {
+      return false;
+    }
+
+    const snapshot = serializeWindowManagerSnapshot(windowManager.getSnapshot());
+    let hasChanges = false;
+
+    for (const windowId of cachedOwnedWindowIdsFromSession) {
+      const win = snapshot.windows[windowId];
+      if (!win) {
+        continue;
+      }
+
+      const ownerRuntimeId =
+        typeof win.ownerRuntimeId === 'string' && win.ownerRuntimeId.trim() ? win.ownerRuntimeId : null;
+      if (ownerRuntimeId && ownerRuntimeId !== previousRuntimeIdFromSession && ownerRuntimeId !== runtimeId) {
+        continue;
+      }
+
+      snapshot.windows[windowId] = {
+        ...win,
+        ownerRuntimeId: runtimeId,
+        isMinimized: false,
+      };
+      hasChanges = true;
+    }
+
+    if (!hasChanges) {
+      return false;
+    }
+
+    suppressBroadcastOnce = true;
+    isHydratingRemote = true;
+    try {
+      windowManager.hydratePersistedState(snapshot);
+    } catch {
+      // Ignore refresh reclaim failures.
+      return false;
+    } finally {
+      isHydratingRemote = false;
+    }
+
+    return true;
+  }
+
   function adoptOwnedWindowsForColdStart() {
     const snapshot = serializeWindowManagerSnapshot(windowManager.getSnapshot());
     let hasChanges = false;
@@ -1060,18 +1228,33 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     }
   }
 
-  function scheduleColdStartAdoptionCheck() {
+  function scheduleStartupOwnershipCheck() {
     if (isDestroyed || startupColdStartTimerId) {
       return;
     }
 
     startupColdStartTimerId = window.setTimeout(() => {
       startupColdStartTimerId = 0;
-      if (isDestroyed || hasObservedPeerRuntime()) {
+      if (isDestroyed) {
         return;
       }
 
-      adoptOwnedWindowsForColdStart();
+      const hasObservedPeer = startupProbeAckCount > 0 || hasObservedPeerRuntime();
+      if (startupProbeDetectedRuntimeCollision) {
+        // Duplicate tab startup: clear inherited ownership cache and avoid reclaim.
+        writeRuntimeSessionState({
+          runtimeId,
+          ownedWindowIds: [],
+          updatedAt: Date.now(),
+        });
+        return;
+      }
+
+      reclaimCachedOwnedWindowsForRefresh();
+
+      if (!hasObservedPeer) {
+        adoptOwnedWindowsForColdStart();
+      }
     }, startupPeerWaitMs);
   }
 
@@ -1521,6 +1704,48 @@ export async function createWindowSessionPersistence(windowManager, options = {}
 
     const sentAt = Number.isFinite(message.sentAt) ? message.sentAt : Date.now();
 
+    if (message.type === 'startup-probe') {
+      touchRuntimePresence(sourceRuntimeId, sentAt);
+      const targetRuntimeId =
+        typeof message.targetRuntimeId === 'string' && message.targetRuntimeId.trim() ? message.targetRuntimeId : null;
+      if (targetRuntimeId && targetRuntimeId !== runtimeId) {
+        return;
+      }
+
+      const probeId = typeof message.probeId === 'string' && message.probeId.trim() ? message.probeId : null;
+      const candidateRuntimeId =
+        typeof message.candidateRuntimeId === 'string' && message.candidateRuntimeId.trim()
+          ? message.candidateRuntimeId
+          : null;
+
+      postPresence('startup-ack', {
+        targetRuntimeId: sourceRuntimeId,
+        probeId,
+        hasRuntimeCollision: Boolean(candidateRuntimeId && candidateRuntimeId === runtimeId),
+      });
+      return;
+    }
+
+    if (message.type === 'startup-ack') {
+      const targetRuntimeId =
+        typeof message.targetRuntimeId === 'string' && message.targetRuntimeId.trim() ? message.targetRuntimeId : null;
+      if (targetRuntimeId !== runtimeId) {
+        return;
+      }
+
+      const probeId = typeof message.probeId === 'string' && message.probeId.trim() ? message.probeId : null;
+      if (probeId !== startupProbeId) {
+        return;
+      }
+
+      startupProbeAckCount += 1;
+      if (message.hasRuntimeCollision === true) {
+        startupProbeDetectedRuntimeCollision = true;
+      }
+      touchRuntimePresence(sourceRuntimeId, sentAt);
+      return;
+    }
+
     if (message.type === 'probe') {
       touchRuntimePresence(sourceRuntimeId, sentAt);
       const targetRuntimeId =
@@ -1580,6 +1805,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     }
 
     const normalizedSnapshot = serializeWindowManagerSnapshot(snapshot);
+    persistRuntimeOwnedWindowIds(normalizedSnapshot);
     pendingSnapshot = normalizedSnapshot;
     latestLocalSnapshotForSync = normalizedSnapshot;
     scheduleFlush();
@@ -1620,6 +1846,10 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     const now = Date.now();
     activeRuntimeSeenAt.set(runtimeId, now);
     postPresence('hello');
+    postPresence('startup-probe', {
+      probeId: startupProbeId,
+      candidateRuntimeId: previousRuntimeIdFromSession,
+    });
     lastPresenceSentAt = now;
     pruneStaleRuntimes(now);
     presenceTickTimerId = window.setInterval(() => {
@@ -1641,7 +1871,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   if (syncChannel) {
     requestPeerState();
   }
-  scheduleColdStartAdoptionCheck();
+  scheduleStartupOwnershipCheck();
 
   scheduleOrphanReclaim();
   reconcileOwnershipFromPresence();
