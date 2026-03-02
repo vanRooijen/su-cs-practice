@@ -52,6 +52,14 @@ function listWindowsForApp(state, appId) {
   return state.windowOrder.filter((id) => state.windows[id]?.appId === appId);
 }
 
+function listWindowsForAppOwnedByRuntime(state, appWindowIds, ownerRuntimeId) {
+  if (typeof ownerRuntimeId !== 'string' || !ownerRuntimeId.trim()) {
+    return appWindowIds;
+  }
+
+  return appWindowIds.filter((windowId) => state.windows[windowId]?.ownerRuntimeId === ownerRuntimeId);
+}
+
 function resolveExactRouteWindowId(state, appWindowIds, route) {
   if (!appWindowIds.length) {
     return null;
@@ -86,7 +94,10 @@ function resolveExactRouteWindowId(state, appWindowIds, route) {
   return null;
 }
 
-export function resolveNavigationWindowForApp(state, route, appDefinitions) {
+export function resolveNavigationWindowForApp(state, route, appDefinitions, options = {}) {
+  const ownerRuntimeId =
+    typeof options.ownerRuntimeId === 'string' && options.ownerRuntimeId.trim() ? options.ownerRuntimeId : null;
+  const allowForeignFallback = options.allowForeignFallback !== false;
   const appConfig = appDefinitions[route.appId];
   const appWindowIds = listWindowsForApp(state, route.appId);
 
@@ -94,9 +105,38 @@ export function resolveNavigationWindowForApp(state, route, appDefinitions) {
     return null;
   }
 
-  const exactRouteWindowId = resolveExactRouteWindowId(state, appWindowIds, route);
+  const ownerScopedWindowIds = listWindowsForAppOwnedByRuntime(state, appWindowIds, ownerRuntimeId);
+  const exactRouteWindowId = resolveExactRouteWindowId(state, ownerScopedWindowIds, route);
   if (exactRouteWindowId) {
     return exactRouteWindowId;
+  }
+
+  if (ownerScopedWindowIds.length && typeof appConfig?.resolveNavigationWindowId === 'function') {
+    const selected = appConfig.resolveNavigationWindowId({
+      appId: route.appId,
+      appWindowIds: ownerScopedWindowIds,
+      focusedWindowId: state.focusedWindowId,
+      windowOrder: state.windowOrder,
+      windows: state.windows,
+      route,
+    });
+
+    if (selected && state.windows[selected]?.appId === route.appId) {
+      return selected;
+    }
+  }
+
+  if (ownerScopedWindowIds.length) {
+    return ownerScopedWindowIds.at(-1) ?? null;
+  }
+
+  if (!allowForeignFallback) {
+    return null;
+  }
+
+  const foreignExactRouteWindowId = resolveExactRouteWindowId(state, appWindowIds, route);
+  if (foreignExactRouteWindowId) {
+    return foreignExactRouteWindowId;
   }
 
   if (typeof appConfig?.resolveNavigationWindowId === 'function') {

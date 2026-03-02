@@ -205,6 +205,36 @@ test('claimWindowsOwnedByInactiveRuntimes preserves windows owned by active runt
   );
 });
 
+test('claimWindowsOwnedByInactiveRuntimes can restrict claims to explicit runtime ids', () => {
+  const sourceStore = createWindowManagerStore();
+  sourceStore.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
+  sourceStore.applyRoute(makeRoute('/reader/help', 'reader', 'help', { openMode: 'new-window' }));
+
+  const persisted = sourceStore.getSnapshot();
+  const restoredStore = createWindowManagerStore();
+  restoredStore.hydratePersistedState(persisted);
+
+  const before = restoredStore.getSnapshot();
+  const foreignOwnerRuntimeId = before.windows[before.windowOrder[0]]?.ownerRuntimeId;
+  assert.ok(foreignOwnerRuntimeId, 'expected foreign owner runtime id');
+
+  restoredStore.claimWindowsOwnedByInactiveRuntimes([], []);
+  let after = restoredStore.getSnapshot();
+  assert.equal(after.focusedWindowId, null);
+  assert.ok(
+    after.windowOrder.every((windowId) => after.windows[windowId]?.ownerRuntimeId === foreignOwnerRuntimeId),
+    'expected no claim when reclaimable set is empty',
+  );
+
+  restoredStore.claimWindowsOwnedByInactiveRuntimes([], [foreignOwnerRuntimeId]);
+  after = restoredStore.getSnapshot();
+  const localRuntimeId = restoredStore.getRuntimeId();
+  assert.ok(
+    after.windowOrder.every((windowId) => after.windows[windowId]?.ownerRuntimeId === localRuntimeId),
+    'expected claim when runtime id is explicitly reclaimable',
+  );
+});
+
 test('reconcileOwnership clears offline marker without auto-restoring minimized windows', () => {
   const sourceStore = createWindowManagerStore();
   sourceStore.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
@@ -313,6 +343,35 @@ test('route navigation prefers exact route window match before app fallback stra
   assert.equal(snapshot.focusedWindowId, firstWindowId);
   assert.equal(snapshot.windows[firstWindowId].path, '/reader/articles');
   assert.equal(snapshot.windows[secondWindowId].path, '/reader/help');
+});
+
+test('applyRoute does not auto-steal foreign-owned windows for route matches', () => {
+  const sourceStore = createWindowManagerStore();
+  sourceStore.applyRoute(makeRoute('/reader/help', 'reader', 'help'));
+
+  const persisted = sourceStore.getSnapshot();
+  const restoredStore = createWindowManagerStore();
+  restoredStore.hydratePersistedState(persisted);
+
+  const before = restoredStore.getSnapshot();
+  const foreignWindowId = before.windowOrder[0];
+  const foreignOwnerRuntimeId = before.windows[foreignWindowId]?.ownerRuntimeId;
+  const localRuntimeId = restoredStore.getRuntimeId();
+  assert.ok(foreignWindowId, 'expected foreign-owned window');
+  assert.ok(foreignOwnerRuntimeId && foreignOwnerRuntimeId !== localRuntimeId, 'expected foreign owner');
+  assert.equal(before.focusedWindowId, null);
+
+  restoredStore.applyRoute(makeRoute('/reader/help', 'reader', 'help'));
+  const after = restoredStore.getSnapshot();
+
+  const localOwnedWindowIds = after.windowOrder.filter((windowId) => after.windows[windowId]?.ownerRuntimeId === localRuntimeId);
+  const foreignOwnedWindowIds = after.windowOrder.filter((windowId) => after.windows[windowId]?.ownerRuntimeId !== localRuntimeId);
+
+  assert.equal(localOwnedWindowIds.length, 1);
+  assert.equal(foreignOwnedWindowIds.length, 1);
+  assert.equal(after.windows[localOwnedWindowIds[0]].path, '/reader/help');
+  assert.equal(after.windows[foreignOwnedWindowIds[0]].ownerRuntimeId, foreignOwnerRuntimeId);
+  assert.equal(after.focusedWindowId, localOwnedWindowIds[0]);
 });
 
 test('sidebar activation minimizes focused window and restores it on second activation', () => {

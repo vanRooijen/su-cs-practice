@@ -315,7 +315,10 @@ export function createWindowManagerStore() {
       const shouldForceDuplicate = route.openMode === 'new-window';
       const preselectedWindowId = shouldForceDuplicate
         ? null
-        : resolveNavigationWindowForApp(state, route, APP_DEFINITIONS);
+        : resolveNavigationWindowForApp(state, route, APP_DEFINITIONS, {
+            ownerRuntimeId: runtimeId,
+            allowForeignFallback: false,
+          });
       const preselectedWindow = preselectedWindowId ? state.windows[preselectedWindowId] : null;
       const isStrictNoOp =
         Boolean(preselectedWindow) &&
@@ -361,7 +364,12 @@ export function createWindowManagerStore() {
         return next;
       }
 
-      let targetWindowId = shouldForceDuplicate ? null : resolveNavigationWindowForApp(next, route, APP_DEFINITIONS);
+      let targetWindowId = shouldForceDuplicate
+        ? null
+        : resolveNavigationWindowForApp(next, route, APP_DEFINITIONS, {
+            ownerRuntimeId: runtimeId,
+            allowForeignFallback: false,
+          });
 
       if (!targetWindowId) {
         targetWindowId = createWindowFromRoute(next, route, APP_DEFINITIONS, { ownerRuntimeId: runtimeId });
@@ -812,8 +820,25 @@ export function createWindowManagerStore() {
     });
   }
 
-  function claimWindowsOwnedByInactiveRuntimes(activeRuntimeIdsLike) {
+  function toReclaimableRuntimeIdSet(reclaimableRuntimeIdsLike) {
+    if (reclaimableRuntimeIdsLike == null) {
+      return null;
+    }
+
+    const reclaimableRuntimeIds = new Set(
+      reclaimableRuntimeIdsLike instanceof Set
+        ? [...reclaimableRuntimeIdsLike]
+        : Array.isArray(reclaimableRuntimeIdsLike)
+          ? reclaimableRuntimeIdsLike
+          : [],
+    );
+
+    return reclaimableRuntimeIds;
+  }
+
+  function claimWindowsOwnedByInactiveRuntimes(activeRuntimeIdsLike, reclaimableRuntimeIdsLike = null) {
     const activeRuntimeIds = toActiveRuntimeIdSet(activeRuntimeIdsLike);
+    const reclaimableRuntimeIds = toReclaimableRuntimeIdSet(reclaimableRuntimeIdsLike);
 
     store.update((state) => {
       const next = cloneState(state);
@@ -828,6 +853,10 @@ export function createWindowManagerStore() {
         const ownerRuntimeId =
           typeof win.ownerRuntimeId === 'string' && win.ownerRuntimeId.trim() ? win.ownerRuntimeId : null;
         if (!ownerRuntimeId || ownerRuntimeId === runtimeId || activeRuntimeIds.has(ownerRuntimeId)) {
+          continue;
+        }
+
+        if (reclaimableRuntimeIds && !reclaimableRuntimeIds.has(ownerRuntimeId)) {
           continue;
         }
 

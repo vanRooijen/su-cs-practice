@@ -833,6 +833,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
   let syncChannel = null;
   let presenceChannel = null;
   const activeRuntimeSeenAt = new Map([[runtimeId, Date.now()]]);
+  const reclaimableRuntimeIds = new Set();
   const latestRemoteSequence = new Map();
   let latestLocalSnapshotForSync = lastPersistedSnapshot;
   let lastBroadcastSnapshotForSync = lastPersistedSnapshot;
@@ -889,6 +890,7 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     }
 
     activeRuntimeSeenAt.set(otherRuntimeId, seenAt);
+    reclaimableRuntimeIds.delete(otherRuntimeId);
     reconcileOwnershipFromPresence();
   }
 
@@ -897,8 +899,12 @@ export async function createWindowSessionPersistence(windowManager, options = {}
       return;
     }
 
+    if (!reclaimableRuntimeIds.size) {
+      return;
+    }
+
     try {
-      windowManager.claimWindowsOwnedByInactiveRuntimes(activeRuntimeIds());
+      windowManager.claimWindowsOwnedByInactiveRuntimes(activeRuntimeIds(), reclaimableRuntimeIds);
     } catch {
       // Ignore orphan-claim failures.
     }
@@ -937,7 +943,6 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     }
 
     if (removed) {
-      reclaimOrphanedWindows();
       reconcileOwnershipFromPresence();
     }
   }
@@ -1244,10 +1249,16 @@ export async function createWindowSessionPersistence(windowManager, options = {}
     }
 
     if (message.type === 'bye') {
-      if (activeRuntimeSeenAt.delete(sourceRuntimeId)) {
+      const wasActive = activeRuntimeSeenAt.delete(sourceRuntimeId);
+      reclaimableRuntimeIds.add(sourceRuntimeId);
+
+      if (wasActive) {
         reclaimOrphanedWindows();
         reconcileOwnershipFromPresence();
+        return;
       }
+
+      reclaimOrphanedWindows();
       return;
     }
 
