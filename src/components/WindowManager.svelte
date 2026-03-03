@@ -20,6 +20,8 @@
   const runtimeId = windowManager.getRuntimeId?.() ?? null;
   const MOBILE_VIEWPORT_MEDIA_QUERY = '(max-width: 860px)';
   let localKeepAliveMinimizedWindowIds = new Set();
+  let routeAttentionTokens = {};
+  let nextRouteAttentionToken = 1;
 
   let workspaceElement;
   let isMobileViewport = false;
@@ -51,6 +53,32 @@
     }
 
     return true;
+  }
+
+  function normalizeNavigationId(value) {
+    const numeric = Number(value);
+    return Number.isFinite(numeric) ? numeric : 0;
+  }
+
+  function toFocusedPath(snapshotLike) {
+    const focusedWindowId = snapshotLike?.focusedWindowId;
+    if (!focusedWindowId) {
+      return '';
+    }
+
+    return snapshotLike?.windows?.[focusedWindowId]?.path ?? '';
+  }
+
+  function issueRouteAttention(windowId) {
+    if (!Number.isInteger(windowId) || windowId <= 0) {
+      return;
+    }
+
+    routeAttentionTokens = {
+      ...routeAttentionTokens,
+      [windowId]: nextRouteAttentionToken,
+    };
+    nextRouteAttentionToken += 1;
   }
 
   function trackLocalMinimizedWindow(windowId) {
@@ -660,11 +688,49 @@
     const initialFocusedPath = initialFocusedWindowId ? initialSnapshot.windows[initialFocusedWindowId]?.path ?? '' : '';
     let previousFocusKey = `${initialFocusedWindowId ?? 'none'}::${initialFocusedPath}`;
     let hasSeenFocusedWindow = Boolean(initialFocusedWindowId && initialFocusedPath);
+    let previousRouteSnapshot = initialSnapshot;
+    let previousRouteNavigationId = normalizeNavigationId($route?.navigationId);
     const stopWindowSubscription = windowManager.subscribe((snapshot) => {
+      const requestedPath = typeof $route?.path === 'string' ? $route.path : '';
+      const routedPathFromSnapshot = typeof snapshot?.lastRoute?.path === 'string' ? snapshot.lastRoute.path : '';
+      const previousFocusedWindowId = previousRouteSnapshot?.focusedWindowId ?? null;
+      const nextFocusedWindowId = snapshot?.focusedWindowId ?? null;
+      const previousFocusedPath = toFocusedPath(previousRouteSnapshot);
+      const nextFocusedPath = toFocusedPath(snapshot);
+
+      const focusShiftedByRoute = Boolean(
+        nextFocusedWindowId &&
+          nextFocusedWindowId !== previousFocusedWindowId &&
+          routedPathFromSnapshot &&
+          nextFocusedPath === routedPathFromSnapshot,
+      );
+
+      let samePathRequested = false;
+      const routeNavigationId = normalizeNavigationId($route?.navigationId);
+      if (routeNavigationId !== previousRouteNavigationId) {
+        samePathRequested =
+          Boolean(nextFocusedWindowId) &&
+          nextFocusedWindowId === previousFocusedWindowId &&
+          requestedPath &&
+          requestedPath === previousFocusedPath &&
+          requestedPath === nextFocusedPath;
+
+        previousRouteNavigationId = routeNavigationId;
+      }
+
+      if (focusShiftedByRoute || samePathRequested) {
+        const targetWindowId = nextFocusedWindowId ?? previousFocusedWindowId;
+        const targetWindow = targetWindowId ? snapshot.windows[targetWindowId] : null;
+        if (targetWindow && !targetWindow.isMinimized && targetWindow.ownerRuntimeId === runtimeId) {
+          issueRouteAttention(targetWindowId);
+        }
+      }
+
       const focusedWindowId = snapshot.focusedWindowId;
       const focusedPath = focusedWindowId ? snapshot.windows[focusedWindowId]?.path ?? '' : '';
       const focusKey = `${focusedWindowId ?? 'none'}::${focusedPath}`;
 
+      previousRouteSnapshot = snapshot;
       if (focusKey === previousFocusKey) {
         return;
       }
@@ -855,6 +921,7 @@
             zIndex={index + 1}
             isFocused={$windowManager.focusedWindowId === windowId && !windowState.isMinimized}
             forceMaximized={isMobileViewport}
+            attentionToken={routeAttentionTokens[windowId] ?? 0}
             on:focus={(event) => focusWindowAndSyncUrl(event.detail.windowId)}
             on:minimize={(event) => handleMinimize(event.detail.windowId)}
             on:maximize={(event) => handleMaximize(event.detail.windowId)}

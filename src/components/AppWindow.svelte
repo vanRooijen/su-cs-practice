@@ -1,5 +1,5 @@
 <script>
-  import { createEventDispatcher, onDestroy } from 'svelte';
+  import { createEventDispatcher, onDestroy, tick } from 'svelte';
   import iconChevronLeft from '../assets/icons/lucide/chevron-left.svg?raw';
   import iconChevronRight from '../assets/icons/lucide/chevron-right.svg?raw';
   import iconPanelLeft from '../assets/icons/lucide/panel-left.svg?raw';
@@ -12,6 +12,7 @@
   export let zIndex = 1;
   export let workspaceRect = null;
   export let forceMaximized = false;
+  export let attentionToken = 0;
 
   const dispatch = createEventDispatcher();
   let windowElement;
@@ -21,6 +22,9 @@
   let interactionFrameRequestId = 0;
   let latestPointerPosition = null;
   let dragPreviewOffset = null;
+  let attentionOverlayElement;
+  let attentionAnimation = null;
+  let lastAttentionToken = 0;
 
   function setGlobalDragCursor(isActive) {
     if (typeof document === 'undefined' || !document.body) {
@@ -150,6 +154,44 @@
     }
 
     latestPointerPosition = null;
+  }
+
+  function playAttentionAnimation() {
+    if (!attentionOverlayElement || typeof attentionOverlayElement.animate !== 'function') {
+      return;
+    }
+
+    attentionAnimation?.cancel();
+    attentionAnimation = attentionOverlayElement.animate(
+      [
+        {
+          opacity: 0,
+          transform: 'scale(0.985)',
+        },
+        {
+          opacity: 0.6,
+          transform: 'scale(1)',
+          offset: 0.38,
+        },
+        {
+          opacity: 0,
+          transform: 'scale(1.01)',
+        },
+      ],
+      {
+        duration: 360,
+        easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
+      },
+    );
+  }
+
+  async function playAttentionAnimationSoon(expectedToken) {
+    await tick();
+    if (attentionToken !== expectedToken || windowState?.isMinimized) {
+      return;
+    }
+
+    playAttentionAnimation();
   }
 
   function requestFocus() {
@@ -309,6 +351,8 @@
     interactionSourceElement = null;
     setGlobalDragCursor(false);
     dragPreviewOffset = null;
+    attentionAnimation?.cancel();
+    attentionAnimation = null;
     cancelInteractionFrame();
     removeWindowInteractionListeners();
   });
@@ -337,6 +381,12 @@
   $: canGoBack = historyIndex > 0;
   $: canGoForward = historyIndex < historyLength - 1;
   $: canonicalPath = typeof windowState?.path === 'string' && windowState.path ? windowState.path : '/';
+  $: if (attentionToken > 0 && attentionToken !== lastAttentionToken) {
+    lastAttentionToken = attentionToken;
+    if (!windowState?.isMinimized) {
+      void playAttentionAnimationSoon(attentionToken);
+    }
+  }
 </script>
 
 <section
@@ -406,6 +456,7 @@
   <div class="window-body">
     <slot />
   </div>
+  <div class="window-attention-overlay" bind:this={attentionOverlayElement} aria-hidden="true"></div>
 
   {#if !isEffectivelyMaximized}
     <button
@@ -646,6 +697,18 @@
     min-height: 0;
     overflow: hidden;
     background: var(--su-app-content-bg, var(--su-surface, #fffdf9));
+  }
+
+  .window-attention-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: inherit;
+    opacity: 0;
+    background:
+      radial-gradient(100% 95% at 0% 0%, rgba(202, 162, 88, 0.28), transparent 62%),
+      radial-gradient(105% 100% at 100% 100%, rgba(97, 34, 59, 0.2), transparent 64%);
   }
 
   .resize-handle {

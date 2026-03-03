@@ -10,16 +10,51 @@ card_variant: feature
 
 ## Why This Site
 
-This site was designed around a simple idea: a university web presence should feel fast, stable, and practical for daily use.
+Most department websites force a one-page-at-a-time workflow: you open something, lose context, go back, then repeat.
 
-Traditional CMS workflows can be powerful, but they often make deep customization and rapid interaction design expensive in time. This platform keeps content in markdown while preserving full control over application behavior and interface design.
+This site takes a different approach. It treats navigation like a lightweight workspace, while still behaving like a normal website.
 
-### What This Model Gives Us
+### What We Wanted To Fix
 
-- Content behaves like a lightweight markdown CMS.
-- Application shells stay programmable with Svelte, so custom workflows are possible without fighting the CMS.
-- Navigation is URL-driven and window-based, so users can keep context while moving between people, articles, and tools.
+- Context loss when moving between articles, staff pages, and programme information.
+- Slow, rigid publishing workflows where content and interface are tightly coupled.
+- “Either/or” UX choices where power users lose browser features to gain app-style interaction.
 
-### Why It Matters
+### Core Idea
 
-The goal is not to replace browser power features. It is to add site-level utility without removing tabbed browsing, history, and normal web behavior. One tab can be enough for focused work, but multiple tabs remain fully supported for power users.
+Use a URL-driven SPA with persistent app windows:
+
+- URL chooses the focused app and subroute.
+- Open apps stay mounted until explicitly closed.
+- Content is authored in markdown and compiled at build time.
+- Browser behavior (history, tabs, links) remains first-class.
+
+In practice, this means one tab can function like a complete workspace, while multiple browser tabs still work naturally for advanced workflows.
+
+### Try It In 60 Seconds
+
+1. Open [Home](/home), [Staff](/people/staff), and [Articles Overview](/reader/overview).
+2. Move between them using the sidebar and top navigation.
+3. Open an article like [Why This Site](/reader/articles/why-this-site), then open another article.
+4. Use Back/Forward and notice that navigation restores app identity and focus, not destructive snapshots.
+5. Keep multiple windows open and continue where you left off.
+
+### Why This Model Works
+
+- **Fast interaction:** no full page reload for normal in-site navigation.
+- **Structured content pipeline:** content lives in versioned markdown files.
+- **Flexible UI:** app shells are normal Svelte components, so behavior is programmable.
+- **Predictable routing:** links stay readable and shareable.
+
+### Power Users Are Not Penalized
+
+The goal is not to replace browser tabs. The goal is to make each tab more capable.
+
+If you prefer a single focused workspace, this model gives you that.
+If you prefer several browser tabs and parallel workflows, that still works exactly as expected.
+
+### Trade-Offs (Explicitly)
+
+- Content changes ship on deploy, not as live CMS edits.
+- History restores route identity and app focus, not historical content snapshots.
+- The architecture is intentionally opinionated: stable behavior over hidden magic.

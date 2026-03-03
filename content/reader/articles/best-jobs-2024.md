@@ -3,7 +3,6 @@ title: The Best Jobs of 2024
 excerpt: For nearly 30 years, CareerCast.me have produced an annual “Best jobs” list that ranks 200 occupations based on various factors. Over the last couple of years, many jobs in the to…
 sort_order: 7
 card_badge: Feature
-card_image: /cs-assets/features/jobs.png
 source_url: https://cs.sun.ac.za/features/2019/02/20/best-jobs.html
 source_mirrored_at: 2026-03-03
 ---

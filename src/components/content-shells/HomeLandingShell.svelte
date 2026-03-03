@@ -72,7 +72,7 @@
     <p class="hero-eyebrow">Stellenbosch University</p>
     <h2>Computer Science Department</h2>
     <p class="hero-summary">
-      Official landing workspace for people, programmes, research, and department updates.
+      Explore study options, research activity, people, and the latest department news.
     </p>
 
     {#if introSections.length > 0}
