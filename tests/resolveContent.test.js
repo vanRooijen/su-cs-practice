@@ -65,3 +65,40 @@ test('compiled cs-assets references resolve to files in public/cs-assets', () =>
     assert.equal(existsSync(publicAssetPath), true, `Missing asset file for ${assetPath}`);
   }
 });
+
+test('programs and research content rewrites legacy internal paths to app routes', () => {
+  const legacyPrefixes = ['/teaching', '/contact'];
+  const hrefPattern = /href=\"([^\"]+)\"/g;
+  const appIds = new Set(['programs', 'research']);
+  const internalLinks = [];
+
+  for (const artifact of Object.values(CONTENT_ARTIFACTS)) {
+    if (!appIds.has(artifact?.appId)) {
+      continue;
+    }
+
+    const htmlBlocks = [artifact?.html ?? '', ...(artifact?.sections ?? []).map((section) => section?.html ?? '')];
+    for (const block of htmlBlocks) {
+      for (const match of block.matchAll(hrefPattern)) {
+        const href = match[1];
+        if (href.startsWith('/')) {
+          internalLinks.push(href);
+        }
+      }
+    }
+  }
+
+  for (const href of internalLinks) {
+    assert.equal(
+      legacyPrefixes.some((prefix) => href.startsWith(prefix)),
+      false,
+      `Found unrewritten legacy internal link: ${href}`,
+    );
+  }
+
+  assert.equal(
+    internalLinks.some((href) => href.startsWith('/programs')),
+    true,
+    'Expected at least one rewritten internal /programs link in synced content.',
+  );
+});
