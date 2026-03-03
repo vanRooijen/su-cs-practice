@@ -578,7 +578,7 @@
             on:click={() => activateSidebarEntry(windowId)}
           >
             <strong>{appName}</strong>
-            <small>~ {win.routeLabel}</small>
+            <small>{win.routeLabel}</small>
           </button>
 
           <button
@@ -792,7 +792,8 @@
     text-transform: capitalize;
     cursor: pointer;
     position: relative;
-    transition: color 140ms ease, background-color 140ms ease;
+    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.12);
+    transition: color 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
   }
 
   .topbar-link:first-child {
@@ -822,6 +823,7 @@
   .topbar-link:hover {
     background: var(--su-tab-highlight);
     color: var(--su-maroon);
+    box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.22);
   }
 
   .topbar-link:hover::after,
@@ -833,6 +835,7 @@
     outline: 2px solid rgba(202, 162, 88, 0.65);
     outline-offset: 2px;
     background: var(--su-tab-highlight);
+    box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.3);
     z-index: 1;
   }
 
@@ -916,7 +919,7 @@
     justify-content: center;
     padding: 0;
     cursor: pointer;
-    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.14);
     transition: background-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
   }
 
@@ -929,7 +932,7 @@
   .sidebar-tool:hover {
     background: var(--su-tab-highlight);
     color: var(--su-maroon);
-    box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.22);
+    box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.28);
   }
 
   .sidebar-tool:focus-visible {
@@ -1045,6 +1048,12 @@
     line-height: 1;
   }
 
+  .entry-main small::before {
+    content: '~';
+    margin-right: 0.24rem;
+    opacity: 0.78;
+  }
+
   .sidebar-entry[data-owned-local='true'] .entry-main strong {
     color: var(--su-maroon);
   }
@@ -1088,14 +1097,12 @@
     line-height: 1;
     font-weight: 600;
     color: color-mix(in srgb, var(--su-muted) 84%, black 16%);
-    background: color-mix(in srgb, var(--su-surface-subtle) 88%, white 12%);
-    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.09);
+    background: rgba(44, 42, 41, 0.06);
   }
 
   .entry-close:hover {
     background: color-mix(in srgb, var(--su-tab-highlight) 58%, white 42%);
     color: var(--su-maroon);
-    box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.22);
   }
 
   .actions-menu {

@@ -15,8 +15,9 @@
 
 <div class="app-layout" data-sidebar-collapsed={sidebarCollapsed}>
   {#if !sidebarCollapsed}
-    <aside>
+    <aside class="app-sidebar">
       <h3>Reader</h3>
+      <p class="app-intro">Browse department articles and reader pages in one place.</p>
       <nav aria-label="Reader sections">
         {#each APP_NAV_LINKS.reader as section}
           <a href={section.href} aria-current={activePath === section.href ? 'page' : undefined}>
@@ -25,13 +26,15 @@
         {/each}
       </nav>
 
-      <h4>Entries</h4>
-      <ul>
+      <h4>Article Library</h4>
+      <ul class="entry-cards">
         {#each articleEntries as article (article.key)}
           {@const path = `/reader/${article.subroute}`}
-          <li>
-            <a href={path} aria-current={activePath === path ? 'page' : undefined}>{article.title}</a>
-            <a href={path} data-open-in-new-window="true">Open in new window</a>
+          <li class="entry-card">
+            <a class="entry-link" href={path} aria-current={activePath === path ? 'page' : undefined}>
+              {article.title}
+            </a>
+            <small>{article.subroute}</small>
           </li>
         {/each}
       </ul>
@@ -56,7 +59,7 @@
     grid-template-columns: 1fr;
   }
 
-  aside {
+  .app-sidebar {
     border-right: 1px solid rgba(44, 42, 41, 0.08);
     padding: 0.72rem 0.68rem;
     min-width: 210px;
@@ -64,11 +67,18 @@
     background: color-mix(in srgb, var(--su-surface-subtle, #f8f4ed) 82%, white 18%);
   }
 
-  aside h3,
-  aside h4 {
+  .app-sidebar h3,
+  .app-sidebar h4 {
     margin: 0 0 0.48rem;
     font-size: 0.92rem;
     color: color-mix(in srgb, var(--su-maroon, #61223b) 84%, black 16%);
+  }
+
+  .app-intro {
+    margin: 0 0 0.56rem;
+    font-size: 0.82rem;
+    line-height: 1.35;
+    color: color-mix(in srgb, var(--su-muted, #686d71) 92%, black 8%);
   }
 
   nav {
@@ -83,12 +93,14 @@
     text-decoration: none;
     padding: 0.34rem 0.4rem;
     border-radius: 0.4rem;
-    transition: background-color 120ms ease, color 120ms ease;
+    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.1);
+    transition: background-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
   }
 
   nav a:hover {
     background: rgba(202, 162, 88, 0.16);
     color: var(--su-maroon, #61223b);
+    box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.22);
   }
 
   nav a[aria-current='page'] {
@@ -97,19 +109,40 @@
     font-weight: 600;
   }
 
-  ul {
+  .entry-cards {
     margin: 0;
-    padding-left: 1rem;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.34rem;
   }
 
-  li {
-    margin-bottom: 0.5rem;
+  .entry-card {
+    margin: 0;
+    padding: 0.36rem 0.42rem;
+    border-radius: 0.42rem;
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.09);
+    display: grid;
+    gap: 0.14rem;
   }
 
-  li a {
-    margin-right: 0.5rem;
+  .entry-link {
+    display: inline-block;
     color: color-mix(in srgb, var(--su-maroon, #61223b) 90%, black 10%);
     text-underline-offset: 2px;
+    font-size: 0.84rem;
+    font-weight: 600;
+  }
+
+  .entry-link[aria-current='page'] {
+    text-decoration-thickness: 2px;
+  }
+
+  .entry-card small {
+    font-size: 0.73rem;
+    line-height: 1.2;
+    color: color-mix(in srgb, var(--su-muted, #686d71) 88%, black 12%);
   }
 
   .content-slot {
@@ -122,7 +155,7 @@
       grid-template-rows: auto 1fr;
     }
 
-    aside {
+    .app-sidebar {
       border-right: none;
       border-bottom: 1px solid rgba(44, 42, 41, 0.08);
       min-width: 0;

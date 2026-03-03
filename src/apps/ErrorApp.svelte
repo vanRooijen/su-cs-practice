@@ -71,6 +71,7 @@
 
   .error-context p {
     margin: 0 0 0.3rem;
+    font-size: 0.84rem;
   }
 
   .error-context p:last-child {
@@ -114,15 +115,21 @@
 
   .error-history p {
     margin: 0 0 0.3rem;
+    font-size: 0.82rem;
   }
 
   .error-history ul {
     margin: 0;
-    padding-left: 1rem;
+    padding: 0;
+    list-style: none;
   }
 
   .error-history li {
-    margin: 0 0 0.45rem;
+    margin: 0 0 0.38rem;
+    padding: 0.34rem 0.4rem;
+    border-radius: 0.42rem;
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.09);
   }
 
   .error-history li p {

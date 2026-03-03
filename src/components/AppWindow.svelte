@@ -474,7 +474,7 @@
     border: none;
     border-radius: 0.38rem;
     background: color-mix(in srgb, var(--su-surface-subtle, #f8f4ed) 86%, white 14%);
-    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.11);
+    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.16);
     color: var(--su-ink, #2c2a29);
     min-width: 1.62rem;
     height: 1.52rem;
@@ -503,7 +503,7 @@
   .window-header button:hover {
     background: color-mix(in srgb, var(--su-tab-highlight, rgba(202, 162, 88, 0.14)) 60%, white 40%);
     color: var(--su-maroon, #61223b);
-    box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.24);
+    box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.3);
   }
 
   .window-header button:focus-visible {
