@@ -1,5 +1,11 @@
 <script>
   import { createEventDispatcher, onDestroy } from 'svelte';
+  import iconChevronLeft from '../assets/icons/lucide/chevron-left.svg?raw';
+  import iconChevronRight from '../assets/icons/lucide/chevron-right.svg?raw';
+  import iconPanelLeft from '../assets/icons/lucide/panel-left.svg?raw';
+  import iconMinus from '../assets/icons/lucide/minus.svg?raw';
+  import iconSquare from '../assets/icons/lucide/square.svg?raw';
+  import iconClose from '../assets/icons/lucide/x.svg?raw';
 
   export let windowState;
   export let isFocused = false;
@@ -283,6 +289,7 @@
   $: historyLength = windowState.history?.entries?.length ?? 0;
   $: canGoBack = historyIndex > 0;
   $: canGoForward = historyIndex < historyLength - 1;
+  $: canonicalPath = typeof windowState?.path === 'string' && windowState.path ? windowState.path : '/';
 </script>
 
 <section
@@ -297,7 +304,7 @@
     <div class="window-header-left">
       {#if windowState.showWindowHistoryNavigation}
         <button type="button" disabled={!canGoBack} on:click={requestHistoryBack} aria-label="Back in app">
-          &lt;
+          <span class="control-icon" aria-hidden="true">{@html iconChevronLeft}</span>
         </button>
         <button
           type="button"
@@ -305,7 +312,7 @@
           on:click={requestHistoryForward}
           aria-label="Forward in app"
         >
-          &gt;
+          <span class="control-icon" aria-hidden="true">{@html iconChevronRight}</span>
         </button>
       {/if}
 
@@ -317,21 +324,25 @@
           aria-label="Toggle app sidebar"
           title="Toggle app sidebar"
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M4.5 5.5h15v13h-15z" fill="none" stroke="currentColor" stroke-width="1.7" />
-            <path d="M10 5.5v13M13 9h4M13 12h4M13 15h4" fill="none" stroke="currentColor" stroke-width="1.7" />
-          </svg>
+          <span class="control-icon" aria-hidden="true">{@html iconPanelLeft}</span>
         </button>
       {/if}
 
-      <span>{windowState.title}</span>
-      <small>{windowState.path}</small>
+      <div class="window-header-title" title={canonicalPath}>
+        <p class="window-path-label">{canonicalPath}</p>
+      </div>
     </div>
 
     <div class="window-header-right">
-      <button type="button" on:click={requestMinimize} aria-label="Minimize window">_</button>
-      <button type="button" on:click={requestMaximize} aria-label="Maximize window">[]</button>
-      <button type="button" on:click={requestClose} aria-label="Close window">X</button>
+      <button type="button" on:click={requestMinimize} aria-label="Minimize window">
+        <span class="control-icon" aria-hidden="true">{@html iconMinus}</span>
+      </button>
+      <button type="button" on:click={requestMaximize} aria-label="Maximize window">
+        <span class="control-icon" aria-hidden="true">{@html iconSquare}</span>
+      </button>
+      <button type="button" on:click={requestClose} aria-label="Close window">
+        <span class="control-icon" aria-hidden="true">{@html iconClose}</span>
+      </button>
     </div>
   </header>
 
@@ -424,13 +435,14 @@
   }
 
   .window-header {
+    --window-control-size: 2.14rem;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 0.42rem;
+    gap: 0.62rem;
     border-bottom: 1px solid rgba(44, 42, 41, 0.1);
-    padding: 0.28rem 0.36rem;
-    min-height: 2.25rem;
+    padding: 0.3rem 0.56rem;
     cursor: move;
     user-select: none;
     touch-action: none;
@@ -440,80 +452,118 @@
   .window-header-left {
     display: flex;
     align-items: center;
-    gap: 0.34rem;
+    gap: 0.42rem;
+    flex: 1;
     min-width: 0;
   }
 
-  .window-header-left span {
-    font-size: 0.88rem;
-    line-height: 1.1;
-    font-weight: 600;
-    color: color-mix(in srgb, var(--su-maroon, #61223b) 82%, black 18%);
-    white-space: nowrap;
+  .window-header-title {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    margin-inline-start: 0.34rem;
   }
 
-  .window-header-left small {
-    font-size: 0.72rem;
-    line-height: 1.1;
-    color: color-mix(in srgb, var(--su-muted, #686d71) 92%, black 8%);
+  .window-path-label {
+    width: 100%;
+    max-width: min(46ch, 52vw);
+    margin: 0;
+    min-height: var(--window-control-size);
+    padding: 0.34rem 0.62rem;
+    border-radius: 0.38rem;
+    background: color-mix(in srgb, var(--su-surface-subtle, #f8f4ed) 86%, white 14%);
+    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.16);
+    color: color-mix(in srgb, var(--su-maroon, #61223b) 90%, black 10%);
+    font-size: 0.86rem;
+    font-weight: 600;
+    line-height: 1.3;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    min-width: 0;
-    max-width: min(44ch, 36vw);
+    display: flex;
+    align-items: center;
   }
 
   .window-header-right {
     display: flex;
-    gap: 0.22rem;
+    gap: 0.32rem;
     flex-shrink: 0;
   }
 
-  .window-header button {
+  .window-header-left > button,
+  .window-header-right > button {
     appearance: none;
     border: none;
-    border-radius: 0.38rem;
+    border-radius: 0.34rem;
     background: color-mix(in srgb, var(--su-surface-subtle, #f8f4ed) 86%, white 14%);
     box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.16);
     color: var(--su-ink, #2c2a29);
-    min-width: 1.62rem;
-    height: 1.52rem;
-    padding: 0 0.34rem;
-    font-size: 0.72rem;
+    flex: 0 0 var(--window-control-size);
+    width: var(--window-control-size);
+    height: var(--window-control-size);
+    min-width: var(--window-control-size);
+    min-height: var(--window-control-size);
+    max-width: var(--window-control-size);
+    max-height: var(--window-control-size);
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    font-size: 0.86rem;
     font-weight: 600;
     line-height: 1;
     letter-spacing: 0.01em;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     transition: background-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
   }
 
   .window-sidebar-toggle {
-    min-width: 1.58rem;
-    width: 1.58rem;
-    padding: 0;
+    width: var(--window-control-size);
+    height: var(--window-control-size);
   }
 
-  .window-sidebar-toggle svg {
-    width: 0.9rem;
-    height: 0.9rem;
+  .window-header-left > button .control-icon,
+  .window-header-right > button .control-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.02rem;
+    height: 1.02rem;
+    flex: 0 0 auto;
+  }
+
+  .window-header-left > button .control-icon :global(svg),
+  .window-header-right > button .control-icon :global(svg) {
+    width: 1.02rem;
+    height: 1.02rem;
     display: block;
-    margin: 0 auto;
   }
 
-  .window-header button:hover {
+  .window-sidebar-toggle .control-icon,
+  .window-sidebar-toggle .control-icon :global(svg) {
+    width: 1.08rem;
+    height: 1.08rem;
+  }
+
+  .window-header-left > button:hover,
+  .window-header-right > button:hover {
     background: color-mix(in srgb, var(--su-tab-highlight, rgba(202, 162, 88, 0.14)) 60%, white 40%);
     color: var(--su-maroon, #61223b);
     box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.3);
   }
 
-  .window-header button:focus-visible {
+  .window-header-left > button:focus-visible,
+  .window-header-right > button:focus-visible {
     outline: none;
     box-shadow:
       inset 0 0 0 1px rgba(97, 34, 59, 0.28),
       0 0 0 2px rgba(97, 34, 59, 0.13);
   }
 
-  .window-header button:disabled {
+  .window-header-left > button:disabled,
+  .window-header-right > button:disabled {
     opacity: 0.44;
     cursor: not-allowed;
     box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.08);

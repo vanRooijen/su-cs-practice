@@ -9,7 +9,6 @@
   $: normalizedSubroute = subroute.replace(/^\/+|\/+$/g, '');
   $: activePath = normalizedSubroute ? `/people/${normalizedSubroute}` : '/people';
   $: content = resolveContent('people', normalizedSubroute);
-  $: highlightSections = APP_NAV_LINKS.people.filter((section) => section.href !== '/people');
 </script>
 
 <div class="app-layout" data-sidebar-collapsed={sidebarCollapsed}>
@@ -24,17 +23,6 @@
           </a>
         {/each}
       </nav>
-
-      <h4>Highlights</h4>
-      <ul class="entry-cards">
-        {#each highlightSections as section (section.href)}
-          <li class="entry-card">
-            <a class="entry-link" href={section.href} aria-current={activePath === section.href ? 'page' : undefined}>
-              {section.label}
-            </a>
-          </li>
-        {/each}
-      </ul>
     </aside>
   {/if}
 
@@ -63,8 +51,7 @@
     background: color-mix(in srgb, var(--su-surface-subtle, #f8f4ed) 82%, white 18%);
   }
 
-  .app-sidebar h3,
-  .app-sidebar h4 {
+  .app-sidebar h3 {
     margin: 0 0 0.48rem;
     font-size: 0.92rem;
     color: color-mix(in srgb, var(--su-maroon, #61223b) 84%, black 16%);
@@ -81,7 +68,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.28rem;
-    margin-bottom: 0.64rem;
+    margin-bottom: 0;
   }
 
   nav a {
@@ -102,29 +89,6 @@
   nav a[aria-current='page'] {
     background: rgba(202, 162, 88, 0.22);
     color: var(--su-maroon, #61223b);
-    font-weight: 600;
-  }
-
-  .entry-cards {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: grid;
-    gap: 0.3rem;
-  }
-
-  .entry-card {
-    margin: 0;
-    padding: 0.28rem 0.36rem;
-    border-radius: 0.42rem;
-    background: rgba(255, 255, 255, 0.72);
-    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.09);
-  }
-
-  .entry-link {
-    color: color-mix(in srgb, var(--su-maroon, #61223b) 90%, black 10%);
-    text-underline-offset: 2px;
-    font-size: 0.82rem;
     font-weight: 600;
   }
 

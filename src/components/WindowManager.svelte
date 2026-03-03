@@ -4,7 +4,12 @@
   import { DESKTOP_SHORTCUTS, TOPBAR_LINKS } from '../lib/navigation/siteManifest.js';
   import { navigateTo, navigateToDesktop, openInNewWindow, route } from '../lib/navigation/historyRouter.js';
   import { windowManager } from '../lib/window/windowManagerStore.js';
-  import suLogoMark from '../assets/branding/su-gold-s-mark.svg';
+  import suLogoMark from '../assets/branding/su-corporate-horizontal-no-slogan.svg';
+  import iconMail from '../assets/icons/lucide/mail.svg?raw';
+  import iconHome from '../assets/icons/lucide/house.svg?raw';
+  import iconNewspaper from '../assets/icons/lucide/newspaper.svg?raw';
+  import iconHelp from '../assets/icons/lucide/circle-question-mark.svg?raw';
+  import iconClose from '../assets/icons/lucide/x.svg?raw';
   import AppWindow from './AppWindow.svelte';
 
   export let onCloseOwned = null;
@@ -482,7 +487,7 @@
 <div class="os-layout" role="application" aria-label="Desktop workspace" on:contextmenu={openContextMenu}>
   <header class="topbar">
     <div class="topbar-brand">
-      <img class="site-logo" src={suLogoMark} alt="Stellenbosch University logo mark" />
+      <img class="site-logo" src={suLogoMark} alt="Stellenbosch University" />
       <div class="brand-copy">
         <strong>Computer Science Department</strong>
       </div>
@@ -505,10 +510,7 @@
     <div class="topbar-utilities">
       <div class="topbar-cluster topbar-cluster-single">
         <button type="button" class="topbar-link topbar-contact" on:click={openContact}>
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M4 6h16v12H4z" fill="none" stroke="currentColor" stroke-width="1.7" />
-            <path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-width="1.7" />
-          </svg>
+          <span class="inline-icon" aria-hidden="true">{@html iconMail}</span>
           <span>Contact</span>
         </button>
       </div>
@@ -524,10 +526,7 @@
           aria-label="Open Home"
           on:click={() => openPath('/home')}
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M4 10.5 12 4l8 6.5" fill="none" stroke="currentColor" stroke-width="1.7" />
-            <path d="M6 9.8V20h12V9.8" fill="none" stroke="currentColor" stroke-width="1.7" />
-          </svg>
+          <span class="inline-icon" aria-hidden="true">{@html iconHome}</span>
         </button>
         <button
           type="button"
@@ -535,10 +534,7 @@
           aria-label="Open Articles"
           on:click={() => openPath('/reader/articles')}
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M6 5h12v14H6z" fill="none" stroke="currentColor" stroke-width="1.7" />
-            <path d="M9 9h6M9 12h6M9 15h4" fill="none" stroke="currentColor" stroke-width="1.7" />
-          </svg>
+          <span class="inline-icon" aria-hidden="true">{@html iconNewspaper}</span>
         </button>
         <button
           type="button"
@@ -546,14 +542,7 @@
           aria-label="Open Help"
           on:click={() => openPath('/reader/help')}
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path
-              d="M9.7 9.2a2.3 2.3 0 0 1 4.6 0c0 1.9-2.3 2.1-2.3 3.8M12 16.8h.01M4.8 12a7.2 7.2 0 1 0 14.4 0 7.2 7.2 0 0 0-14.4 0Z"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.7"
-            />
-          </svg>
+          <span class="inline-icon" aria-hidden="true">{@html iconHelp}</span>
         </button>
       </div>
 
@@ -589,7 +578,7 @@
             aria-label={`Close ${appName}`}
             on:click|stopPropagation={() => handleClose(windowId)}
           >
-            x
+            <span class="inline-icon" aria-hidden="true">{@html iconClose}</span>
           </button>
         </div>
       {/each}
@@ -744,7 +733,8 @@
   }
 
   .site-logo {
-    height: 2.05rem;
+    height: 2rem;
+    max-width: clamp(9.8rem, 20vw, 12.4rem);
     width: auto;
     display: block;
     margin-inline: 0 1rem;
@@ -758,12 +748,13 @@
   }
 
   .brand-copy strong {
-    font-size: 0.96rem;
+    font-size: 1.03rem;
     font-weight: 600;
     line-height: 1.1;
     letter-spacing: 0.004em;
     color: color-mix(in srgb, var(--su-maroon) 84%, black 16%);
     white-space: nowrap;
+    padding-top: 0.03rem;
     text-rendering: geometricPrecision;
     -webkit-font-smoothing: antialiased;
   }
@@ -874,10 +865,19 @@
     text-transform: none;
   }
 
-  .topbar-contact svg {
-    width: 0.9rem;
-    height: 0.9rem;
+  .inline-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     flex: 0 0 auto;
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+
+  .inline-icon :global(svg) {
+    width: 0.95rem;
+    height: 0.95rem;
+    display: block;
   }
 
   .main-row {
@@ -921,10 +921,10 @@
     transition: background-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
   }
 
-  .sidebar-tool svg {
+  .sidebar-tool .inline-icon,
+  .sidebar-tool .inline-icon :global(svg) {
     width: 0.94rem;
     height: 0.94rem;
-    flex: 0 0 auto;
   }
 
   .sidebar-tool:hover {

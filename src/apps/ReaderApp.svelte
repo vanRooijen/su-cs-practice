@@ -27,14 +27,13 @@
       </nav>
 
       <h4>Article Library</h4>
-      <ul class="entry-cards">
+      <ul class="tab-list">
         {#each articleEntries as article (article.key)}
           {@const path = `/reader/${article.subroute}`}
-          <li class="entry-card">
-            <a class="entry-link" href={path} aria-current={activePath === path ? 'page' : undefined}>
+          <li>
+            <a class="tab-link" href={path} aria-current={activePath === path ? 'page' : undefined}>
               {article.title}
             </a>
-            <small>{article.subroute}</small>
           </li>
         {/each}
       </ul>
@@ -85,10 +84,11 @@
     display: flex;
     flex-direction: column;
     gap: 0.28rem;
-    margin-bottom: 0.65rem;
+    margin-bottom: 0.58rem;
   }
 
-  nav a {
+  nav a,
+  .tab-link {
     color: color-mix(in srgb, var(--su-ink, #2c2a29) 86%, white 14%);
     text-decoration: none;
     padding: 0.34rem 0.4rem;
@@ -97,52 +97,30 @@
     transition: background-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
   }
 
-  nav a:hover {
+  nav a:hover,
+  .tab-link:hover {
     background: rgba(202, 162, 88, 0.16);
     color: var(--su-maroon, #61223b);
     box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.22);
   }
 
-  nav a[aria-current='page'] {
+  nav a[aria-current='page'],
+  .tab-link[aria-current='page'] {
     background: rgba(202, 162, 88, 0.22);
     color: var(--su-maroon, #61223b);
     font-weight: 600;
   }
 
-  .entry-cards {
+  .tab-list {
     margin: 0;
     padding: 0;
     list-style: none;
     display: grid;
-    gap: 0.34rem;
+    gap: 0.22rem;
   }
 
-  .entry-card {
+  .tab-list li {
     margin: 0;
-    padding: 0.36rem 0.42rem;
-    border-radius: 0.42rem;
-    background: rgba(255, 255, 255, 0.72);
-    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.09);
-    display: grid;
-    gap: 0.14rem;
-  }
-
-  .entry-link {
-    display: inline-block;
-    color: color-mix(in srgb, var(--su-maroon, #61223b) 90%, black 10%);
-    text-underline-offset: 2px;
-    font-size: 0.84rem;
-    font-weight: 600;
-  }
-
-  .entry-link[aria-current='page'] {
-    text-decoration-thickness: 2px;
-  }
-
-  .entry-card small {
-    font-size: 0.73rem;
-    line-height: 1.2;
-    color: color-mix(in srgb, var(--su-muted, #686d71) 88%, black 12%);
   }
 
   .content-slot {
