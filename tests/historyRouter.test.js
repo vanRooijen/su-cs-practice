@@ -26,6 +26,16 @@ test('parsePath canonicalizes known app routes', () => {
   assert.equal(parsed.shouldCanonicalize, true);
 });
 
+test('parsePath canonicalizes newly added app routes', () => {
+  const parsed = parsePath('/programs/guide/');
+
+  assert.equal(parsed.isValid, true);
+  assert.equal(parsed.appId, 'programs');
+  assert.equal(parsed.subroute, 'guide');
+  assert.equal(parsed.canonicalPath, '/programs/guide');
+  assert.equal(parsed.shouldCanonicalize, true);
+});
+
 test('parsePath marks unknown apps as invalid routes', () => {
   const parsed = parsePath('/custom-app/feature');
 
