@@ -68,6 +68,9 @@ export const TOPBAR_LINKS = [
   { label: 'home', path: '/home' },
   { label: 'people', path: '/people' },
   { label: 'articles', path: '/reader/articles' },
+  { label: 'programs', path: '/reader/general/programs' },
+  { label: 'research', path: '/reader/general/research' },
+  { label: 'about', path: '/reader/general/about' },
 ];
 
 export const DESKTOP_SHORTCUTS = [
@@ -87,6 +90,9 @@ export const APP_NAV_LINKS = {
   reader: [
     { label: 'Overview', href: '/reader' },
     { label: 'Articles', href: '/reader/articles' },
+    { label: 'Programs', href: '/reader/general/programs' },
+    { label: 'Research', href: '/reader/general/research' },
+    { label: 'About', href: '/reader/general/about' },
     { label: 'Help', href: '/reader/general/help' },
   ],
 };

@@ -17,12 +17,6 @@
   export let onCloseOtherInstances = null;
 
   const runtimeId = windowManager.getRuntimeId?.() ?? null;
-  const TOPBAR_COMING_SOON_LINKS = [
-    { label: 'programs', path: null },
-    { label: 'research', path: null },
-    { label: 'about', path: null },
-  ];
-  const TOPBAR_NAV_ITEMS = [...TOPBAR_LINKS, ...TOPBAR_COMING_SOON_LINKS];
   let localKeepAliveMinimizedWindowIds = new Set();
 
   let workspaceElement;
@@ -494,13 +488,13 @@
     </div>
 
     <nav class="topbar-cluster" aria-label="Topbar app links">
-      {#each TOPBAR_NAV_ITEMS as link}
+      {#each TOPBAR_LINKS as link}
         <button
           type="button"
           class="topbar-link"
           data-context-path={link.path}
-          title={link.path ?? link.label}
-          on:click={() => link.path && openPath(link.path)}
+          title={link.path}
+          on:click={() => openPath(link.path)}
         >
           {link.label}
         </button>
