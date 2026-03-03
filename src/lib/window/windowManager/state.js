@@ -102,6 +102,8 @@ export function createWindowFromRoute(state, route, appDefinitions, options = {}
   const appConfig = appDefinitions[route.appId];
   const windowId = state.nextWindowId;
   const ownerRuntimeId = typeof options.ownerRuntimeId === 'string' ? options.ownerRuntimeId : null;
+  const initialSidebarCollapsed =
+    typeof options.initialSidebarCollapsed === 'boolean' ? options.initialSidebarCollapsed : false;
 
   state.nextWindowId += 1;
 
@@ -117,7 +119,7 @@ export function createWindowFromRoute(state, route, appDefinitions, options = {}
     routeLabel: toLastSegmentLabel(route.path),
     hasSidebar: Boolean(appConfig?.hasSidebar),
     showWindowHistoryNavigation: Boolean(appConfig?.enableWindowHistoryNavigation),
-    isSidebarCollapsed: false,
+    isSidebarCollapsed: Boolean(appConfig?.hasSidebar) ? initialSidebarCollapsed : false,
     isMinimized: false,
     ownerRuntimeId,
     isMaximized: false,

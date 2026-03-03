@@ -77,6 +77,8 @@
     color: color-mix(in srgb, var(--su-ink, #2c2a29) 92%, black 8%);
     line-height: 1.58;
     font-size: 0.93rem;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .content-document :global(h1),
@@ -88,7 +90,11 @@
   }
 
   .content-document :global(table) {
+    display: block;
     width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     border-collapse: collapse;
     margin: 0.54rem 0 0.8rem;
   }
@@ -99,6 +105,7 @@
     border-bottom: 1px solid rgba(44, 42, 41, 0.12);
     text-align: left;
     vertical-align: top;
+    overflow-wrap: anywhere;
   }
 
   .content-document :global(th) {

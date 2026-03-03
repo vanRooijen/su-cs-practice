@@ -13,6 +13,7 @@
   const GLOBAL_CLOSE_BROADCAST_GRACE_MS = 140;
   const HOME_AUTO_OPEN_COOLDOWN_MS = 24 * 60 * 60 * 1000;
   const HOME_AUTO_OPEN_LAST_AT_KEY = 'su-cs-home-auto-open-last-at';
+  const MOBILE_VIEWPORT_MEDIA_QUERY = '(max-width: 860px)';
 
   let stopRouteSubscription = () => {};
   let persistenceController = null;
@@ -22,6 +23,7 @@
   let closeAllNotice = '';
   let closeAllNoticeTimerId = 0;
   let windowControlChannel = null;
+  let isMobileViewport = false;
   const runtimeId = windowManager.getRuntimeId?.() ?? null;
 
   function hasBroadcastChannel() {
@@ -269,11 +271,30 @@
       }
 
       stopRouteSubscription = route.subscribe((currentRoute) => {
-        windowManager.applyRoute(currentRoute);
+        windowManager.applyRoute(currentRoute, {
+          isMobileViewport,
+        });
       });
 
       maybeAutoOpenHome();
     };
+
+    let removeViewportListener = () => {};
+    if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+      const mediaQueryList = window.matchMedia(MOBILE_VIEWPORT_MEDIA_QUERY);
+      const onViewportChange = (event) => {
+        isMobileViewport = event.matches;
+      };
+
+      isMobileViewport = mediaQueryList.matches;
+      if (typeof mediaQueryList.addEventListener === 'function') {
+        mediaQueryList.addEventListener('change', onViewportChange);
+        removeViewportListener = () => mediaQueryList.removeEventListener('change', onViewportChange);
+      } else if (typeof mediaQueryList.addListener === 'function') {
+        mediaQueryList.addListener(onViewportChange);
+        removeViewportListener = () => mediaQueryList.removeListener(onViewportChange);
+      }
+    }
 
     void setup();
 
@@ -288,6 +309,7 @@
       windowControlChannel?.removeEventListener('message', onWindowControlMessage);
       windowControlChannel?.close();
       windowControlChannel = null;
+      removeViewportListener();
       stopRouter();
     };
   });

@@ -14,8 +14,6 @@
 <div class="app-layout" data-sidebar-collapsed={sidebarCollapsed}>
   {#if !sidebarCollapsed}
     <aside class="app-sidebar">
-      <h3>People Sections</h3>
-      <p class="app-intro">Browse academic staff, students, and alumni directories.</p>
       <nav aria-label="People sections">
         {#each APP_NAV_LINKS.people as section}
           <a href={section.href} aria-current={activePath === section.href ? 'page' : undefined}>
@@ -33,10 +31,13 @@
 
 <style>
   .app-layout {
+    position: relative;
     height: 100%;
     display: grid;
     grid-template-columns: auto 1fr;
     min-height: 0;
+    min-width: 0;
+    overflow: hidden;
     background: var(--su-app-content-bg, var(--su-surface, #fffdf9));
   }
 
@@ -46,28 +47,16 @@
 
   .app-sidebar {
     border-right: 1px solid var(--su-app-chrome-line, rgba(44, 42, 41, 0.08));
-    padding: 0.72rem 0.68rem;
+    padding: 0.62rem 0.58rem;
     min-width: 170px;
+    overflow: auto;
     background: var(--su-app-sidebar-bg, color-mix(in srgb, var(--su-surface-subtle, #f8f4ed) 82%, white 18%));
-  }
-
-  .app-sidebar h3 {
-    margin: 0 0 0.48rem;
-    font-size: 0.92rem;
-    color: color-mix(in srgb, var(--su-maroon, #61223b) 84%, black 16%);
-  }
-
-  .app-intro {
-    margin: 0 0 0.56rem;
-    font-size: 0.82rem;
-    line-height: 1.35;
-    color: color-mix(in srgb, var(--su-muted, #686d71) 92%, black 8%);
   }
 
   nav {
     display: flex;
     flex-direction: column;
-    gap: 0.28rem;
+    gap: 0.24rem;
     margin-bottom: 0;
   }
 
@@ -94,18 +83,24 @@
 
   .content-slot {
     min-height: 0;
+    min-width: 0;
     background: var(--su-app-content-bg, var(--su-surface, #fffdf9));
   }
 
   @media (max-width: 860px) {
     .app-layout {
       grid-template-columns: 1fr;
-      grid-template-rows: auto 1fr;
+      grid-template-rows: 1fr;
     }
 
     .app-sidebar {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
       border-right: none;
-      border-bottom: 1px solid var(--su-app-chrome-line, rgba(44, 42, 41, 0.08));
+      border-bottom: none;
+      min-width: 0;
+      box-shadow: 0 10px 24px rgba(44, 42, 41, 0.14);
     }
   }
 </style>

@@ -828,7 +828,7 @@
               appId={windowState.appId}
               path={windowState.path}
               subroute={windowState.subroute}
-              sidebarCollapsed={isMobileViewport || windowState.isSidebarCollapsed}
+              sidebarCollapsed={windowState.isSidebarCollapsed}
             />
           </AppWindow>
         {/each}

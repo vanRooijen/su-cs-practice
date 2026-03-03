@@ -57,6 +57,20 @@ test('workspace width is not forced to desktop minimums on narrow viewports', ()
   assert.equal(snapshot.windows[windowId].bounds.height, 740);
 });
 
+test('mobile route creation uses app-specific sidebar defaults', () => {
+  const store = createWindowManagerStore();
+
+  store.applyRoute(makeRoute('/people/staff', 'people', 'staff'), { isMobileViewport: true });
+  const peopleWindowId = store.getSnapshot().focusedWindowId;
+  assert.ok(peopleWindowId, 'expected focused people window');
+  assert.equal(store.getSnapshot().windows[peopleWindowId].isSidebarCollapsed, true);
+
+  store.applyRoute(makeRoute('/programs', 'programs', '', { openMode: 'new-window' }), { isMobileViewport: true });
+  const programsWindowId = store.getSnapshot().focusedWindowId;
+  assert.ok(programsWindowId, 'expected focused programs window');
+  assert.equal(store.getSnapshot().windows[programsWindowId].isSidebarCollapsed, false);
+});
+
 test('desktop root route minimizes windows and clears focus', () => {
   const store = createWindowManagerStore();
 

@@ -146,7 +146,7 @@
     padding: 0;
     list-style: none;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(232px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(232px, 100%), 1fr));
     gap: 0.5rem;
   }
 

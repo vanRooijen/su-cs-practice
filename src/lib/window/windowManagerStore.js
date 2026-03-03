@@ -310,7 +310,27 @@ export function createWindowManagerStore() {
     };
   }
 
-  function applyRoute(route) {
+  function resolveInitialSidebarCollapsed(appDefinition, options = {}) {
+    if (!appDefinition?.hasSidebar) {
+      return false;
+    }
+
+    if (options.isMobileViewport === true) {
+      if (typeof appDefinition.mobileSidebarDefaultOpen === 'boolean') {
+        return !appDefinition.mobileSidebarDefaultOpen;
+      }
+
+      return true;
+    }
+
+    if (typeof appDefinition.desktopSidebarDefaultOpen === 'boolean') {
+      return !appDefinition.desktopSidebarDefaultOpen;
+    }
+
+    return false;
+  }
+
+  function applyRoute(route, options = {}) {
     store.update((state) => {
       const shouldForceDuplicate = route.openMode === 'new-window';
       const preselectedWindowId = shouldForceDuplicate
@@ -371,7 +391,11 @@ export function createWindowManagerStore() {
           });
 
       if (!targetWindowId) {
-        targetWindowId = createWindowFromRoute(next, route, APP_DEFINITIONS, { ownerRuntimeId: runtimeId });
+        const appDefinition = APP_DEFINITIONS[route.appId];
+        targetWindowId = createWindowFromRoute(next, route, APP_DEFINITIONS, {
+          ownerRuntimeId: runtimeId,
+          initialSidebarCollapsed: resolveInitialSidebarCollapsed(appDefinition, options),
+        });
       } else {
         const target = next.windows[targetWindowId];
         if (!hasSameRouteIdentity(target, route)) {
