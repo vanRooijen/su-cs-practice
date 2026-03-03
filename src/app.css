@@ -1,6 +1,8 @@
 @font-face {
   font-family: 'SU Raleway Local';
-  src: url('./assets/fonts/SU-raleway-regular.ttf') format('truetype');
+  src:
+    url('./assets/fonts/SU-raleway-regular.woff2') format('woff2'),
+    url('./assets/fonts/SU-raleway-regular.ttf') format('truetype');
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -8,7 +10,9 @@
 
 @font-face {
   font-family: 'SU Raleway Local';
-  src: url('./assets/fonts/SU-raleway-medium.ttf') format('truetype');
+  src:
+    url('./assets/fonts/SU-raleway-medium.woff2') format('woff2'),
+    url('./assets/fonts/SU-raleway-medium.ttf') format('truetype');
   font-style: normal;
   font-weight: 500;
   font-display: swap;
@@ -16,7 +20,9 @@
 
 @font-face {
   font-family: 'SU Raleway Local';
-  src: url('./assets/fonts/SU-raleway-semibold.ttf') format('truetype');
+  src:
+    url('./assets/fonts/SU-raleway-semibold.woff2') format('woff2'),
+    url('./assets/fonts/SU-raleway-semibold.ttf') format('truetype');
   font-style: normal;
   font-weight: 600;
   font-display: swap;
