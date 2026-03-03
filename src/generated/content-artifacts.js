@@ -69,6 +69,40 @@ export const CONTENT_ARTIFACTS = {
       }
     ]
   },
+  "demo.final": {
+    "key": "demo.final",
+    "appId": "demo",
+    "subroute": "final",
+    "title": "Demo Final",
+    "excerpt": "What this workflow proves.",
+    "shell": "default",
+    "meta": {},
+    "html": "<h2>Demo Final</h2>\n<details open>\n  <summary><strong>Step 7: Close All Windows</strong></summary>\n\n<p>You are in a new app window now. Final drill:</p>\n<ol>\n<li>In the sidebar toolbar, click the <strong>trash / clear windows</strong> button</li>\n<li>Choose <strong>Close All Instances</strong></li>\n</ol>\n<p>That is the full mission complete.</p>\n</details>\n\n<details>\n  <summary><strong>What You Just Proved</strong></summary>\n\n<ul>\n<li>Browser tabs still work normally</li>\n<li>Browser history still works normally</li>\n<li>You also gained in-tab app windows and cross-tab pull-over</li>\n</ul>\n</details>\n\n<p>Back to the article: <a href=\"/reader/articles/why-this-site\">Why This Site</a>.</p>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>Demo Final</h2>\n<details open>\n  <summary><strong>Step 7: Close All Windows</strong></summary>\n\n<p>You are in a new app window now. Final drill:</p>\n<ol>\n<li>In the sidebar toolbar, click the <strong>trash / clear windows</strong> button</li>\n<li>Choose <strong>Close All Instances</strong></li>\n</ol>\n<p>That is the full mission complete.</p>\n</details>\n\n<details>\n  <summary><strong>What You Just Proved</strong></summary>\n\n<ul>\n<li>Browser tabs still work normally</li>\n<li>Browser history still works normally</li>\n<li>You also gained in-tab app windows and cross-tab pull-over</li>\n</ul>\n</details>\n\n<p>Back to the article: <a href=\"/reader/articles/why-this-site\">Why This Site</a>.</p>\n"
+      }
+    ]
+  },
+  "demo.index": {
+    "key": "demo.index",
+    "appId": "demo",
+    "subroute": "",
+    "title": "Demo Mission",
+    "excerpt": "Hands-on walkthrough of window, tab, and pull-over behavior.",
+    "shell": "default",
+    "meta": {},
+    "html": "<h2>Demo Mission</h2>\n<p>Do the steps in order. Keep this page open in one tab while you run the drill.</p>\n<details open>\n  <summary><strong>Step 1: Use Browser Tabs On Purpose</strong></summary>\n\n<p>Open the next step in a <strong>new browser tab</strong>:</p>\n<ol>\n<li>Right-click this link: <a href=\"/relay/pull-over\">Step 2 Page</a></li>\n<li>Choose <strong>Open in New Browser Tab</strong></li>\n</ol>\n<p>This proves we are adding workflow, not replacing browser features.</p>\n</details>\n\n<details>\n  <summary><strong>Step 3: Forward Navigation Preview</strong></summary>\n\n<p>After Step 2, you will use browser history to move around:</p>\n<ul>\n<li>Step 4 will send you back here with <strong>Back</strong></li>\n<li>Step 5 will send you forward again with <strong>Forward</strong></li>\n</ul>\n<p>You are testing normal browser history, not a fake in-app version.</p>\n</details>\n\n<details>\n  <summary><strong>Step 5: Use Browser Forward</strong></summary>\n\n<p>After Step 4 sends you back here:</p>\n<ol>\n<li>Press your browser <strong>Forward</strong> button once</li>\n<li>You should return to the Step 2 page</li>\n<li>Come back here again (Back is fine)</details></li>\n</ol>\n<details>\n  <summary><strong>Step 6: Open The Final Step In A New App Window</strong></summary>\n\n<p>Now test in-tab windowing:</p>\n<ol>\n<li>Right-click this link: <a href=\"/demo/final\">Step 7 Final</a></li>\n<li>Choose <strong>Open in New App Window</strong></details></li>\n</ol>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>Demo Mission</h2>\n<p>Do the steps in order. Keep this page open in one tab while you run the drill.</p>\n<details open>\n  <summary><strong>Step 1: Use Browser Tabs On Purpose</strong></summary>\n\n<p>Open the next step in a <strong>new browser tab</strong>:</p>\n<ol>\n<li>Right-click this link: <a href=\"/relay/pull-over\">Step 2 Page</a></li>\n<li>Choose <strong>Open in New Browser Tab</strong></li>\n</ol>\n<p>This proves we are adding workflow, not replacing browser features.</p>\n</details>\n\n<details>\n  <summary><strong>Step 3: Forward Navigation Preview</strong></summary>\n\n<p>After Step 2, you will use browser history to move around:</p>\n<ul>\n<li>Step 4 will send you back here with <strong>Back</strong></li>\n<li>Step 5 will send you forward again with <strong>Forward</strong></li>\n</ul>\n<p>You are testing normal browser history, not a fake in-app version.</p>\n</details>\n\n<details>\n  <summary><strong>Step 5: Use Browser Forward</strong></summary>\n\n<p>After Step 4 sends you back here:</p>\n<ol>\n<li>Press your browser <strong>Forward</strong> button once</li>\n<li>You should return to the Step 2 page</li>\n<li>Come back here again (Back is fine)</details></li>\n</ol>\n<details>\n  <summary><strong>Step 6: Open The Final Step In A New App Window</strong></summary>\n\n<p>Now test in-tab windowing:</p>\n<ol>\n<li>Right-click this link: <a href=\"/demo/final\">Step 7 Final</a></li>\n<li>Choose <strong>Open in New App Window</strong></details></li>\n</ol>\n"
+      }
+    ]
+  },
   "error.app-not-found": {
     "key": "error.app-not-found",
     "appId": "error",
@@ -1048,16 +1082,16 @@ export const CONTENT_ARTIFACTS = {
     "meta": {
       "sort_order": "1",
       "card_title": "Why This Site",
-      "card_excerpt": "Why the department site uses an OS-style model with fast, flexible content workflows.",
+      "card_excerpt": "A quick, hands-on tour of why this site is built like a lightweight web workspace.",
       "card_badge": "Editorial",
       "card_variant": "feature"
     },
-    "html": "<h2>Why This Site</h2>\n<p>Most department websites force a one-page-at-a-time workflow: you open something, lose context, go back, then repeat.</p>\n<p>This site takes a different approach. It treats navigation like a lightweight workspace, while still behaving like a normal website.</p>\n<h3>What We Wanted To Fix</h3>\n<ul>\n<li>Context loss when moving between articles, staff pages, and programme information.</li>\n<li>Slow, rigid publishing workflows where content and interface are tightly coupled.</li>\n<li>“Either/or” UX choices where power users lose browser features to gain app-style interaction.</li>\n</ul>\n<h3>Core Idea</h3>\n<p>Use a URL-driven SPA with persistent app windows:</p>\n<ul>\n<li>URL chooses the focused app and subroute.</li>\n<li>Open apps stay mounted until explicitly closed.</li>\n<li>Content is authored in markdown and compiled at build time.</li>\n<li>Browser behavior (history, tabs, links) remains first-class.</li>\n</ul>\n<p>In practice, this means one tab can function like a complete workspace, while multiple browser tabs still work naturally for advanced workflows.</p>\n<h3>Try It In 60 Seconds</h3>\n<ol>\n<li>Open <a href=\"/home\">Home</a>, <a href=\"/people/staff\">Staff</a>, and <a href=\"/reader/overview\">Articles Overview</a>.</li>\n<li>Move between them using the sidebar and top navigation.</li>\n<li>Open an article like <a href=\"/reader/articles/why-this-site\">Why This Site</a>, then open another article.</li>\n<li>Use Back/Forward and notice that navigation restores app identity and focus, not destructive snapshots.</li>\n<li>Keep multiple windows open and continue where you left off.</li>\n</ol>\n<h3>Why This Model Works</h3>\n<ul>\n<li><strong>Fast interaction:</strong> no full page reload for normal in-site navigation.</li>\n<li><strong>Structured content pipeline:</strong> content lives in versioned markdown files.</li>\n<li><strong>Flexible UI:</strong> app shells are normal Svelte components, so behavior is programmable.</li>\n<li><strong>Predictable routing:</strong> links stay readable and shareable.</li>\n</ul>\n<h3>Power Users Are Not Penalized</h3>\n<p>The goal is not to replace browser tabs. The goal is to make each tab more capable.</p>\n<p>If you prefer a single focused workspace, this model gives you that.\nIf you prefer several browser tabs and parallel workflows, that still works exactly as expected.</p>\n<h3>Trade-Offs (Explicitly)</h3>\n<ul>\n<li>Content changes ship on deploy, not as live CMS edits.</li>\n<li>History restores route identity and app focus, not historical content snapshots.</li>\n<li>The architecture is intentionally opinionated: stable behavior over hidden magic.</li>\n</ul>\n",
+    "html": "<h2>Why This Site</h2>\n<p>Short version: this site lets you keep your browser habits and still get a faster in-site workflow.</p>\n<ul>\n<li>Keep normal browser tabs, back/forward, and shareable URLs.</li>\n<li>Add app windows that stay alive while you navigate.</li>\n<li>Keep content simple with markdown, while interface behavior stays programmable.</li>\n</ul>\n<p>If you want the pitch, that is it.\nIf you want proof, run the guided mission:</p>\n<h3>Start The Guided Mission</h3>\n<p><a href=\"/demo\">Open Demo Mission</a></p>\n<p>It takes a few clicks and shows the model better than a long explanation.</p>\n",
     "sections": [
       {
         "key": "000-main",
         "slot": "main",
-        "html": "<h2>Why This Site</h2>\n<p>Most department websites force a one-page-at-a-time workflow: you open something, lose context, go back, then repeat.</p>\n<p>This site takes a different approach. It treats navigation like a lightweight workspace, while still behaving like a normal website.</p>\n<h3>What We Wanted To Fix</h3>\n<ul>\n<li>Context loss when moving between articles, staff pages, and programme information.</li>\n<li>Slow, rigid publishing workflows where content and interface are tightly coupled.</li>\n<li>“Either/or” UX choices where power users lose browser features to gain app-style interaction.</li>\n</ul>\n<h3>Core Idea</h3>\n<p>Use a URL-driven SPA with persistent app windows:</p>\n<ul>\n<li>URL chooses the focused app and subroute.</li>\n<li>Open apps stay mounted until explicitly closed.</li>\n<li>Content is authored in markdown and compiled at build time.</li>\n<li>Browser behavior (history, tabs, links) remains first-class.</li>\n</ul>\n<p>In practice, this means one tab can function like a complete workspace, while multiple browser tabs still work naturally for advanced workflows.</p>\n<h3>Try It In 60 Seconds</h3>\n<ol>\n<li>Open <a href=\"/home\">Home</a>, <a href=\"/people/staff\">Staff</a>, and <a href=\"/reader/overview\">Articles Overview</a>.</li>\n<li>Move between them using the sidebar and top navigation.</li>\n<li>Open an article like <a href=\"/reader/articles/why-this-site\">Why This Site</a>, then open another article.</li>\n<li>Use Back/Forward and notice that navigation restores app identity and focus, not destructive snapshots.</li>\n<li>Keep multiple windows open and continue where you left off.</li>\n</ol>\n<h3>Why This Model Works</h3>\n<ul>\n<li><strong>Fast interaction:</strong> no full page reload for normal in-site navigation.</li>\n<li><strong>Structured content pipeline:</strong> content lives in versioned markdown files.</li>\n<li><strong>Flexible UI:</strong> app shells are normal Svelte components, so behavior is programmable.</li>\n<li><strong>Predictable routing:</strong> links stay readable and shareable.</li>\n</ul>\n<h3>Power Users Are Not Penalized</h3>\n<p>The goal is not to replace browser tabs. The goal is to make each tab more capable.</p>\n<p>If you prefer a single focused workspace, this model gives you that.\nIf you prefer several browser tabs and parallel workflows, that still works exactly as expected.</p>\n<h3>Trade-Offs (Explicitly)</h3>\n<ul>\n<li>Content changes ship on deploy, not as live CMS edits.</li>\n<li>History restores route identity and app focus, not historical content snapshots.</li>\n<li>The architecture is intentionally opinionated: stable behavior over hidden magic.</li>\n</ul>\n"
+        "html": "<h2>Why This Site</h2>\n<p>Short version: this site lets you keep your browser habits and still get a faster in-site workflow.</p>\n<ul>\n<li>Keep normal browser tabs, back/forward, and shareable URLs.</li>\n<li>Add app windows that stay alive while you navigate.</li>\n<li>Keep content simple with markdown, while interface behavior stays programmable.</li>\n</ul>\n<p>If you want the pitch, that is it.\nIf you want proof, run the guided mission:</p>\n<h3>Start The Guided Mission</h3>\n<p><a href=\"/demo\">Open Demo Mission</a></p>\n<p>It takes a few clicks and shows the model better than a long explanation.</p>\n"
       }
     ]
   },
@@ -1147,6 +1181,40 @@ export const CONTENT_ARTIFACTS = {
         "key": "000-main",
         "slot": "main",
         "html": "<p>Browse Reader articles below. Primary cards focus on current or timeless content, while older newsfeed items are grouped under <strong>Newsroll Archive</strong>.</p>\n<p>Current entries in this snapshot are sourced from:</p>\n<ul>\n<li>cs.sun.ac.za feature pages</li>\n<li>cs.sun.ac.za newsfeed posts</li>\n</ul>\n"
+      }
+    ]
+  },
+  "relay.index": {
+    "key": "relay.index",
+    "appId": "relay",
+    "subroute": "",
+    "title": "Relay",
+    "excerpt": "Hidden relay app used for interactive walkthroughs.",
+    "shell": "default",
+    "meta": {},
+    "html": "<h2>Relay</h2>\n<p>Use the main relay step here: <a href=\"/relay/pull-over\">Pull-Over Step</a>.</p>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>Relay</h2>\n<p>Use the main relay step here: <a href=\"/relay/pull-over\">Pull-Over Step</a>.</p>\n"
+      }
+    ]
+  },
+  "relay.pull-over": {
+    "key": "relay.pull-over",
+    "appId": "relay",
+    "subroute": "pull-over",
+    "title": "Relay Pull-Over Step",
+    "excerpt": "Bring a window from another browser tab into this one.",
+    "shell": "default",
+    "meta": {},
+    "html": "<h2>Relay Pull-Over Step</h2>\n<details open>\n  <summary><strong>Step 2: Pull A Window Over From Another Tab</strong></summary>\n\n<p>In the sidebar:</p>\n<ul>\n<li>Find the <strong>Demo</strong> window entry that came from your first tab</li>\n<li>Click it once</li>\n</ul>\n<p>That action pulls the window into this tab and focuses it.</p>\n</details>\n\n<details>\n  <summary><strong>Step 4: Use Browser Back</strong></summary>\n\n<p>Now press your browser <strong>Back</strong> button once.</p>\n<p>You should land back on the Demo Mission page and continue with Step 5.</p>\n</details>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>Relay Pull-Over Step</h2>\n<details open>\n  <summary><strong>Step 2: Pull A Window Over From Another Tab</strong></summary>\n\n<p>In the sidebar:</p>\n<ul>\n<li>Find the <strong>Demo</strong> window entry that came from your first tab</li>\n<li>Click it once</li>\n</ul>\n<p>That action pulls the window into this tab and focuses it.</p>\n</details>\n\n<details>\n  <summary><strong>Step 4: Use Browser Back</strong></summary>\n\n<p>Now press your browser <strong>Back</strong> button once.</p>\n<p>You should land back on the Demo Mission page and continue with Step 5.</p>\n</details>\n"
       }
     ]
   },
