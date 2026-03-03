@@ -10,30 +10,38 @@
 </script>
 
 <div class="app-layout">
-  <section class="home-overview">
-    <div class="overview-header">
-      <h3>Home</h3>
-      <p>Featured articles delegate into Reader routes.</p>
-    </div>
+  <section class="home-chrome">
+    <header class="home-hero">
+      <p class="hero-eyebrow">Stellenbosch University</p>
+      <h2>Computer Science Department</h2>
+      <p>
+        Welcome to the department workspace. Open people directories, explore current articles, and move between apps
+        without losing your place.
+      </p>
+      <div class="hero-actions">
+        <a href="/people">Open People</a>
+        <a href="/reader/articles">Open Articles</a>
+        <a href="/reader/help">Open Help</a>
+      </div>
+    </header>
 
-    <ul class="entry-cards">
-      {#each featuredArticles as article (article.key)}
-        {@const path = `/reader/${article.subroute}`}
-        <li class="entry-card">
-          <h4>{article.title}</h4>
-          <p>{article.excerpt ?? 'Department updates and announcements.'}</p>
-          <a class="entry-link" href={path}>Read in Reader</a>
-        </li>
-      {/each}
-    </ul>
+    <section class="home-featured">
+      <div class="featured-heading">
+        <h3>Featured Stories</h3>
+        <p>Select an entry to open it in Reader.</p>
+      </div>
 
-    <details class="dev-links">
-      <summary>Developer Test Links</summary>
-      <ul class="broken-links">
-        <li><a href="/broken-app/demo">Broken app route</a></li>
-        <li><a href="/reader/articles/this-does-not-exist">Broken reader path</a></li>
+      <ul class="feature-grid">
+        {#each featuredArticles as article (article.key)}
+          {@const path = `/reader/${article.subroute}`}
+          <li class="feature-card">
+            <h4>{article.title}</h4>
+            <p>{article.excerpt ?? 'Department update and announcement.'}</p>
+            <a class="feature-link" href={path}>Read story</a>
+          </li>
+        {/each}
       </ul>
-    </details>
+    </section>
   </section>
 
   <div class="content-slot">
@@ -47,109 +55,139 @@
     display: grid;
     grid-template-rows: auto 1fr;
     min-height: 0;
-    background: var(--su-surface, #fffdf9);
+    background: var(--su-app-content-bg, var(--su-surface, #fffdf9));
   }
 
-  .home-overview {
-    border-bottom: 1px solid rgba(44, 42, 41, 0.08);
-    padding: 0.72rem 0.78rem 0.68rem;
-    background: color-mix(in srgb, var(--su-surface-subtle, #f8f4ed) 80%, white 20%);
+  .home-chrome {
+    border-bottom: 1px solid var(--su-app-chrome-line, rgba(44, 42, 41, 0.08));
+    padding: 0.72rem 0.86rem 0.74rem;
+    background: var(--su-app-sidebar-bg, color-mix(in srgb, var(--su-surface-subtle, #f8f4ed) 82%, white 18%));
+    display: grid;
+    gap: 0.72rem;
   }
 
-  .overview-header {
-    margin-bottom: 0.52rem;
+  .home-hero {
+    width: 100%;
+    max-width: var(--su-content-max-width, 72rem);
+    margin: 0 auto;
+    display: grid;
+    gap: 0.34rem;
   }
 
-  .home-overview h3 {
-    margin: 0 0 0.24rem;
+  .hero-eyebrow {
+    margin: 0;
+    font-size: 0.76rem;
+    line-height: 1.2;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--su-muted, #686d71) 94%, black 6%);
+  }
+
+  .home-hero h2 {
+    margin: 0;
+    color: color-mix(in srgb, var(--su-maroon, #61223b) 86%, black 14%);
+    font-size: 1.28rem;
+    line-height: 1.16;
+  }
+
+  .home-hero > p {
+    margin: 0;
+    color: color-mix(in srgb, var(--su-ink, #2c2a29) 90%, white 10%);
+    font-size: 0.92rem;
+    line-height: 1.38;
+    max-width: 76ch;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.34rem;
+    margin-top: 0.1rem;
+  }
+
+  .hero-actions a {
+    text-decoration: none;
+    color: var(--su-maroon, #61223b);
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.11);
+    border-radius: 0.4rem;
+    padding: 0.34rem 0.5rem;
+    font-size: 0.82rem;
+    line-height: 1.2;
+    transition: background-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
+  }
+
+  .hero-actions a:hover {
+    background: rgba(202, 162, 88, 0.18);
+    box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.24);
+  }
+
+  .home-featured {
+    width: 100%;
+    max-width: var(--su-content-max-width, 72rem);
+    margin: 0 auto;
+  }
+
+  .featured-heading {
+    margin: 0 0 0.42rem;
+    display: grid;
+    gap: 0.16rem;
+  }
+
+  .featured-heading h3 {
+    margin: 0;
+    font-size: 0.95rem;
     color: color-mix(in srgb, var(--su-maroon, #61223b) 84%, black 16%);
   }
 
-  .home-overview p {
+  .featured-heading p {
     margin: 0;
-    color: color-mix(in srgb, var(--su-muted, #686d71) 90%, black 10%);
-    font-size: 0.88rem;
+    color: color-mix(in srgb, var(--su-muted, #686d71) 92%, black 8%);
+    font-size: 0.82rem;
   }
 
-  .entry-cards,
-  .broken-links {
+  .feature-grid {
     margin: 0;
     padding: 0;
     list-style: none;
-  }
-
-  .entry-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-    gap: 0.42rem;
-    margin-bottom: 0.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.44rem;
   }
 
-  .entry-card,
-  .broken-links li {
+  .feature-card {
     margin: 0;
-  }
-
-  .entry-card {
     border-radius: 0.42rem;
     padding: 0.44rem 0.5rem;
-    background: rgba(255, 255, 255, 0.72);
-    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.09);
+    background: rgba(255, 255, 255, 0.76);
+    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.1);
     display: grid;
     gap: 0.2rem;
   }
 
-  .entry-card h4 {
+  .feature-card h4 {
     margin: 0;
-    font-size: 0.88rem;
+    font-size: 0.86rem;
+    line-height: 1.24;
     color: color-mix(in srgb, var(--su-maroon, #61223b) 84%, black 16%);
   }
 
-  .entry-card p {
+  .feature-card p {
     margin: 0;
-    font-size: 0.82rem;
-    line-height: 1.35;
     color: color-mix(in srgb, var(--su-muted, #686d71) 94%, black 6%);
-  }
-
-  .entry-link,
-  .home-overview a {
-    color: color-mix(in srgb, var(--su-maroon, #61223b) 90%, black 10%);
-    text-underline-offset: 2px;
-    font-size: 0.82rem;
-  }
-
-  .dev-links {
-    border: none;
-    border-radius: 0.42rem;
-    background: rgba(255, 255, 255, 0.62);
-    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.08);
-    overflow: hidden;
-  }
-
-  .dev-links summary {
-    list-style: none;
-    cursor: pointer;
-    user-select: none;
-    padding: 0.34rem 0.46rem;
     font-size: 0.8rem;
-    font-weight: 600;
-    color: color-mix(in srgb, var(--su-ink, #2c2a29) 86%, white 14%);
+    line-height: 1.34;
   }
 
-  .dev-links summary::-webkit-details-marker {
-    display: none;
-  }
-
-  .dev-links ul {
-    padding: 0 0.46rem 0.4rem;
-  }
-
-  .broken-links li + li {
-    margin-top: 0.22rem;
+  .feature-link {
+    text-underline-offset: 2px;
+    color: color-mix(in srgb, var(--su-maroon, #61223b) 90%, black 10%);
+    font-size: 0.8rem;
+    width: fit-content;
   }
 
   .content-slot {
     min-height: 0;
+    background: var(--su-app-content-bg, var(--su-surface, #fffdf9));
   }
 </style>

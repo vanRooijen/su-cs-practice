@@ -104,14 +104,16 @@
         isActive: cachedArtifact.key === activeKey,
       }}
     >
-      <header>
-        <h3>{cachedArtifact?.title}</h3>
-        {#if cachedArtifact?.excerpt}
-          <p>{cachedArtifact.excerpt}</p>
-        {/if}
-      </header>
+      <div class="content-frame">
+        <header>
+          <h3>{cachedArtifact?.title}</h3>
+          {#if cachedArtifact?.excerpt}
+            <p>{cachedArtifact.excerpt}</p>
+          {/if}
+        </header>
 
-      <article class="content-document">{@html cachedArtifact?.html}</article>
+        <article class="content-document">{@html cachedArtifact?.html}</article>
+      </div>
     </section>
   {/each}
 </section>
@@ -121,17 +123,18 @@
     position: relative;
     height: 100%;
     min-height: 0;
+    background: var(--su-app-content-bg, var(--su-surface, #fffdf9));
   }
 
   .content-pane {
     position: absolute;
     inset: 0;
     overflow: auto;
-    padding: 0.82rem 0.92rem 0.95rem;
+    padding: 0.86rem 0.98rem 1rem;
     opacity: 0;
     z-index: 0;
     pointer-events: none;
-    background: var(--su-surface, #fffdf9);
+    background: var(--su-app-content-bg, var(--su-surface, #fffdf9));
   }
 
   .content-pane[data-active='true'] {
@@ -140,18 +143,24 @@
     pointer-events: auto;
   }
 
-  .content-pane > header {
+  .content-frame {
+    width: 100%;
+    max-width: var(--su-content-max-width, 72rem);
+    margin: 0 auto;
+  }
+
+  .content-frame > header {
     margin: 0 0 0.72rem;
   }
 
-  .content-pane > header h3 {
+  .content-frame > header h3 {
     margin: 0 0 0.26rem;
     color: color-mix(in srgb, var(--su-maroon, #61223b) 86%, black 14%);
     font-size: 1.02rem;
     line-height: 1.2;
   }
 
-  .content-pane > header p {
+  .content-frame > header p {
     margin: 0;
     color: color-mix(in srgb, var(--su-muted, #686d71) 90%, black 10%);
     font-size: 0.88rem;

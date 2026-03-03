@@ -283,8 +283,8 @@
   $: activeTransform =
     interactionState?.kind === 'drag' && dragPreviewOffset
       ? `translate3d(${dragPreviewOffset.x}px, ${dragPreviewOffset.y}px, 0)`
-      : 'none';
-  $: windowWillChange = interactionState?.kind === 'drag' ? 'transform' : 'auto';
+      : 'translate3d(0, 0, 0)';
+  $: windowWillChange = 'transform';
   $: historyIndex = windowState.history?.index ?? 0;
   $: historyLength = windowState.history?.entries?.length ?? 0;
   $: canGoBack = historyIndex > 0;
@@ -329,7 +329,7 @@
       {/if}
 
       <div class="window-header-title" title={canonicalPath}>
-        <p class="window-path-label">{canonicalPath}</p>
+        <span class="window-path-label">{canonicalPath}</span>
       </div>
     </div>
 
@@ -421,6 +421,7 @@
     min-width: 0;
     min-height: 0;
     overflow: clip;
+    transform-origin: top left;
     box-shadow:
       0 10px 26px rgba(44, 42, 41, 0.14),
       0 1px 0 rgba(255, 255, 255, 0.75) inset,
@@ -467,22 +468,17 @@
 
   .window-path-label {
     width: 100%;
-    max-width: min(46ch, 52vw);
+    max-width: min(58ch, 58vw);
     margin: 0;
-    min-height: var(--window-control-size);
-    padding: 0.34rem 0.62rem;
-    border-radius: 0.38rem;
-    background: color-mix(in srgb, var(--su-surface-subtle, #f8f4ed) 86%, white 14%);
-    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.16);
-    color: color-mix(in srgb, var(--su-maroon, #61223b) 90%, black 10%);
-    font-size: 0.86rem;
+    color: color-mix(in srgb, var(--su-maroon, #61223b) 78%, black 22%);
+    font-size: 0.96rem;
     font-weight: 600;
-    line-height: 1.3;
+    line-height: 1.18;
+    letter-spacing: 0.002em;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    display: flex;
-    align-items: center;
+    display: block;
   }
 
   .window-header-right {
@@ -579,7 +575,7 @@
     flex: 1;
     min-height: 0;
     overflow: hidden;
-    background: var(--su-surface, #fffdf9);
+    background: var(--su-app-content-bg, var(--su-surface, #fffdf9));
   }
 
   .resize-handle {

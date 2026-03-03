@@ -692,6 +692,10 @@
     --su-surface-subtle: #f8f4ed;
     --su-line: #ddd6cb;
     --su-line-strong: #cec6b9;
+    --su-app-content-bg: var(--su-surface);
+    --su-app-sidebar-bg: color-mix(in srgb, var(--su-surface-subtle) 82%, white 18%);
+    --su-app-chrome-line: rgba(44, 42, 41, 0.08);
+    --su-content-max-width: 72rem;
     --su-local-accent: #61223b;
     --su-foreign-accent: #4d5356;
     --su-focus-soft: rgba(97, 34, 59, 0.12);
@@ -707,7 +711,7 @@
     min-height: 0;
     background-color: var(--su-paper);
     color: var(--su-ink);
-    font-family: 'SU Raleway', 'Raleway', 'Trebuchet MS', sans-serif;
+    font-family: var(--su-font-ui, 'SU Raleway Local', 'SU Raleway', 'Raleway', 'Trebuchet MS', sans-serif);
   }
 
   .topbar {
@@ -718,9 +722,9 @@
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    column-gap: 1rem;
-    min-height: 3.42rem;
-    padding: 0.24rem 1rem;
+    column-gap: 0.86rem;
+    min-height: 4.2rem;
+    padding: 0 0.56rem;
     box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.75);
   }
 
@@ -733,11 +737,11 @@
   }
 
   .site-logo {
-    height: 2rem;
-    max-width: clamp(9.8rem, 20vw, 12.4rem);
+    height: 4.5rem;
+    max-width: clamp(20.8rem, 39vw, 26.8rem);
     width: auto;
     display: block;
-    margin-inline: 0 1rem;
+    margin-inline: 0 0.5rem;
     margin-block: 0;
     flex: 0 0 auto;
   }
@@ -889,7 +893,7 @@
 
   .sidebar {
     border-right: 1px solid var(--su-line);
-    background: var(--su-sidebar);
+    background: var(--su-app-sidebar-bg, var(--su-sidebar));
     overflow: auto;
     padding: 0.62rem 0.6rem 0.65rem;
     box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.6);
@@ -1295,8 +1299,8 @@
   @media (max-width: 860px) {
     .topbar {
       grid-template-columns: 1fr;
-      gap: 0.35rem;
-      padding: 0.45rem 0.75rem;
+      gap: 0.28rem;
+      padding: 0 0.46rem;
     }
 
     .topbar-brand,
@@ -1309,7 +1313,9 @@
     }
 
     .site-logo {
-      margin-inline: 0 0.72rem;
+      height: 3.36rem;
+      max-width: clamp(14.2rem, 62vw, 19.2rem);
+      margin-inline: 0 0.42rem;
     }
 
     .brand-copy strong {
