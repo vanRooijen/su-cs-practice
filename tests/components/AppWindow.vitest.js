@@ -155,4 +155,57 @@ describe('AppWindow component', () => {
     expect(onMinimize).toHaveBeenCalledTimes(1);
     expect(onMinimize.mock.calls[0][0]?.detail?.windowId).toBe(1);
   });
+
+  it('dragging a maximized header requests restore-for-drag with a clamped position', async () => {
+    const onRestoreForDrag = vi.fn();
+    const onMove = vi.fn();
+    const { getByRole } = render(AppWindow, {
+      props: makeProps({
+        isMaximized: true,
+        bounds: {
+          x: 0,
+          y: 0,
+          width: 1200,
+          height: 800,
+        },
+        restoreBounds: {
+          x: 120,
+          y: 64,
+          width: 760,
+          height: 520,
+        },
+      }),
+      events: {
+        restoreForDrag: onRestoreForDrag,
+        move: onMove,
+      },
+    });
+
+    const header = getByRole('group', { name: 'Window header' });
+    await fireEvent.pointerDown(header, {
+      button: 0,
+      pointerId: 1,
+      clientX: 1050,
+      clientY: 16,
+    });
+    await fireEvent.pointerUp(window, {
+      button: 0,
+      pointerId: 1,
+      clientX: 1075,
+      clientY: 20,
+    });
+
+    expect(onRestoreForDrag).toHaveBeenCalledTimes(1);
+    const restoreDetail = onRestoreForDrag.mock.calls[0][0]?.detail;
+    expect(restoreDetail?.windowId).toBe(1);
+    expect(restoreDetail?.x).toBeGreaterThanOrEqual(0);
+    expect(restoreDetail?.x).toBeLessThanOrEqual(440);
+    expect(restoreDetail?.y).toBe(0);
+
+    expect(onMove).toHaveBeenCalledTimes(1);
+    const moveDetail = onMove.mock.calls[0][0]?.detail;
+    expect(moveDetail?.windowId).toBe(1);
+    expect(moveDetail?.x).toBeGreaterThanOrEqual(restoreDetail.x);
+    expect(moveDetail?.y).toBeGreaterThanOrEqual(0);
+  });
 });

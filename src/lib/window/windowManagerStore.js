@@ -638,6 +638,40 @@ export function createWindowManagerStore() {
     });
   }
 
+  function restoreMaximizedWindowForDrag(windowId, position = {}) {
+    store.update((state) => {
+      const target = state.windows[windowId];
+
+      if (!target || !target.isMaximized || !isOwnedByRuntime(target)) {
+        return state;
+      }
+
+      const restored = target.restoreBounds ?? makeCenteredBounds(state.workspaceRect, windowId);
+      const restoredBounds = clampBoundsToWorkspace(state.workspaceRect, restored);
+      const nextPosition = clampPositionToWorkspace(
+        state.workspaceRect,
+        restoredBounds,
+        position?.x ?? restoredBounds.x,
+        position?.y ?? restoredBounds.y,
+      );
+
+      const next = cloneState(state);
+      next.windows[windowId] = {
+        ...target,
+        isMaximized: false,
+        bounds: {
+          ...restoredBounds,
+          x: nextPosition.x,
+          y: nextPosition.y,
+        },
+        restoreBounds: cloneBounds(restoredBounds),
+      };
+
+      focusWindow(next, windowId, { restoreMinimized: true, ownerRuntimeId: runtimeId });
+      return next;
+    });
+  }
+
   function moveWindow(windowId, position) {
     store.update((state) => {
       const target = state.windows[windowId];
@@ -968,6 +1002,7 @@ export function createWindowManagerStore() {
     toggleMaximize,
     toggleSidebar,
     setSidebarCollapsed,
+    restoreMaximizedWindowForDrag,
     moveWindow,
     resizeWindow,
     stepWindowHistory,

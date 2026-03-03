@@ -443,6 +443,37 @@ test('moveWindow clamps coordinates to workspace and no-ops for unchanged bounds
   assert.equal(afterNoOp, moved);
 });
 
+test('restoreMaximizedWindowForDrag restores maximized windows and repositions within workspace', () => {
+  const store = createWindowManagerStore();
+  store.setWorkspaceRect({ width: 900, height: 600 });
+  store.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
+
+  const windowId = store.getSnapshot().focusedWindowId;
+  assert.ok(windowId, 'expected focused window');
+
+  store.moveWindow(windowId, { x: 140, y: 96 });
+  const beforeMaximize = store.getSnapshot().windows[windowId].bounds;
+
+  store.toggleMaximize(windowId);
+  let snapshot = store.getSnapshot();
+  assert.equal(snapshot.windows[windowId].isMaximized, true);
+
+  store.restoreMaximizedWindowForDrag(windowId, { x: 9999, y: -200 });
+  snapshot = store.getSnapshot();
+  const restored = snapshot.windows[windowId];
+
+  assert.equal(restored.isMaximized, false);
+  assert.equal(restored.bounds.width, beforeMaximize.width);
+  assert.equal(restored.bounds.height, beforeMaximize.height);
+  assert.equal(restored.bounds.x, snapshot.workspaceRect.width - restored.bounds.width);
+  assert.equal(restored.bounds.y, 0);
+
+  const afterRestore = snapshot;
+  store.restoreMaximizedWindowForDrag(windowId, { x: 120, y: 48 });
+  const afterNoOp = store.getSnapshot();
+  assert.equal(afterNoOp, afterRestore);
+});
+
 test('resizeWindow respects workspace boundaries and minimum dimensions', () => {
   const store = createWindowManagerStore();
   store.setWorkspaceRect({ width: 900, height: 600 });

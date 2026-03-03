@@ -602,6 +602,10 @@
     windowManager.moveWindow(windowId, { x, y });
   }
 
+  function handleRestoreForDrag(windowId, x, y) {
+    windowManager.restoreMaximizedWindowForDrag(windowId, { x, y });
+  }
+
   function handleResize(windowId, edge, deltaX, deltaY, startBounds) {
     windowManager.resizeWindow(windowId, {
       edge,
@@ -928,6 +932,8 @@
             on:toggleSidebar={(event) => handleToggleSidebar(event.detail.windowId)}
             on:historyBack={(event) => handleWindowHistoryBack(event.detail.windowId)}
             on:historyForward={(event) => handleWindowHistoryForward(event.detail.windowId)}
+            on:restoreForDrag={(event) =>
+              handleRestoreForDrag(event.detail.windowId, event.detail.x, event.detail.y)}
             on:move={(event) => handleMove(event.detail.windowId, event.detail.x, event.detail.y)}
             on:resize={(event) =>
               handleResize(

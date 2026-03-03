@@ -77,6 +77,8 @@
   function toDraggedPosition(interaction, clientX, clientY) {
     const rawX = interaction.startWindowX + (clientX - interaction.startPointerX);
     const rawY = interaction.startWindowY + (clientY - interaction.startPointerY);
+    const windowWidth = Math.max(1, Math.round(interaction.windowWidth ?? windowState.bounds.width));
+    const windowHeight = Math.max(1, Math.round(interaction.windowHeight ?? windowState.bounds.height));
 
     if (!workspaceRect) {
       return {
@@ -85,12 +87,36 @@
       };
     }
 
-    const maxX = Math.max(0, workspaceRect.width - windowState.bounds.width);
-    const maxY = Math.max(0, workspaceRect.height - windowState.bounds.height);
+    const maxX = Math.max(0, workspaceRect.width - windowWidth);
+    const maxY = Math.max(0, workspaceRect.height - windowHeight);
 
     return {
       x: clamp(Math.round(rawX), 0, maxX),
       y: clamp(Math.round(rawY), 0, maxY),
+    };
+  }
+
+  function resolveRestorePositionForDrag(event) {
+    const fallbackBounds = windowState.restoreBounds ?? windowState.bounds;
+    const restoreWidth = Math.max(1, Math.round(fallbackBounds.width));
+    const restoreHeight = Math.max(1, Math.round(fallbackBounds.height));
+    const currentWidth = Math.max(1, Math.round(windowState.bounds.width));
+    const currentHeight = Math.max(1, Math.round(windowState.bounds.height));
+    const pointerOffsetX = clamp(event.clientX - windowState.bounds.x, 0, currentWidth);
+    const pointerOffsetY = clamp(event.clientY - windowState.bounds.y, 0, currentHeight);
+    const pointerXRatio = pointerOffsetX / currentWidth;
+    const anchoredX = event.clientX - pointerXRatio * restoreWidth;
+    const anchoredY = event.clientY - pointerOffsetY;
+    const workspaceWidth = Math.max(1, Math.round(workspaceRect?.width ?? currentWidth));
+    const workspaceHeight = Math.max(1, Math.round(workspaceRect?.height ?? currentHeight));
+    const maxX = Math.max(0, workspaceWidth - restoreWidth);
+    const maxY = Math.max(0, workspaceHeight - restoreHeight);
+
+    return {
+      x: clamp(Math.round(anchoredX), 0, maxX),
+      y: clamp(Math.round(anchoredY), 0, maxY),
+      width: restoreWidth,
+      height: restoreHeight,
     };
   }
 
@@ -253,7 +279,7 @@
   }
 
   function startDrag(event) {
-    if (event.button !== 0 || isEffectivelyMaximized) {
+    if (event.button !== 0 || forceMaximized) {
       return;
     }
 
@@ -263,13 +289,32 @@
     }
 
     requestFocus();
+    const startingBounds = windowState.isMaximized
+      ? resolveRestorePositionForDrag(event)
+      : {
+          x: windowState.bounds.x,
+          y: windowState.bounds.y,
+          width: windowState.bounds.width,
+          height: windowState.bounds.height,
+        };
+
+    if (windowState.isMaximized) {
+      dispatch('restoreForDrag', {
+        windowId: windowState.windowId,
+        x: startingBounds.x,
+        y: startingBounds.y,
+      });
+    }
+
     interactionState = {
       kind: 'drag',
       pointerId: event.pointerId,
       startPointerX: event.clientX,
       startPointerY: event.clientY,
-      startWindowX: windowState.bounds.x,
-      startWindowY: windowState.bounds.y,
+      startWindowX: startingBounds.x,
+      startWindowY: startingBounds.y,
+      windowWidth: startingBounds.width,
+      windowHeight: startingBounds.height,
     };
     setGlobalDragCursor(true);
     dragPreviewOffset = { x: 0, y: 0 };
@@ -341,7 +386,11 @@
     cancelInteractionFrame();
     removeWindowInteractionListeners();
 
-    if (sourceElement?.hasPointerCapture(pointerId)) {
+    if (
+      typeof sourceElement?.hasPointerCapture === 'function' &&
+      sourceElement.hasPointerCapture(pointerId) &&
+      typeof sourceElement.releasePointerCapture === 'function'
+    ) {
       sourceElement.releasePointerCapture(pointerId);
     }
   }
