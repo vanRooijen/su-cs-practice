@@ -17,9 +17,12 @@
   export let onCloseOtherInstances = null;
 
   const runtimeId = windowManager.getRuntimeId?.() ?? null;
+  const MOBILE_VIEWPORT_MEDIA_QUERY = '(max-width: 860px)';
   let localKeepAliveMinimizedWindowIds = new Set();
 
   let workspaceElement;
+  let isMobileViewport = false;
+  let mobileDrawer = null;
   let contextMenuElement;
   let contextMenu = {
     open: false,
@@ -113,6 +116,7 @@
   }
 
   function openPath(path) {
+    closeMobileDrawer();
     navigateTo(path, { forceEmit: true });
   }
 
@@ -121,7 +125,36 @@
   }
 
   function openPathInNewWindow(path) {
+    closeMobileDrawer();
     openInNewWindow(path);
+  }
+
+  function setMobileViewport(nextIsMobile) {
+    const normalized = Boolean(nextIsMobile);
+    if (normalized === isMobileViewport) {
+      return;
+    }
+
+    isMobileViewport = normalized;
+    if (!normalized) {
+      closeMobileDrawer();
+    }
+  }
+
+  function closeMobileDrawer() {
+    if (mobileDrawer === null) {
+      return;
+    }
+
+    mobileDrawer = null;
+  }
+
+  function toggleMobileDrawer(drawer) {
+    if (!isMobileViewport) {
+      return;
+    }
+
+    mobileDrawer = mobileDrawer === drawer ? null : drawer;
   }
 
   function closeContextMenu() {
@@ -203,27 +236,35 @@
   }
 
   function onGlobalClick(event) {
-    if (!contextMenu.open) {
-      return;
-    }
-
     const target = event.target instanceof Element ? event.target : null;
-    if (target?.closest('.site-context-menu')) {
-      return;
+    if (contextMenu.open) {
+      if (!target?.closest('.site-context-menu')) {
+        closeContextMenu();
+      }
     }
 
-    closeContextMenu();
+    if (mobileDrawer && !target?.closest('.mobile-dock') && !target?.closest('.mobile-drawer')) {
+      closeMobileDrawer();
+    }
   }
 
   function onGlobalKeydown(event) {
     if (event.key === 'Escape' && contextMenu.open) {
       closeContextMenu();
-      return;
+    }
+
+    if (event.key === 'Escape' && mobileDrawer) {
+      closeMobileDrawer();
     }
   }
 
   function onGlobalResize() {
     clampContextMenuPosition();
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      return;
+    }
+
+    setMobileViewport(window.matchMedia(MOBILE_VIEWPORT_MEDIA_QUERY).matches);
   }
 
   function openHelpPage() {
@@ -357,6 +398,7 @@
     }
 
     syncUrlToFocusedWindowOrDesktop();
+    closeMobileDrawer();
   }
 
   function handleMinimize(windowId) {
@@ -422,6 +464,8 @@
     if (suggestedPath && suggestedPath !== $route.path) {
       navigateTo(suggestedPath, { replace: true });
     }
+
+    closeMobileDrawer();
   }
 
   onMount(() => {
@@ -446,6 +490,23 @@
     });
 
     observer.observe(workspaceElement);
+
+    let removeViewportListener = () => {};
+    if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+      const mediaQueryList = window.matchMedia(MOBILE_VIEWPORT_MEDIA_QUERY);
+      const onViewportChange = (event) => {
+        setMobileViewport(event.matches);
+      };
+
+      setMobileViewport(mediaQueryList.matches);
+      if (typeof mediaQueryList.addEventListener === 'function') {
+        mediaQueryList.addEventListener('change', onViewportChange);
+        removeViewportListener = () => mediaQueryList.removeEventListener('change', onViewportChange);
+      } else if (typeof mediaQueryList.addListener === 'function') {
+        mediaQueryList.addListener(onViewportChange);
+        removeViewportListener = () => mediaQueryList.removeListener(onViewportChange);
+      }
+    }
 
     const initialSnapshot = windowManager.getSnapshot();
     const initialFocusedWindowId = initialSnapshot.focusedWindowId;
@@ -473,6 +534,7 @@
 
     return () => {
       observer.disconnect();
+      removeViewportListener();
       stopWindowSubscription();
     };
   });
@@ -487,107 +549,111 @@
       </div>
     </div>
 
-    <nav class="topbar-cluster" aria-label="Topbar app links">
-      {#each TOPBAR_LINKS as link}
-        <button
-          type="button"
-          class="topbar-link"
-          data-context-path={link.path}
-          title={link.path}
-          on:click={() => openPath(link.path)}
-        >
-          {link.label}
-        </button>
-      {/each}
-    </nav>
+    {#if !isMobileViewport}
+      <nav class="topbar-cluster" aria-label="Topbar app links">
+        {#each TOPBAR_LINKS as link}
+          <button
+            type="button"
+            class="topbar-link"
+            data-context-path={link.path}
+            title={link.path}
+            on:click={() => openPath(link.path)}
+          >
+            {link.label}
+          </button>
+        {/each}
+      </nav>
 
-    <div class="topbar-utilities">
-      <div class="topbar-cluster topbar-cluster-single">
-        <button type="button" class="topbar-link topbar-contact" on:click={openContact}>
-          <span class="inline-icon" aria-hidden="true">{@html iconMail}</span>
-          <span>Contact</span>
-        </button>
+      <div class="topbar-utilities">
+        <div class="topbar-cluster topbar-cluster-single">
+          <button type="button" class="topbar-link topbar-contact" on:click={openContact}>
+            <span class="inline-icon" aria-hidden="true">{@html iconMail}</span>
+            <span>Contact</span>
+          </button>
+        </div>
       </div>
-    </div>
+    {/if}
   </header>
 
   <div class="main-row">
-    <aside class="sidebar">
-      <div class="sidebar-toolbar" aria-label="Sidebar shortcuts">
-        <button
-          type="button"
-          class="sidebar-tool"
-          aria-label="Open Home"
-          on:click={() => openPath('/home')}
-        >
-          <span class="inline-icon" aria-hidden="true">{@html iconHome}</span>
-        </button>
-        <button
-          type="button"
-          class="sidebar-tool"
-          aria-label="Open Articles"
-          on:click={() => openPath('/reader/articles')}
-        >
-          <span class="inline-icon" aria-hidden="true">{@html iconNewspaper}</span>
-        </button>
-        <button
-          type="button"
-          class="sidebar-tool"
-          aria-label="Open Help"
-          on:click={() => openPath('/reader/general/help')}
-        >
-          <span class="inline-icon" aria-hidden="true">{@html iconHelp}</span>
-        </button>
-      </div>
-
-      {#if sidebarWindowIds.length === 0}
-        <p class="sidebar-empty">No windows open.</p>
-      {/if}
-
-      {#each sidebarWindowIds as windowId (windowId)}
-        {@const win = $windowManager.windows[windowId]}
-        {@const appName = APP_REGISTRY[win.appId]?.title ?? win.appId}
-
-        <div
-          class="sidebar-entry"
-          data-focused={$windowManager.focusedWindowId === windowId && !win.isMinimized && win.ownerRuntimeId === runtimeId}
-          data-minimized={win.isMinimized}
-          data-stolen={isWindowStolen(win)}
-          data-owned-local={win.ownerRuntimeId === runtimeId}
-          data-owned-foreign={Boolean(win.ownerRuntimeId && win.ownerRuntimeId !== runtimeId)}
-        >
+    {#if !isMobileViewport}
+      <aside class="sidebar">
+        <div class="sidebar-toolbar" aria-label="Sidebar shortcuts">
           <button
             type="button"
-            class="entry-main"
-            data-context-path={win.path}
-            on:click={() => activateSidebarEntry(windowId)}
+            class="sidebar-tool"
+            aria-label="Open Home"
+            on:click={() => openPath('/home')}
           >
-            <strong>{appName}</strong>
-            <small>{win.routeLabel}</small>
+            <span class="inline-icon" aria-hidden="true">{@html iconHome}</span>
           </button>
-
           <button
             type="button"
-            class="entry-close"
-            aria-label={`Close ${appName}`}
-            on:click|stopPropagation={() => handleClose(windowId)}
+            class="sidebar-tool"
+            aria-label="Open Articles"
+            on:click={() => openPath('/reader/articles')}
           >
-            <span class="inline-icon" aria-hidden="true">{@html iconClose}</span>
+            <span class="inline-icon" aria-hidden="true">{@html iconNewspaper}</span>
+          </button>
+          <button
+            type="button"
+            class="sidebar-tool"
+            aria-label="Open Help"
+            on:click={() => openPath('/reader/general/help')}
+          >
+            <span class="inline-icon" aria-hidden="true">{@html iconHelp}</span>
           </button>
         </div>
-      {/each}
 
-      <div class="sidebar-actions">
-        <details class="actions-menu">
-          <summary>Window Actions</summary>
-          <div class="actions-menu-panel">
-            <button type="button" on:click={handleCloseOwned}>Close My Windows</button>
-            <button type="button" on:click={handleCloseOtherInstances}>Close Other Instances</button>
-            <button type="button" on:click={handleCloseAllInstances}>Close All Instances</button>
+        {#if sidebarWindowIds.length === 0}
+          <p class="sidebar-empty">No windows open.</p>
+        {/if}
+
+        {#each sidebarWindowIds as windowId (windowId)}
+          {@const win = $windowManager.windows[windowId]}
+          {@const appName = APP_REGISTRY[win.appId]?.title ?? win.appId}
+
+          <div
+            class="sidebar-entry"
+            data-focused={$windowManager.focusedWindowId === windowId && !win.isMinimized && win.ownerRuntimeId === runtimeId}
+            data-minimized={win.isMinimized}
+            data-stolen={isWindowStolen(win)}
+            data-owned-local={win.ownerRuntimeId === runtimeId}
+            data-owned-foreign={Boolean(win.ownerRuntimeId && win.ownerRuntimeId !== runtimeId)}
+          >
+            <button
+              type="button"
+              class="entry-main"
+              data-context-path={win.path}
+              on:click={() => activateSidebarEntry(windowId)}
+            >
+              <strong>{appName}</strong>
+              <small>{win.routeLabel}</small>
+            </button>
+
+            <button
+              type="button"
+              class="entry-close"
+              aria-label={`Close ${appName}`}
+              on:click|stopPropagation={() => handleClose(windowId)}
+            >
+              <span class="inline-icon" aria-hidden="true">{@html iconClose}</span>
+            </button>
           </div>
-        </details>
-      </div>
-    </aside>
+        {/each}
+
+        <div class="sidebar-actions">
+          <details class="actions-menu">
+            <summary>Window Actions</summary>
+            <div class="actions-menu-panel">
+              <button type="button" on:click={handleCloseOwned}>Close My Windows</button>
+              <button type="button" on:click={handleCloseOtherInstances}>Close Other Instances</button>
+              <button type="button" on:click={handleCloseAllInstances}>Close All Instances</button>
+            </div>
+          </details>
+        </div>
+      </aside>
+    {/if}
 
     <section class="workspace" bind:this={workspaceElement}>
       <div class="desktop-layer">
@@ -619,6 +685,7 @@
             workspaceRect={$windowManager.workspaceRect}
             zIndex={index + 1}
             isFocused={$windowManager.focusedWindowId === windowId && !windowState.isMinimized}
+            forceMaximized={isMobileViewport}
             on:focus={(event) => focusWindowAndSyncUrl(event.detail.windowId)}
             on:minimize={(event) => handleMinimize(event.detail.windowId)}
             on:maximize={(event) => handleMaximize(event.detail.windowId)}
@@ -641,13 +708,82 @@
               appId={windowState.appId}
               path={windowState.path}
               subroute={windowState.subroute}
-              sidebarCollapsed={windowState.isSidebarCollapsed}
+              sidebarCollapsed={isMobileViewport || windowState.isSidebarCollapsed}
             />
           </AppWindow>
         {/each}
       </div>
     </section>
   </div>
+
+  {#if isMobileViewport}
+    <nav class="mobile-dock" aria-label="Mobile controls">
+      <button type="button" on:click={() => toggleMobileDrawer('apps')}>
+        <span class="inline-icon" aria-hidden="true">{@html iconHome}</span>
+        <span>Apps</span>
+      </button>
+      <button type="button" on:click={() => toggleMobileDrawer('tabs')}>
+        <span class="inline-icon" aria-hidden="true">{@html iconNewspaper}</span>
+        <span>Tabs</span>
+      </button>
+      <button type="button" on:click={openHelpPage}>
+        <span class="inline-icon" aria-hidden="true">{@html iconHelp}</span>
+        <span>Help</span>
+      </button>
+    </nav>
+  {/if}
+
+  {#if isMobileViewport && mobileDrawer}
+    <div class="mobile-drawer-backdrop">
+      <div class="mobile-drawer" role="dialog" aria-label="Mobile panel">
+        {#if mobileDrawer === 'apps'}
+          <header>
+            <h2>Apps</h2>
+          </header>
+          <div class="mobile-drawer-list">
+            {#each TOPBAR_LINKS as link}
+              <button type="button" data-context-path={link.path} on:click={() => openPath(link.path)}>
+                {link.label}
+              </button>
+            {/each}
+            <button type="button" on:click={openContact}>Contact</button>
+          </div>
+        {:else if mobileDrawer === 'tabs'}
+          <header>
+            <h2>Tabs</h2>
+          </header>
+          <div class="mobile-drawer-list">
+            {#if sidebarWindowIds.length === 0}
+              <p class="mobile-drawer-empty">No windows open.</p>
+            {:else}
+              {#each sidebarWindowIds as windowId (windowId)}
+                {@const win = $windowManager.windows[windowId]}
+                {@const appName = APP_REGISTRY[win.appId]?.title ?? win.appId}
+                <div
+                  class="mobile-tab-row"
+                  data-focused={$windowManager.focusedWindowId === windowId && !win.isMinimized}
+                  data-minimized={win.isMinimized}
+                >
+                  <button type="button" data-context-path={win.path} on:click={() => activateSidebarEntry(windowId)}>
+                    <strong>{appName}</strong>
+                    <small>{win.routeLabel}</small>
+                  </button>
+                  <button
+                    type="button"
+                    class="mobile-tab-close"
+                    aria-label={`Close ${appName}`}
+                    on:click={() => handleClose(windowId)}
+                  >
+                    <span class="inline-icon" aria-hidden="true">{@html iconClose}</span>
+                  </button>
+                </div>
+              {/each}
+            {/if}
+          </div>
+        {/if}
+      </div>
+    </div>
+  {/if}
 
   {#if contextMenu.open}
     <div
@@ -1170,6 +1306,7 @@
     min-height: 0;
     overflow: hidden;
     background: #faf8f3;
+    padding-bottom: 0;
   }
 
   .desktop-layer,
@@ -1253,6 +1390,185 @@
     pointer-events: none;
   }
 
+  .mobile-dock {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    background: color-mix(in srgb, var(--su-topbar) 94%, white 6%);
+    border-top: 1px solid var(--su-line);
+    box-shadow: 0 -8px 20px rgba(44, 42, 41, 0.08);
+  }
+
+  .mobile-dock button {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--su-ink);
+    font-family: inherit;
+    font-size: 0.84rem;
+    font-weight: 600;
+    line-height: 1.2;
+    min-height: 3.05rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.34rem;
+    box-shadow: inset -1px 0 0 rgba(44, 42, 41, 0.08);
+  }
+
+  .mobile-dock button:last-child {
+    box-shadow: none;
+  }
+
+  .mobile-dock button:hover {
+    background: var(--su-tab-highlight);
+    color: var(--su-maroon);
+  }
+
+  .mobile-drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 19;
+    background: rgba(44, 42, 41, 0.22);
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .mobile-drawer {
+    width: 100%;
+    max-height: min(74vh, 38rem);
+    border-top-left-radius: 0.72rem;
+    border-top-right-radius: 0.72rem;
+    background: color-mix(in srgb, var(--su-surface) 94%, white 6%);
+    box-shadow:
+      0 -14px 36px rgba(44, 42, 41, 0.16),
+      0 1px 0 rgba(255, 255, 255, 0.8) inset;
+    padding: 0.6rem 0.62rem 0.82rem;
+    overflow: auto;
+  }
+
+  .mobile-drawer header {
+    margin-bottom: 0.48rem;
+  }
+
+  .mobile-drawer h2 {
+    margin: 0;
+    font-size: 0.96rem;
+    color: var(--su-maroon);
+  }
+
+  .mobile-drawer-list {
+    display: grid;
+    gap: 0.32rem;
+  }
+
+  .mobile-drawer-list > button {
+    appearance: none;
+    border: none;
+    border-radius: 0.38rem;
+    background: var(--su-surface-subtle);
+    color: var(--su-ink);
+    text-transform: capitalize;
+    text-align: left;
+    font-family: inherit;
+    font-size: 0.86rem;
+    font-weight: 600;
+    padding: 0.54rem 0.58rem;
+    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.1);
+  }
+
+  .mobile-drawer-list > button:hover {
+    background: var(--su-tab-highlight);
+    color: var(--su-maroon);
+    box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.24);
+  }
+
+  .mobile-drawer-empty {
+    margin: 0;
+    color: var(--su-muted);
+    font-size: 0.84rem;
+  }
+
+  .mobile-tab-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.22rem;
+    border-radius: 0.42rem;
+    background: var(--su-surface-subtle);
+    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.1);
+    overflow: hidden;
+  }
+
+  .mobile-tab-row[data-focused='true'] {
+    box-shadow:
+      inset 2px 0 0 var(--su-local-accent),
+      inset 0 0 0 1px rgba(97, 34, 59, 0.24);
+  }
+
+  .mobile-tab-row[data-minimized='true'] {
+    opacity: 0.84;
+  }
+
+  .mobile-tab-row > button {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: inherit;
+    font-family: inherit;
+  }
+
+  .mobile-tab-row > button:first-child {
+    min-width: 0;
+    text-align: left;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28rem;
+    padding: 0.5rem 0.52rem;
+  }
+
+  .mobile-tab-row strong,
+  .mobile-tab-row small {
+    display: inline-block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-tab-row strong {
+    font-size: 0.84rem;
+    color: var(--su-maroon);
+  }
+
+  .mobile-tab-row small {
+    font-size: 0.75rem;
+    color: var(--su-muted);
+  }
+
+  .mobile-tab-row small::before {
+    content: '~';
+    margin-right: 0.22rem;
+  }
+
+  .mobile-tab-close {
+    width: 2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--su-muted);
+  }
+
+  .mobile-tab-close .inline-icon,
+  .mobile-tab-close .inline-icon :global(svg) {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+
   .site-context-menu {
     position: fixed;
     z-index: 50;
@@ -1293,8 +1609,9 @@
   @media (max-width: 860px) {
     .topbar {
       grid-template-columns: 1fr;
-      gap: 0.28rem;
-      padding: 0 0.46rem;
+      gap: 0;
+      min-height: 3.7rem;
+      padding: 0 0.32rem;
     }
 
     .topbar-brand,
@@ -1307,30 +1624,26 @@
     }
 
     .site-logo {
-      height: 3.36rem;
-      max-width: clamp(14.2rem, 62vw, 19.2rem);
-      margin-inline: 0 0.42rem;
+      height: 3.18rem;
+      max-width: min(86vw, 22rem);
+      margin-inline: 0 0.3rem;
     }
 
     .brand-copy strong {
-      font-size: 0.9rem;
-    }
-
-    .topbar nav.topbar-cluster {
-      width: 100%;
-      overflow-x: auto;
-      overflow-y: hidden;
-      padding-bottom: 0.08rem;
-      scrollbar-width: thin;
+      font-size: 0.88rem;
     }
 
     .main-row {
       grid-template-columns: 1fr;
-      grid-template-rows: auto 1fr;
+      grid-template-rows: 1fr;
     }
 
-    .sidebar {
-      max-height: 180px;
+    .workspace {
+      padding-bottom: 3.05rem;
+    }
+
+    .desktop-layer {
+      display: none;
     }
   }
 </style>

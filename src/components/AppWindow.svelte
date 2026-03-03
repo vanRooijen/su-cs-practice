@@ -11,6 +11,7 @@
   export let isFocused = false;
   export let zIndex = 1;
   export let workspaceRect = null;
+  export let forceMaximized = false;
 
   const dispatch = createEventDispatcher();
   let windowElement;
@@ -178,7 +179,7 @@
   }
 
   function startDrag(event) {
-    if (event.button !== 0 || windowState.isMaximized) {
+    if (event.button !== 0 || isEffectivelyMaximized) {
       return;
     }
 
@@ -205,7 +206,7 @@
   }
 
   function startResize(event, edge) {
-    if (event.button !== 0 || windowState.isMaximized) {
+    if (event.button !== 0 || isEffectivelyMaximized) {
       return;
     }
 
@@ -278,6 +279,16 @@
   });
 
   $: bounds = windowState.bounds;
+  $: isEffectivelyMaximized = Boolean(forceMaximized || windowState.isMaximized);
+  $: effectiveBounds =
+    isEffectivelyMaximized && workspaceRect
+      ? {
+          x: 0,
+          y: 0,
+          width: Math.max(1, Math.round(workspaceRect.width)),
+          height: Math.max(1, Math.round(workspaceRect.height)),
+        }
+      : bounds;
   $: visibility = windowState.isMinimized ? 'hidden' : 'visible';
   $: pointerEvents = windowState.isMinimized ? 'none' : 'auto';
   $: activeTransform =
@@ -297,8 +308,9 @@
   bind:this={windowElement}
   on:click={requestFocus}
   data-focused={isFocused}
+  data-maximized={isEffectivelyMaximized}
   aria-hidden={windowState.isMinimized}
-  style={`z-index:${zIndex};left:${bounds.x}px;top:${bounds.y}px;width:${bounds.width}px;height:${bounds.height}px;visibility:${visibility};pointer-events:${pointerEvents};transform:${activeTransform};will-change:${windowWillChange};`}
+  style={`z-index:${zIndex};left:${effectiveBounds.x}px;top:${effectiveBounds.y}px;width:${effectiveBounds.width}px;height:${effectiveBounds.height}px;visibility:${visibility};pointer-events:${pointerEvents};transform:${activeTransform};will-change:${windowWillChange};`}
 >
   <header class="window-header" role="group" aria-label="Window header" on:pointerdown={startDrag}>
     <div class="window-header-left">
@@ -337,7 +349,7 @@
       <button type="button" on:click={requestMinimize} aria-label="Minimize window">
         <span class="control-icon" aria-hidden="true">{@html iconMinus}</span>
       </button>
-      <button type="button" on:click={requestMaximize} aria-label="Maximize window">
+      <button type="button" on:click={requestMaximize} aria-label="Maximize window" disabled={forceMaximized}>
         <span class="control-icon" aria-hidden="true">{@html iconSquare}</span>
       </button>
       <button type="button" on:click={requestClose} aria-label="Close window">
@@ -350,7 +362,7 @@
     <slot />
   </div>
 
-  {#if !windowState.isMaximized}
+  {#if !isEffectivelyMaximized}
     <button
       type="button"
       class="resize-handle resize-handle-n"
@@ -433,6 +445,10 @@
       0 14px 34px rgba(44, 42, 41, 0.18),
       0 0 0 1px rgba(97, 34, 59, 0.26),
       0 0 0 3px rgba(97, 34, 59, 0.08);
+  }
+
+  .app-window[data-maximized='true'] {
+    border-radius: 0;
   }
 
   .window-header {

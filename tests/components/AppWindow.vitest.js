@@ -102,4 +102,18 @@ describe('AppWindow component', () => {
     expect(backButton.hasAttribute('disabled')).toBe(false);
     expect(forwardButton.hasAttribute('disabled')).toBe(true);
   });
+
+  it('forces maximized layout when mobile compositor mode is enabled', () => {
+    const { container, getByRole } = render(AppWindow, {
+      props: {
+        ...makeProps(),
+        forceMaximized: true,
+      },
+    });
+
+    const windowNode = container.querySelector('.app-window');
+    expect(windowNode?.getAttribute('data-maximized')).toBe('true');
+    expect(getByRole('button', { name: 'Maximize window' }).hasAttribute('disabled')).toBe(true);
+    expect(container.querySelector('.resize-handle')).toBe(null);
+  });
 });
