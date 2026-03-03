@@ -19,9 +19,8 @@
   }
 
   $: normalizedSubroute = subroute.replace(/^\/+|\/+$/g, '');
-  $: effectiveSubroute = normalizedSubroute || 'overview';
-  $: activePath = `/reader/${effectiveSubroute}`;
-  $: content = resolveContent('reader', effectiveSubroute);
+  $: activePath = normalizedSubroute ? `/reader/${normalizedSubroute}` : '/reader';
+  $: content = resolveContent('reader', normalizedSubroute);
 </script>
 
 <div class="app-layout" data-sidebar-collapsed={sidebarCollapsed}>

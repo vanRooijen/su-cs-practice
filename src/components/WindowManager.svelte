@@ -9,6 +9,7 @@
   import iconHome from '../assets/icons/lucide/house.svg?raw';
   import iconNewspaper from '../assets/icons/lucide/newspaper.svg?raw';
   import iconHelp from '../assets/icons/lucide/circle-question-mark.svg?raw';
+  import iconSlidersHorizontal from '../assets/icons/lucide/sliders-horizontal.svg?raw';
   import iconClose from '../assets/icons/lucide/x.svg?raw';
   import AppWindow from './AppWindow.svelte';
 
@@ -24,6 +25,7 @@
   let isMobileViewport = false;
   let mobileDrawer = null;
   let contextMenuElement;
+  let sidebarActionsOpen = false;
   let contextMenu = {
     open: false,
     x: 0,
@@ -116,6 +118,7 @@
   }
 
   function openPath(path) {
+    closeSidebarActionsMenu();
     closeMobileDrawer();
     navigateTo(path, { forceEmit: true });
   }
@@ -125,6 +128,7 @@
   }
 
   function openPathInNewWindow(path) {
+    closeSidebarActionsMenu();
     closeMobileDrawer();
     openInNewWindow(path);
   }
@@ -147,6 +151,19 @@
     }
 
     mobileDrawer = null;
+  }
+
+  function closeSidebarActionsMenu() {
+    if (!sidebarActionsOpen) {
+      return;
+    }
+
+    sidebarActionsOpen = false;
+  }
+
+  function toggleSidebarActionsMenu(event) {
+    event?.stopPropagation();
+    sidebarActionsOpen = !sidebarActionsOpen;
   }
 
   function toggleMobileDrawer(drawer) {
@@ -246,6 +263,10 @@
     if (mobileDrawer && !target?.closest('.mobile-dock') && !target?.closest('.mobile-drawer')) {
       closeMobileDrawer();
     }
+
+    if (sidebarActionsOpen && !target?.closest('.toolbar-actions')) {
+      closeSidebarActionsMenu();
+    }
   }
 
   function onGlobalKeydown(event) {
@@ -255,6 +276,10 @@
 
     if (event.key === 'Escape' && mobileDrawer) {
       closeMobileDrawer();
+    }
+
+    if (event.key === 'Escape' && sidebarActionsOpen) {
+      closeSidebarActionsMenu();
     }
   }
 
@@ -277,6 +302,7 @@
       return;
     }
 
+    closeSidebarActionsMenu();
     onCloseOwned();
   }
 
@@ -285,6 +311,7 @@
       return;
     }
 
+    closeSidebarActionsMenu();
     onCloseAllInstances();
   }
 
@@ -293,6 +320,7 @@
       return;
     }
 
+    closeSidebarActionsMenu();
     onCloseOtherInstances();
   }
 
@@ -603,6 +631,29 @@
           >
             <span class="inline-icon" aria-hidden="true">{@html iconHelp}</span>
           </button>
+
+          <div class="toolbar-actions">
+            <button
+              type="button"
+              class="sidebar-tool sidebar-tool-actions"
+              aria-label="Window actions"
+              aria-haspopup="menu"
+              aria-expanded={sidebarActionsOpen}
+              on:click={toggleSidebarActionsMenu}
+            >
+              <span class="inline-icon" aria-hidden="true">{@html iconSlidersHorizontal}</span>
+            </button>
+
+            {#if sidebarActionsOpen}
+              <div class="toolbar-actions-menu" role="menu" aria-label="Window actions menu">
+                <button type="button" role="menuitem" on:click={handleCloseOwned}>Close My Windows</button>
+                <button type="button" role="menuitem" on:click={handleCloseOtherInstances}>
+                  Close Other Instances
+                </button>
+                <button type="button" role="menuitem" on:click={handleCloseAllInstances}>Close All Instances</button>
+              </div>
+            {/if}
+          </div>
         </div>
 
         {#if sidebarWindowIds.length === 0}
@@ -642,16 +693,6 @@
           </div>
         {/each}
 
-        <div class="sidebar-actions">
-          <details class="actions-menu">
-            <summary>Window Actions</summary>
-            <div class="actions-menu-panel">
-              <button type="button" on:click={handleCloseOwned}>Close My Windows</button>
-              <button type="button" on:click={handleCloseOtherInstances}>Close Other Instances</button>
-              <button type="button" on:click={handleCloseAllInstances}>Close All Instances</button>
-            </div>
-          </details>
-        </div>
       </aside>
     {/if}
 
@@ -820,10 +861,10 @@
     --su-sidebar: #f4f0e8;
     --su-surface: #fffdf9;
     --su-surface-subtle: #f8f4ed;
-    --su-workspace: #f2ede4;
+    --su-workspace: #fcfcfb;
     --su-line: #ddd6cb;
     --su-line-strong: #cec6b9;
-    --su-app-content-bg: #fcf8f2;
+    --su-app-content-bg: #ffffff;
     --su-app-sidebar-bg: color-mix(in srgb, var(--su-surface-subtle) 82%, white 18%);
     --su-app-chrome-line: rgba(44, 42, 41, 0.08);
     --su-content-max-width: 72rem;
@@ -1031,6 +1072,7 @@
   }
 
   .sidebar-toolbar {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
@@ -1071,6 +1113,53 @@
   .sidebar-tool:focus-visible {
     outline: 2px solid rgba(202, 162, 88, 0.65);
     outline-offset: 2px;
+  }
+
+  .toolbar-actions {
+    position: relative;
+    margin-left: auto;
+    z-index: 4;
+  }
+
+  .sidebar-tool-actions[aria-expanded='true'] {
+    background: var(--su-tab-highlight);
+    color: var(--su-maroon);
+    box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.3);
+  }
+
+  .toolbar-actions-menu {
+    position: absolute;
+    top: calc(100% + 0.28rem);
+    right: 0;
+    min-width: 13rem;
+    padding: 0.28rem;
+    border-radius: 0.44rem;
+    background: color-mix(in srgb, var(--su-surface) 92%, white 8%);
+    box-shadow:
+      0 8px 22px rgba(44, 42, 41, 0.18),
+      inset 0 0 0 1px rgba(44, 42, 41, 0.11);
+    display: grid;
+    gap: 0.2rem;
+  }
+
+  .toolbar-actions-menu button {
+    appearance: none;
+    width: 100%;
+    text-align: left;
+    border: none;
+    border-radius: 0.34rem;
+    background: color-mix(in srgb, var(--su-surface-subtle) 84%, white 16%);
+    color: var(--su-ink);
+    padding: 0.36rem 0.44rem;
+    font-family: inherit;
+    font-size: 0.82rem;
+    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.08);
+  }
+
+  .toolbar-actions-menu button:hover {
+    background: var(--su-tab-highlight);
+    color: var(--su-maroon);
+    box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.24);
   }
 
   .sidebar-empty {
@@ -1146,17 +1235,6 @@
       inset 0 0 0 1px rgba(77, 83, 86, 0.17);
   }
 
-  .sidebar-actions {
-    margin-top: 0.6rem;
-    padding: 0.58rem 0 0.35rem;
-    border-top: 1px solid var(--su-line);
-    position: sticky;
-    bottom: 0;
-    background: color-mix(in srgb, var(--su-sidebar) 90%, white 10%);
-    display: grid;
-    gap: 0.35rem;
-  }
-
   .entry-main {
     width: 100%;
     text-align: left;
@@ -1211,8 +1289,7 @@
   }
 
   .entry-main,
-  .entry-close,
-  .sidebar-actions button {
+  .entry-close {
     appearance: none;
     border: none;
     border-radius: calc(var(--su-panel-radius) - 0.04rem);
@@ -1223,11 +1300,6 @@
   .entry-main:focus-visible,
   .entry-close:focus-visible {
     outline: none;
-  }
-
-  .sidebar-actions button:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 2px var(--su-focus-soft);
   }
 
   .entry-close {
@@ -1248,60 +1320,6 @@
     color: var(--su-maroon);
   }
 
-  .actions-menu {
-    margin: 0;
-    border: none;
-    border-radius: 0.54rem;
-    background: color-mix(in srgb, var(--su-surface) 88%, white 12%);
-    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.08);
-    overflow: clip;
-  }
-
-  .actions-menu summary {
-    list-style: none;
-    cursor: pointer;
-    user-select: none;
-    padding: 0.44rem 0.52rem;
-    font-size: 0.84rem;
-    font-weight: 700;
-    letter-spacing: 0.01em;
-    color: var(--su-ink);
-    border-bottom: 1px solid transparent;
-    background: transparent;
-  }
-
-  .actions-menu summary::-webkit-details-marker {
-    display: none;
-  }
-
-  .actions-menu[open] summary {
-    border-bottom-color: rgba(44, 42, 41, 0.08);
-    background: var(--su-surface-subtle);
-  }
-
-  .actions-menu-panel {
-    display: grid;
-    gap: 0.2rem;
-    padding: 0.28rem;
-    background: transparent;
-  }
-
-  .actions-menu-panel button {
-    width: 100%;
-    text-align: left;
-    padding: 0.36rem 0.44rem;
-    color: var(--su-ink);
-    background: var(--su-surface-subtle);
-    font-size: 0.84rem;
-    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.08);
-  }
-
-  .actions-menu-panel button:hover {
-    background: var(--su-surface-subtle);
-    color: var(--su-maroon);
-    box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.24);
-  }
-
   .workspace {
     position: relative;
     min-height: 0;
@@ -1319,10 +1337,10 @@
   .desktop-layer {
     overflow: auto;
     padding: 0.5rem;
-    background-color: #faf8f3;
+    background-color: #fdfdfd;
     background-image:
-      radial-gradient(rgba(44, 42, 41, 0.033) 0.5px, transparent 0.5px),
-      radial-gradient(rgba(255, 255, 255, 0.82) 0.6px, transparent 0.6px);
+      radial-gradient(rgba(44, 42, 41, 0.022) 0.5px, transparent 0.5px),
+      radial-gradient(rgba(255, 255, 255, 0.88) 0.6px, transparent 0.6px);
     background-size: 13px 13px, 18px 18px;
     background-position: 0 0, 5px 6px;
   }
