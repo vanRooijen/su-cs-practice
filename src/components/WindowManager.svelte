@@ -329,6 +329,55 @@
     }
   }
 
+  function onGlobalClickCapture(event) {
+    if (!isMobileViewport) {
+      return;
+    }
+
+    if (event.defaultPrevented || event.button !== 0) {
+      return;
+    }
+
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      return;
+    }
+
+    const target = event.target instanceof Element ? event.target : null;
+    const sidebarLink = target?.closest('.app-sidebar a[href]');
+    if (!sidebarLink) {
+      return;
+    }
+
+    const windowHost = sidebarLink.closest('.app-window');
+    if (!windowHost) {
+      return;
+    }
+
+    const windowId = Number(windowHost.getAttribute('data-window-id'));
+    if (!Number.isInteger(windowId) || windowId <= 0) {
+      return;
+    }
+
+    const win = $windowManager.windows[windowId];
+    if (!win || win.ownerRuntimeId !== runtimeId || !win.hasSidebar || win.isSidebarCollapsed) {
+      return;
+    }
+
+    const href = sidebarLink.getAttribute('href');
+    if (typeof href !== 'string' || !href.trim()) {
+      return;
+    }
+
+    const targetUrl = new URL(href, window.location.href);
+    if (targetUrl.origin !== window.location.origin) {
+      return;
+    }
+
+    event.preventDefault();
+    windowManager.setSidebarCollapsed(windowId, true);
+    navigateTo(targetUrl.pathname, { forceEmit: true });
+  }
+
   function onGlobalKeydown(event) {
     if (event.key === 'Escape' && contextMenu.open) {
       closeContextMenu();
@@ -928,7 +977,12 @@
 
 </div>
 
-<svelte:window on:click={onGlobalClick} on:keydown={onGlobalKeydown} on:resize={onGlobalResize} />
+<svelte:window
+  on:click|capture={onGlobalClickCapture}
+  on:click={onGlobalClick}
+  on:keydown={onGlobalKeydown}
+  on:resize={onGlobalResize}
+/>
 
 <style>
   .os-layout {

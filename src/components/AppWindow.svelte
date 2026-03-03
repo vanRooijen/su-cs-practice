@@ -343,6 +343,7 @@
   class="app-window"
   bind:this={windowElement}
   on:click={requestFocus}
+  data-window-id={windowState.windowId}
   data-focused={isFocused}
   data-maximized={isEffectivelyMaximized}
   data-dragging={isDragging}

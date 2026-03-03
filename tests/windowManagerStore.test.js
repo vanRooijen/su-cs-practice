@@ -523,6 +523,21 @@ test('toggleSidebar is a no-op for apps without sidebars', () => {
   assert.equal(after, before);
 });
 
+test('setSidebarCollapsed applies explicit sidebar state for owned sidebar apps', () => {
+  const store = createWindowManagerStore();
+  store.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
+  const windowId = store.getSnapshot().focusedWindowId;
+  assert.ok(windowId, 'expected focused people window');
+
+  store.setSidebarCollapsed(windowId, true);
+  let snapshot = store.getSnapshot();
+  assert.equal(snapshot.windows[windowId].isSidebarCollapsed, true);
+
+  store.setSidebarCollapsed(windowId, false);
+  snapshot = store.getSnapshot();
+  assert.equal(snapshot.windows[windowId].isSidebarCollapsed, false);
+});
+
 test('toggleMinimize minimizes unfocused windows without a focus-first click', () => {
   const store = createWindowManagerStore();
   const localRuntimeId = store.getRuntimeId();

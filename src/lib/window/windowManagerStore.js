@@ -617,6 +617,27 @@ export function createWindowManagerStore() {
     });
   }
 
+  function setSidebarCollapsed(windowId, collapsed) {
+    store.update((state) => {
+      const target = state.windows[windowId];
+      if (!target || !target.hasSidebar || !isOwnedByRuntime(target)) {
+        return state;
+      }
+
+      const nextCollapsed = Boolean(collapsed);
+      if (target.isSidebarCollapsed === nextCollapsed) {
+        return state;
+      }
+
+      const next = cloneState(state);
+      next.windows[windowId] = {
+        ...target,
+        isSidebarCollapsed: nextCollapsed,
+      };
+      return next;
+    });
+  }
+
   function moveWindow(windowId, position) {
     store.update((state) => {
       const target = state.windows[windowId];
@@ -946,6 +967,7 @@ export function createWindowManagerStore() {
     toggleMinimize,
     toggleMaximize,
     toggleSidebar,
+    setSidebarCollapsed,
     moveWindow,
     resizeWindow,
     stepWindowHistory,
