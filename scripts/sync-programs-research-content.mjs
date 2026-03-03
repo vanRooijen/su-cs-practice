@@ -80,9 +80,26 @@ function cleanText(value = '') {
 }
 
 function normalizeInternalHref(rawHref = '') {
-  const href = rawHref.trim();
+  let href = rawHref.trim();
   if (!href) {
     return href;
+  }
+
+  if (/^https?:\/\//i.test(href)) {
+    try {
+      const parsed = new URL(href);
+      if (parsed.hostname !== 'cs.sun.ac.za') {
+        return href;
+      }
+
+      href = parsed.pathname || '/';
+    } catch {
+      return href;
+    }
+  }
+
+  if (href.startsWith('/assets/pdfs/')) {
+    return `/cs-assets/${href.replace(/^\/assets\//, '')}`;
   }
 
   if (href.startsWith('/assets/')) {
@@ -98,6 +115,10 @@ function normalizeInternalHref(rawHref = '') {
     ['/teaching/honours/', '/programs/honours'],
     ['/teaching/masters/', '/programs/masters'],
     ['/teaching/phd/', '/programs/phd'],
+    ['/courses/artificial-intelligence/', '/programs/courses/artificial-intelligence'],
+    ['/courses/functional/', '/programs/courses/functional'],
+    ['/courses/data-science/', '/programs/courses/data-science'],
+    ['/courses/space-science/', '/programs/courses/space-science'],
   ];
 
   const normalized = href.toLowerCase();

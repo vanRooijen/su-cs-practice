@@ -1,0 +1,10 @@
+---
+title: Top 2016 Computer Science students awarded
+excerpt: The top students in Computer Science at Stellenbosch University for 2016 were awarded prizes for their achievements. The students received their prizes at the annual prize-giving…
+sort_order: 120
+card_badge: Newsfeed
+source_url: https://cs.sun.ac.za/newsfeed/2017/03/31/prizegiving-2017.html
+source_mirrored_at: 2026-03-03
+---
+
+<div class="newsitem"><h1>Top 2016 Computer Science students awarded</h1><div class="newsdate"><span class="day"> Friday </span><span class="date"> 31 </span><span class="month">March</span><span class="year">2017</span></div><p class="noimage"><img src="/cs-assets/newsfeed/prizegiving-2017.jpg" alt="Awardees and awarders"></p><p>The top students in Computer Science at Stellenbosch University for 2016 were awarded prizes for their achievements.  The students received their prizes at the annual prize-giving of the Computer Science division in the Department of Mathematical Sciences on Friday 31 March 2017.</p><p>The students receiving awards were:</p><ul><li>René Spoerer: Best first-year student</li><li>Jordan Ferreira: Best second-year student</li><li>Brian Schirmacher: Best third-year student (<strong>Van der Walt Medal</strong>)</li><li>Jaco Smit: Best Honours student</li><li>Rudolf Stander: Best Honours project</li><li>Johannes Schoeman: Best student in Machine Learning</li><li>Ruan Du Toit: Best Mobile App Project</li></ul><p>Congratulations to the winners! As always there was stiff competition and we are proud of our excellent student body.</p><p>We are also very grateful the following companies who supported the event by donating invididual prizes:</p><ul><li><a href="https://www.barclaysafrica.com/news/press-statements/2017/absa-university-scholarships-to-benefit-even-more-students/">Barclays</a></li><li><a href="http://www.vastech.co.za/">VasTech</a></li><li><a href="http://www.4imobile.co.za/">4iMobile</a></li><li><a href="http://praelexis.com/">Praelexis</a></li><li><a href="https://www.polymorph.co.za/">Polymorph</a></li></ul></div>

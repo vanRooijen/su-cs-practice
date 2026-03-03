@@ -36,17 +36,17 @@ You can choose a combination of courses that focusses more on topics in a specif
 
 ### Class schedules and general info
 
-- [Semester class timetable for 2026: venues TBC](https://cs.sun.ac.za/assets/pdfs/HonoursTimetable1stSem.pdf)
-- [Semester class timetable for 2026: venues TBC](https://cs.sun.ac.za/assets/pdfs/HonoursTimetable2ndSem.pdf)
-- [Honours 797 overview](https://cs.sun.ac.za/assets/pdfs/rw797-intro.pdf)
+- [Semester class timetable for 2026: venues TBC](/cs-assets/pdfs/HonoursTimetable1stSem.pdf)
+- [Semester class timetable for 2026: venues TBC](/cs-assets/pdfs/HonoursTimetable2ndSem.pdf)
+- [Honours 797 overview](/cs-assets/pdfs/rw797-intro.pdf)
 - [Honours projects for 2026](http://www.cs.sun.ac.za/rw771)
 - [Library: Computer Science catalogue](https://libguides.sun.ac.za/ComputerScience)
 
 ### Plagiarism declaration forms
 
-- [Plagiarism form for written work](https://cs.sun.ac.za/assets/pdfs/plagform-written-work.pdf)
-- [Plagiarism form for code submissions](https://cs.sun.ac.za/assets/pdfs/plagform-code.pdf)
+- [Plagiarism form for written work](/cs-assets/pdfs/plagform-written-work.pdf)
+- [Plagiarism form for code submissions](/cs-assets/pdfs/plagform-code.pdf)
 
 ### Course frameworks
 
-- [Honours 797 programme framework](https://cs.sun.ac.za/assets/pdfs/rw797-module-framework.pdf)
+- [Honours 797 programme framework](/cs-assets/pdfs/rw797-module-framework.pdf)

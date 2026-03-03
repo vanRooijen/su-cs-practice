@@ -1007,6 +1007,7 @@
     --su-focus-soft: rgba(97, 34, 59, 0.12);
     --su-tab-highlight: rgba(202, 162, 88, 0.14);
     --su-panel-radius: 0.42rem;
+    --su-topbar-logo-scale: 1.14;
 
     height: 100vh;
     box-sizing: border-box;
@@ -1029,7 +1030,7 @@
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
     column-gap: 0.86rem;
-    min-height: 4.2rem;
+    min-height: 3.72rem;
     padding: 0 0.56rem;
     box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.75);
   }
@@ -1047,9 +1048,11 @@
     max-width: clamp(20.8rem, 39vw, 26.8rem);
     width: auto;
     display: block;
-    margin-inline: 0 0.5rem;
+    margin-inline: 0.34rem;
     margin-block: 0;
     flex: 0 0 auto;
+    transform: scale(var(--su-topbar-logo-scale));
+    transform-origin: center center;
   }
 
   .brand-copy {
@@ -1771,7 +1774,7 @@
     .topbar {
       grid-template-columns: 1fr;
       gap: 0;
-      min-height: 3.7rem;
+      min-height: 3.24rem;
       padding: 0 0.32rem;
     }
 
@@ -1787,7 +1790,8 @@
     .site-logo {
       height: 3.18rem;
       max-width: min(86vw, 22rem);
-      margin-inline: 0 0.3rem;
+      margin-inline: 0.24rem;
+      transform: scale(var(--su-topbar-logo-scale));
     }
 
     .brand-copy strong {

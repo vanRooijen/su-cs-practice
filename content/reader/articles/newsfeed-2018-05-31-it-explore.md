@@ -1,0 +1,10 @@
+---
+title: Investec IT Explore Hackathon
+excerpt: Stellenbosch University wins Investec IT Explore challenge.
+sort_order: 107
+card_badge: Newsfeed
+source_url: https://cs.sun.ac.za/newsfeed/2018/05/31/IT-explore.html
+source_mirrored_at: 2026-03-03
+---
+
+<div class="newsitem"><h1>Investec IT Explore Hackathon</h1><div class="newsdate"><span class="day"> Thursday </span><span class="date"> 31 </span><span class="month">May</span><span class="year">2018</span></div><p>Stellenbosch University wins Investec <em>IT Explore</em> challenge.</p><p>This year Investec hosted their <em>IT Explore</em> challenge in Sandton from the 30th to the 31st of May. The aim of this challenge is to develop an application for a given problem within a 16 hour time constraint.</p><p>We are proud to announce that the winning team is from the University of Stellenbosch’s Department of Computer Science. The team members were: Matthew Venter, Reece Murray, Lisa van Staden, Ashleigh Schepers, and Steyn van Litsenborgh.</p><p class="noimage colimage"><img src="/cs-assets/newsfeed/zebroid.jpeg" alt=" The Team "></p><p>The problem statement for this year was: <em>A mobile application that revolutionises the recruitment process for Investec’s IT Graduate Programme.</em> The stellenbosch team decided to implement a basic Project Management simulation, where a profile is built for each user based on the decisions that they make.</p><p>There were 8 teams that took part from universities all over the country. At the end of the competition all solutions had to be presented to a panel of judges, who took into consideration a number of aspects, including: technologies that were used, innovation, teamwork and how well the solution fits in with Investec’s culture.</p></div>

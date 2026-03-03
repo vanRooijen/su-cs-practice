@@ -111,7 +111,9 @@
             {#if badge}
               <p class="news-badge">{badge}</p>
             {/if}
-            <h4>{articleCardTitle(article)}</h4>
+            <h4>
+              <a class="news-title-link" href={path}>{articleCardTitle(article)}</a>
+            </h4>
             <p>{articleCardExcerpt(article)}</p>
             <a href={path}>Open Article</a>
           </article>
@@ -300,6 +302,18 @@
     font-size: 0.82rem;
     text-underline-offset: 2px;
     color: color-mix(in srgb, var(--su-maroon, #61223b) 90%, black 10%);
+  }
+
+  .news-card .news-title-link {
+    width: auto;
+    font-size: inherit;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .news-card .news-title-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
 
   .body-sections,

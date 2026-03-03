@@ -77,17 +77,6 @@ const ARTICLE_CONFIGS = [
     fallbackExcerpt: 'Feature article introducing Computer Science through a short overview video.',
   },
   {
-    slug: 'looking-for-a-great-career',
-    sourcePath: 'cs.sun.ac.za_features_2018_01_14_great-career.html.html',
-    sourceUrl: 'https://cs.sun.ac.za/features/2018/01/14/great-career.html',
-    selector: 'main > .box',
-    mode: 'inner',
-    sortOrder: 9,
-    badge: 'Feature',
-    cardImage: '/cs-assets/features/career.jpg',
-    fallbackExcerpt: 'Long-form feature covering software and information technology career paths.',
-  },
-  {
     slug: 'phd-student-on-his-way-to-naples',
     sourcePath: 'cs.sun.ac.za_newsfeed_2019_02_21_ieeeeirc.html.html',
     sourceUrl: 'https://cs.sun.ac.za/newsfeed/2019/02/21/ieeeeirc.html',
@@ -135,6 +124,55 @@ function collectAssetPaths(rawHtml = '') {
 
 function rewriteAssetPaths(rawHtml = '') {
   return rawHtml.replace(/https?:\/\/cs\.sun\.ac\.za\/assets\//g, '/cs-assets/').replace(/\/assets\//g, '/cs-assets/');
+}
+
+function normalizeEmbeddedMediaHtml(rawHtml = '') {
+  const dom = new JSDOM(`<body>${rawHtml}</body>`);
+  const { document } = dom.window;
+
+  const normalizeDomWhitespace = (rootNode) => {
+    const nodeFilter = dom.window.NodeFilter;
+    const walker = document.createTreeWalker(rootNode, nodeFilter.SHOW_TEXT | nodeFilter.SHOW_COMMENT);
+    const removals = [];
+
+    let current = walker.nextNode();
+    while (current) {
+      if (current.nodeType === dom.window.Node.COMMENT_NODE) {
+        removals.push(current);
+        current = walker.nextNode();
+        continue;
+      }
+
+      const value = current.nodeValue ?? '';
+      const collapsed = value.replace(/\s+/g, ' ');
+      if (!collapsed.trim()) {
+        removals.push(current);
+      } else {
+        current.nodeValue = collapsed;
+      }
+      current = walker.nextNode();
+    }
+
+    for (const node of removals) {
+      node.parentNode?.removeChild(node);
+    }
+  };
+
+  for (const youtubeContainer of document.querySelectorAll('.youtube')) {
+    youtubeContainer.removeAttribute('style');
+
+    for (const node of youtubeContainer.querySelectorAll('span')) {
+      node.remove();
+    }
+
+    for (const node of youtubeContainer.querySelectorAll('a[href*="youtu"]')) {
+      node.remove();
+    }
+  }
+
+  normalizeDomWhitespace(document.body);
+
+  return document.body.innerHTML;
 }
 
 async function fileExists(filePath) {
@@ -220,10 +258,11 @@ async function syncArticle(config) {
   const doc = dom.window.document;
 
   const bodyHtml = extractBodyHtml(doc, config.selector, config.mode);
-  const assetPaths = collectAssetPaths(bodyHtml);
+  const normalizedBodyHtml = normalizeEmbeddedMediaHtml(bodyHtml);
+  const assetPaths = collectAssetPaths(normalizedBodyHtml);
   await Promise.all(assetPaths.map(downloadAsset));
 
-  const rewrittenBodyHtml = rewriteAssetPaths(bodyHtml).trim();
+  const rewrittenBodyHtml = rewriteAssetPaths(normalizedBodyHtml).trim();
   const title = inferTitle(doc, config.selector);
   const excerpt = inferExcerpt(doc, config.selector, config.fallbackExcerpt);
   const cardImage = config.cardImage || inferCardImage(doc, config.selector);
