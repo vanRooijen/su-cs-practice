@@ -127,15 +127,70 @@
     position: absolute;
     inset: 0;
     overflow: auto;
-    padding: 0.5rem;
+    padding: 0.82rem 0.92rem 0.95rem;
     opacity: 0;
     z-index: 0;
     pointer-events: none;
+    background: var(--su-surface, #fffdf9);
   }
 
   .content-pane[data-active='true'] {
     opacity: 1;
     z-index: 1;
     pointer-events: auto;
+  }
+
+  .content-pane > header {
+    margin: 0 0 0.72rem;
+  }
+
+  .content-pane > header h3 {
+    margin: 0 0 0.26rem;
+    color: color-mix(in srgb, var(--su-maroon, #61223b) 86%, black 14%);
+    font-size: 1.02rem;
+    line-height: 1.2;
+  }
+
+  .content-pane > header p {
+    margin: 0;
+    color: color-mix(in srgb, var(--su-muted, #686d71) 90%, black 10%);
+    font-size: 0.88rem;
+  }
+
+  .content-document {
+    color: color-mix(in srgb, var(--su-ink, #2c2a29) 92%, black 8%);
+    line-height: 1.58;
+    font-size: 0.93rem;
+  }
+
+  .content-document :global(h1),
+  .content-document :global(h2),
+  .content-document :global(h3),
+  .content-document :global(h4) {
+    color: color-mix(in srgb, var(--su-maroon, #61223b) 82%, black 18%);
+    line-height: 1.24;
+  }
+
+  .content-document :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.54rem 0 0.8rem;
+  }
+
+  .content-document :global(th),
+  .content-document :global(td) {
+    padding: 0.42rem 0.46rem;
+    border-bottom: 1px solid rgba(44, 42, 41, 0.12);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .content-document :global(th) {
+    background: color-mix(in srgb, var(--su-surface-subtle, #f8f4ed) 78%, white 22%);
+  }
+
+  .content-document :global(a) {
+    color: color-mix(in srgb, var(--su-maroon, #61223b) 88%, black 12%);
+    text-underline-offset: 2px;
   }
 </style>

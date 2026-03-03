@@ -310,7 +310,18 @@
       {/if}
 
       {#if windowState.hasSidebar}
-        <button type="button" on:click={requestSidebarToggle} aria-label="Toggle app sidebar">Sidebar</button>
+        <button
+          type="button"
+          class="window-sidebar-toggle"
+          on:click={requestSidebarToggle}
+          aria-label="Toggle app sidebar"
+          title="Toggle app sidebar"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4.5 5.5h15v13h-15z" fill="none" stroke="currentColor" stroke-width="1.7" />
+            <path d="M10 5.5v13M13 9h4M13 12h4M13 15h4" fill="none" stroke="currentColor" stroke-width="1.7" />
+          </svg>
+        </button>
       {/if}
 
       <span>{windowState.title}</span>
@@ -391,48 +402,134 @@
 <style>
   .app-window {
     position: absolute;
-    border: 1px solid;
+    border: none;
+    border-radius: var(--su-panel-radius, 0.42rem);
     display: flex;
     flex-direction: column;
-    background: white;
+    background: var(--su-surface, #fffdf9);
     min-width: 0;
     min-height: 0;
+    overflow: clip;
+    box-shadow:
+      0 10px 26px rgba(44, 42, 41, 0.14),
+      0 1px 0 rgba(255, 255, 255, 0.75) inset,
+      0 0 0 1px rgba(44, 42, 41, 0.1);
+  }
+
+  .app-window[data-focused='true'] {
+    box-shadow:
+      0 14px 34px rgba(44, 42, 41, 0.18),
+      0 0 0 1px rgba(97, 34, 59, 0.26),
+      0 0 0 3px rgba(97, 34, 59, 0.08);
   }
 
   .window-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 0.5rem;
-    border-bottom: 1px solid;
-    padding: 0.25rem;
+    gap: 0.42rem;
+    border-bottom: 1px solid rgba(44, 42, 41, 0.1);
+    padding: 0.28rem 0.36rem;
+    min-height: 2.25rem;
     cursor: move;
     user-select: none;
     touch-action: none;
+    background: color-mix(in srgb, var(--su-surface-subtle, #f8f4ed) 84%, white 16%);
   }
 
   .window-header-left {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.34rem;
     min-width: 0;
   }
 
+  .window-header-left span {
+    font-size: 0.88rem;
+    line-height: 1.1;
+    font-weight: 600;
+    color: color-mix(in srgb, var(--su-maroon, #61223b) 82%, black 18%);
+    white-space: nowrap;
+  }
+
   .window-header-left small {
+    font-size: 0.72rem;
+    line-height: 1.1;
+    color: color-mix(in srgb, var(--su-muted, #686d71) 92%, black 8%);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    min-width: 0;
+    max-width: min(44ch, 36vw);
   }
 
   .window-header-right {
     display: flex;
-    gap: 0.25rem;
+    gap: 0.22rem;
+    flex-shrink: 0;
+  }
+
+  .window-header button {
+    appearance: none;
+    border: none;
+    border-radius: 0.38rem;
+    background: color-mix(in srgb, var(--su-surface-subtle, #f8f4ed) 86%, white 14%);
+    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.11);
+    color: var(--su-ink, #2c2a29);
+    min-width: 1.62rem;
+    height: 1.52rem;
+    padding: 0 0.34rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition: background-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
+  }
+
+  .window-sidebar-toggle {
+    min-width: 1.58rem;
+    width: 1.58rem;
+    padding: 0;
+  }
+
+  .window-sidebar-toggle svg {
+    width: 0.9rem;
+    height: 0.9rem;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .window-header button:hover {
+    background: color-mix(in srgb, var(--su-tab-highlight, rgba(202, 162, 88, 0.14)) 60%, white 40%);
+    color: var(--su-maroon, #61223b);
+    box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.24);
+  }
+
+  .window-header button:focus-visible {
+    outline: none;
+    box-shadow:
+      inset 0 0 0 1px rgba(97, 34, 59, 0.28),
+      0 0 0 2px rgba(97, 34, 59, 0.13);
+  }
+
+  .window-header button:disabled {
+    opacity: 0.44;
+    cursor: not-allowed;
+    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.08);
+  }
+
+  .window-header-right button:last-child:hover {
+    background: color-mix(in srgb, var(--su-maroon, #61223b) 14%, white 86%);
+    color: var(--su-maroon, #61223b);
+    box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.32);
   }
 
   .window-body {
     flex: 1;
     min-height: 0;
     overflow: hidden;
+    background: var(--su-surface, #fffdf9);
   }
 
   .resize-handle {

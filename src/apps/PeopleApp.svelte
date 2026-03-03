@@ -36,6 +36,7 @@
     display: grid;
     grid-template-columns: auto 1fr;
     min-height: 0;
+    background: var(--su-surface, #fffdf9);
   }
 
   .app-layout[data-sidebar-collapsed='true'] {
@@ -43,15 +44,41 @@
   }
 
   aside {
-    border-right: 1px solid;
-    padding: 0.5rem;
+    border-right: 1px solid rgba(44, 42, 41, 0.08);
+    padding: 0.72rem 0.68rem;
     min-width: 170px;
+    background: color-mix(in srgb, var(--su-surface-subtle, #f8f4ed) 82%, white 18%);
+  }
+
+  aside h3 {
+    margin: 0 0 0.48rem;
+    font-size: 0.92rem;
+    color: color-mix(in srgb, var(--su-maroon, #61223b) 84%, black 16%);
   }
 
   nav {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.28rem;
+  }
+
+  nav a {
+    color: color-mix(in srgb, var(--su-ink, #2c2a29) 86%, white 14%);
+    text-decoration: none;
+    padding: 0.34rem 0.4rem;
+    border-radius: 0.4rem;
+    transition: background-color 120ms ease, color 120ms ease;
+  }
+
+  nav a:hover {
+    background: rgba(202, 162, 88, 0.16);
+    color: var(--su-maroon, #61223b);
+  }
+
+  nav a[aria-current='page'] {
+    background: rgba(202, 162, 88, 0.22);
+    color: var(--su-maroon, #61223b);
+    font-weight: 600;
   }
 
   .content-slot {
@@ -66,7 +93,7 @@
 
     aside {
       border-right: none;
-      border-bottom: 1px solid;
+      border-bottom: 1px solid rgba(44, 42, 41, 0.08);
     }
   }
 </style>

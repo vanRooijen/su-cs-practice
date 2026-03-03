@@ -60,11 +60,13 @@
     display: grid;
     grid-template-rows: auto auto 1fr;
     min-height: 0;
+    background: var(--su-surface, #fffdf9);
   }
 
   .error-context {
-    border-bottom: 1px solid;
-    padding: 0.5rem;
+    border-bottom: 1px solid rgba(44, 42, 41, 0.08);
+    padding: 0.66rem 0.72rem;
+    background: color-mix(in srgb, var(--su-surface-subtle, #f8f4ed) 82%, white 18%);
   }
 
   .error-context p {
@@ -76,10 +78,11 @@
   }
 
   .error-history {
-    border-bottom: 1px solid;
-    padding: 0.5rem;
+    border-bottom: 1px solid rgba(44, 42, 41, 0.08);
+    padding: 0.66rem 0.72rem;
     max-height: 180px;
     overflow: auto;
+    background: color-mix(in srgb, var(--su-surface-subtle, #f8f4ed) 70%, white 30%);
   }
 
   .error-history-header {
@@ -92,6 +95,21 @@
 
   .error-history-header h4 {
     margin: 0;
+    color: color-mix(in srgb, var(--su-maroon, #61223b) 84%, black 16%);
+  }
+
+  .error-history-header button {
+    border: none;
+    border-radius: 0.38rem;
+    padding: 0.3rem 0.44rem;
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.11);
+    color: var(--su-ink, #2c2a29);
+  }
+
+  .error-history-header button:not(:disabled):hover {
+    color: var(--su-maroon, #61223b);
+    box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.24);
   }
 
   .error-history p {

@@ -67,7 +67,7 @@ export const APP_DEFINITIONS = {
 export const TOPBAR_LINKS = [
   { label: 'home', path: '/home' },
   { label: 'people', path: '/people' },
-  { label: 'article', path: '/reader/articles' },
+  { label: 'articles', path: '/reader/articles' },
 ];
 
 export const DESKTOP_SHORTCUTS = [
