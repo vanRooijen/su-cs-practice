@@ -1,21 +1,51 @@
 ---
-title: Undergraduate Modules
-excerpt: Undergraduate focal areas and key module progression from CS teaching pages.
+title: Undergraduate programme and modules
+excerpt: Source-synced content for Undergraduate programme and modules.
 ---
 
-## Undergraduate Modules and Focal Areas
+Source snapshot: [cs.sun.ac.za/teaching/UG/](https://cs.sun.ac.za/teaching/UG/) (fetched on March 3, 2026).
 
-The undergraduate page lists BSc Computer Science focal areas (General CS, Computer Systems, Data Science, and additional combinations) and BDatSci with a CS focal area.
+## BSc Computer Science (CS) Programme
 
-### Typical module progression
+- **[Focus General Computer Science](https://www.sun.ac.za/english/Documents/Yearbooks/Current/2023-Science.pdf#page=76)** (Code: 18139) - The General Computer Science focal area combines a Computer Science major with a choice of Science modules. Please consult Section 4.4.1 of the Science calendar for a list of the compulsory and elective modules for this focal area.
+- **[Focus Computer Systems](https://www.sun.ac.za/english/Documents/Yearbooks/Current/2023-Science.pdf#page=79)** (Code: 18139) - The Computer Systems focal area combines a Computer Science major with a selection of Electric and Electronic Engineering modules. Please consult Section 4.4.2 of the Science calendar for a list of the compulsory and elective modules for this focal area.
+- **[Focus Data Science](https://www.sun.ac.za/english/Documents/Yearbooks/Current/2023-Science.pdf#page=80)** (Code: 18139) - The Data Science focal area combines a Computer Science major with Statistics and Data Science modules. Please consult Section 4.4.3 of the Science calendar for a list of the compulsory and elective modules for this focal area.
+- **[Focus Computer Science with Genetics as second major](https://www.sun.ac.za/english/Documents/Yearbooks/Current/2023-Science.pdf#page=81)** (Code: 18139) - This focal area combines Computer Science with Genetics as second major. Please consult Section 4.4.4 of the Science calendar for a list of the compulsory and elective modules for this focal area.
+- **[Focus BSc Computer Science with Geographical Information Technology as second major](https://www.sun.ac.za/english/Documents/Yearbooks/Current/2023-Science.pdf#page=82)** (Code: 18139) - Computer Science with Geographical Information Technology as second major. Please consult Section 4.4.5 of the Science calendar for a list of the compulsory and elective modules for this focal area.
 
-- First year: CS113/CS114/CS144 foundations
-- Second year: CS214 (Data Structures and Algorithms), CS244 (Computer Architecture)
-- Third year: CS313, CS314, CS315, CS343, CS344, CS345
-- BDatSci fourth-year CS modules include advanced and ML-focused options
+## BDatSci Programme
 
-### Planning advice from source
+- **[Focus Computer Science (CS)](https://www.sun.ac.za/english/Documents/Yearbooks/Current/2023-Science.pdf#page=87)** (Code: 18139) - BDatSci with focal area Computer Science combines Computer Science with Statistics and Data Science modules. BDatSci is a four-year degree, which consists of a set of core compulsory modules on all year levels. Please consult Section 4.6.1 of the Science calendar for a list of the modules for this focal area.
 
-The source page advises students to verify the latest official module combinations and constraints in the university calendar before registration.
+## First year CS modules
 
-Source: https://cs.sun.ac.za/teaching/UG/
+- **[Computer Science for Actuarial Studies](http://www.cs.sun.ac.za/rw113)** (Code: 18139-113) ((1st Semester)) - Introduction to computer programming from a financial perspective. Basic financial problems are rephrased in terms of analytical problem solving. Standard imperative programming constructs including types of variables, assignments, if-then-else and loops, and recursive approaches are covered as needed in financial programming. Static data structures (in particular arrays) and declarative programming models such as spreadsheets are also covered.
+- **[Introductory Computer Science 1](http://www.cs.sun.ac.za/rw114)** (Code: 18139-114) ((1st Semester)) - Introduction to basic computer programming; formulation and solution of problems by means of computer programming; data representation and variable types (including character strings, integers, floating point numbers and Boolean variables); assignment statements; conditional execution and iteration; static data structures (arrays and records); input and output (including graphics and sound); modular programming; recursion; testing and debugging; introduction to object-oriented programming (including abstraction, encapsulation and use of existing object implementations).
+- **[Introductory Computer Science 2](http://www.cs.sun.ac.za/rw144)** (Code: 18139-144) ((2nd Semester)) - Further formulation and solution of problems by means of computer programming; introductory data structures and algorithms in an object-oriented set-up; key concepts in object orientation: inheritance and polymorphism; design patterns as abstractions for the creation of reusable object-oriented designs; searching and sorting algorithms; complexity theory for the analysis of algorithms; fundamental methods in the design of algorithms; dynamic data structures; regular expressions and finite automata.
+
+## Second year CS modules
+
+- **[Object-Oriented Programming](http://www.cs.sun.ac.za/rwe214)** (Code: 59536-214) ((1st Semester)) - Formulation and solution of problems by means of computer programming in an object-oriented set-up; principles of testing and debugging; key concepts in object orientation: abstraction, encapsulation, inheritance and polymorphism; design patterns as abstractions for the creation of reusable object oriented designs; searching and sorting algorithms; complexity theory for the analysis of algorithms; fundamental methods in the design of algorithms; dynamic data structures.
+- **[Data Structures and Algorithms](http://www.cs.sun.ac.za/rw214)** (Code: 18139-214) ((1st Semester)) - The classical data structures and algorithms in an object-oriented set-up. Advanced techniques for the analysis of algorithms.
+- **[Computer Architecture](http://www.cs.sun.ac.za/rw244)** (Code: 18139-244) ((2nd Semester)) - Basic computer architecture. Programming in machine language and assembly language. Assemblers, binders and loaders. Basic concepts of operating systems; memory management, process management and file systems.
+- **[Scientific Computing](http://www.cs.sun.ac.za/wb272)** (Code: 12263-272) ((1st and 2nd Semester)) - Introduction to Linux; Linux commands; Linux file systems; editors; process control. Introduction to programming in Python: variables, types, control structures, loop structures, functions, files and directories, strings, unit testing, basic data processing. Introduction to numerical computing using Numpy; plotting and curve fitting.
+
+## Third year CS modules
+
+- **[Computer Networks](https://computer-science.pages.cs.sun.ac.za/computer-networks/website/)** (Code: 18139-313) ((1st Semester)) - Introduction to networks in general and the internet in particular. Architecture and protocols. Allocation of resources and congestion control. Network security. Applications.
+- **[Concurrency](http://www.cs.sun.ac.za/rw314)** (Code: 18139-314) ((1st Semester)) - Introduction to programming techniques and principles of concurrent systems, from operating systems to application programs. This includes communication, synchronisation, scheduling and load balancing. Several parallel and distributed architectures will be covered.
+- **[Machine Learning](http://www.cs.sun.ac.za/rw315)** (Code: 18139-315) ((1st Semester)) - Unless you have completed Computer Science 315 or an equivalent, the following Computer Science module is also compulsory. Dimension reduction techniques; machine-learning techniques based on maximum-likelihood, maximum-posterior and expectation-maximization estimates; modelling using logistic regression, Gaussian mixtures and hidden Markov models.
+- **[Databases and Web Centric Programming](http://www.cs.sun.ac.za/rw343)** (Code: 18139-343) ((2nd Semester)) - Introduction to relational databases. Mapping relational model onto object model. Implementing a database application in the context of the web. Web services. Server-side scalability. Virtualisation. Cloud Computing.
+- **[Program Design](http://www.cs.sun.ac.za/rw344)** (Code: 18139-344) ((2nd Semester)) - Program specifications as guidelines for program design; reusable frameworks for program design; testability of program designs; development of a medium-sized system to illustrate the practical application of the principles of program design.
+- **[Computability and Automata Theory](http://www.cs.sun.ac.za/rw345)** (Code: 18139-345) ((2nd Semester)) - Introduction to automata theory and formal languages, computability and complexity. Regular languages, context-free languages and grammars. Turing machines. P vs NP problem and NP completeness.
+- **[Scientific Computing](http://www.cs.sun.ac.za/wb372)** (Code: 12263-372) ((1st and 2nd Semester)) - Scientific-document construction and presentations in LaTeX. Regular expressions. Important algorithms including sorting, searching and random-number generation. Advanced computing in Python with Numpy and Scipy; applications including pattern searching, processing of large empirical data sets and constructing data-processing pipelines. Other scientific tools in Linux.
+
+## Fourth year CS modules for BDatSci
+
+- **[Computer Networks (313*)](https://computer-science.pages.cs.sun.ac.za/computer-networks/website/)** (Code: 18139-411) ((1st Semester)) - Introduction to networks in general and the internet in particular. Architecture and protocols. Allocation of resources and congestion control. Network security. Network applications. Network research technique.
+- **[Machine Learning](http://www.cs.sun.ac.za/rw315)** (Code: 59536-414) ((1st Semester)) - Dimension reduction techniques; machine-learning techniques based on maximum-likelihood, maximum-posterior and expectation-maximization estimates; modelling using logistic regression, Gaussian mixtures and hidden Markov models.
+- **[Advanced Algorithms (712*)](http://algos.cs.sun.ac.za)** (Code: 18139-412) ((1st Semester)) - This module continues from Computer Science 214 and covers advanced topics in the design and analysis of algorithms and associated data structure. Topics include a selection from algorithm design techniques, linear programming, approximation algorithms, randomised algorithms, probabilistic algorithms, parallel algorithms, number-theoretic algorithms, cryptanalysis, computational geometry, computational biology, network algorithms, and complexity theory.
+- **[Machine Learning (741*)](http://www.cs.sun.ac.za/cs741)** (Code: 18139-441) ((2nd Semester)) - This module is an introduction to selected topics in machine learning.
+- **Data Science Research Assignment** (Code: 18139-471) ((2nd Semester)) - The research assignment provides students with a comprehensive learning experience that integrates knowledge from previous courses. The student will integrate knowledge and experiences gained from all previous modules and apply this to a data-rich research topic. Students will have the opportunity to synthesise what they have learned and apply that knowledge to new, complex situations. Students should engage in the entire process of solving a real-world data science problem, from collecting and processing actual data, to applying suitable and appropriate analytic methods to the problem, and communicating the results in a clear and comprehensive way.
+- **[Space Science Algorithms (791*)](https://cs.sun.ac.za/courses/space-science/)** (Code: 18139-491) ((2nd Semester)) - Algorithms and techniques in Space Science, with applications.
+- **[Functional Programming (795*)](https://cs.sun.ac.za/courses/functional/)** (Code: 18139-495) ((Not presented Semester)) - This module gives an introduction to the functional programming paradigm

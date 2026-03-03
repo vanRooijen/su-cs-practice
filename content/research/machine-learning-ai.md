@@ -1,24 +1,24 @@
 ---
 title: Machine Learning and Artificial Intelligence
-excerpt: Decision-making, learning, and search under uncertainty.
+excerpt: This group considers almost any aspect of the general decision-making problem, including sequential decision-making under uncertainty. Major sub-problems we consider are planning,...
 ---
 
 ## Machine Learning and Artificial Intelligence
 
-The research page describes this group as focusing on decision-making under uncertainty, with major sub-problems in planning, machine learning, and search, grounded in probability and game theory.
+This group considers almost any aspect of the general decision-making problem, including sequential decision-making under uncertainty. Major sub-problems we consider are planning, machine learning, and search algorithms. Our approach is grounded in probability theory and game theory for managing uncertainty and multi-agent systems. We also investigate the combination of machine learning and big data, and specifically data from earth observation satellite sensors and radio interferometers.
 
-The page also notes work combining machine learning with large-scale data sources, including earth-observation and radio-interferometry contexts.
+### Current Members
 
-### Members listed on source page
+| Photo | Member | Profile |
+| --- | --- | --- |
+| <img src="/cs-assets/people/bbecker.jpg" alt="Burger Becker" width="40" height="40" /> | Burger Becker |  |
+| <img src="/cs-assets/people/mchristoph.jpg" alt="Marc Christoph" width="40" height="40" /> | Marc Christoph |  |
+| <img src="/cs-assets/people/dcoetsee.jpg" alt="Dirko Coetsee" width="40" height="40" /> | Dirko Coetsee |  |
+| <img src="/cs-assets/people/tlgrobler.jpg" alt="Trienko Grobler" width="40" height="40" /> | Trienko Grobler |  |
+| <img src="/cs-assets/people/kroon.jpg" alt="Steve Kroon" width="40" height="40" /> | Steve Kroon | [Link](http://www.cs.sun.ac.za/~kroon/decision.html) |
+| <img src="/cs-assets/people/masakuna.jpg" alt="Jordan Masakuna" width="40" height="40" /> | Jordan Masakuna |  |
+| <img src="/cs-assets/people/apretorius.jpg" alt="Arnu Pretorius" width="40" height="40" /> | Arnu Pretorius |  |
+| <img src="/cs-assets/people/csteyl.jpg" alt="Charl Steyl" width="40" height="40" /> | Charl Steyl |  |
+| <img src="/cs-assets/people/evanbiljon.jpg" alt="Elan van Biljon" width="40" height="40" /> | Elan van Biljon |  |
 
-- Burger Becker
-- Marc Christoph
-- Dirko Coetsee
-- Trienko Grobler
-- Steve Kroon
-- Jordan Masakuna
-- Arnu Pretorius
-- Charl Steyl
-- Elan van Biljon
-
-Source: https://cs.sun.ac.za/research/
+Source snapshot: [cs.sun.ac.za/research/](https://cs.sun.ac.za/research/) (fetched on March 3, 2026).

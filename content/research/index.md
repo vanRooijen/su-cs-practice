@@ -1,17 +1,13 @@
 ---
 title: Research
-excerpt: Research groups and themes in the Computer Science Division.
+excerpt: Research groups synchronized from the official Computer Science research page.
 ---
 
-## Research Overview
+## Research Groups
 
-The official research page organizes activity into focused groups spanning foundational theory and applied systems.
+- [Theory and Applications of Automata and Grammars](/research/automata-grammars) (5 members listed)
+- [Software Engineering and Verification](/research/software-engineering-verification) (8 members listed)
+- [Machine Learning and Artificial Intelligence](/research/machine-learning-ai) (9 members listed)
+- [Telkom-Siemens Centre of Excellence in ATM and Broadband Networks and their Applications »](/research/broadband-networks) (3 members listed)
 
-This app summarizes the groups listed on:
-
-- Automata and grammars
-- Software engineering and verification
-- Machine learning and artificial intelligence
-- Broadband network research initiatives
-
-Source snapshot: https://cs.sun.ac.za/research/ (fetched March 3, 2026).
+Source snapshot: [cs.sun.ac.za/research/](https://cs.sun.ac.za/research/) (fetched on March 3, 2026).
