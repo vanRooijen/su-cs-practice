@@ -74,3 +74,72 @@ export function listReaderArticles() {
       return left.title.localeCompare(right.title);
     });
 }
+
+function fromMeta(artifact, ...keys) {
+  for (const key of keys) {
+    const value = artifact?.meta?.[key];
+    if (typeof value === 'string' && value.trim()) {
+      return value.trim();
+    }
+  }
+
+  return '';
+}
+
+function normalizedMetaValue(artifact, ...keys) {
+  return fromMeta(artifact, ...keys).toLowerCase();
+}
+
+function isNewsfeedArticle(artifact) {
+  const badge = normalizedMetaValue(artifact, 'card_badge', 'cardBadge');
+  if (badge === 'newsfeed') {
+    return true;
+  }
+
+  if (typeof artifact?.subroute === 'string' && artifact.subroute.startsWith('articles/newsfeed-')) {
+    return true;
+  }
+
+  const sourceUrl = normalizedMetaValue(artifact, 'source_url', 'sourceUrl');
+  return sourceUrl.includes('/newsfeed/');
+}
+
+function getArticleArchiveGroup(artifact) {
+  const explicitGroup = normalizedMetaValue(
+    artifact,
+    'newsroll_group',
+    'newsrollGroup',
+    'archive_group',
+    'archiveGroup',
+  );
+
+  if (explicitGroup === 'main' || explicitGroup === 'primary' || explicitGroup === 'current' || explicitGroup === 'timeless') {
+    return 'primary';
+  }
+
+  if (explicitGroup === 'archive' || explicitGroup === 'newsroll-archive') {
+    return 'archive';
+  }
+
+  return isNewsfeedArticle(artifact) ? 'archive' : 'primary';
+}
+
+export function listReaderArticleCollections() {
+  const all = listReaderArticles();
+  const primary = [];
+  const archive = [];
+
+  for (const article of all) {
+    if (getArticleArchiveGroup(article) === 'archive') {
+      archive.push(article);
+    } else {
+      primary.push(article);
+    }
+  }
+
+  return {
+    all,
+    primary,
+    archive,
+  };
+}

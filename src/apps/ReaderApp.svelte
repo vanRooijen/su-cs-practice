@@ -1,13 +1,14 @@
 <script>
   import ContentRegion from '../components/ContentRegion.svelte';
   import { APP_NAV_LINKS } from '../lib/navigation/siteManifest.js';
-  import { listReaderArticles, resolveContent } from '../lib/content/resolveContent.js';
+  import { listReaderArticleCollections, resolveContent } from '../lib/content/resolveContent.js';
 
   export let subroute = '';
   export let sidebarCollapsed = false;
 
-  const articleEntries = listReaderArticles();
+  const { primary: primaryArticleEntries, archive: archivedArticleEntries } = listReaderArticleCollections();
   const ARTICLE_TITLE_MAX_LENGTH = 40;
+  let archiveExpanded = false;
 
   function truncateLabel(value = '', maxLength = ARTICLE_TITLE_MAX_LENGTH) {
     const text = String(value).trim();
@@ -21,6 +22,12 @@
   $: normalizedSubroute = subroute.replace(/^\/+|\/+$/g, '');
   $: activePath = normalizedSubroute ? `/reader/${normalizedSubroute}` : '/reader';
   $: content = resolveContent('reader', normalizedSubroute);
+  $: archiveContainsActivePath = archivedArticleEntries.some((article) => `/reader/${article.subroute}` === activePath);
+  $: archiveIsOpen = archiveExpanded || archiveContainsActivePath;
+
+  function onArchiveToggle(event) {
+    archiveExpanded = Boolean(event.currentTarget?.open);
+  }
 </script>
 
 <div class="app-layout" data-sidebar-collapsed={sidebarCollapsed}>
@@ -34,8 +41,8 @@
         {/each}
       </nav>
 
-      <ul class="tab-list">
-        {#each articleEntries as article (article.key)}
+      <ul class="tab-list" aria-label="Reader primary articles">
+        {#each primaryArticleEntries as article (article.key)}
           {@const path = `/reader/${article.subroute}`}
           {@const shortTitle = truncateLabel(article.title)}
           <li>
@@ -50,6 +57,32 @@
           </li>
         {/each}
       </ul>
+
+      {#if archivedArticleEntries.length > 0}
+        <details class="archive-group" open={archiveIsOpen} on:toggle={onArchiveToggle}>
+          <summary>
+            <span>Newsroll Archive</span>
+            <span class="archive-count">{archivedArticleEntries.length}</span>
+          </summary>
+
+          <ul class="tab-list tab-list-archive" aria-label="Reader newsroll archive">
+            {#each archivedArticleEntries as article (article.key)}
+              {@const path = `/reader/${article.subroute}`}
+              {@const shortTitle = truncateLabel(article.title)}
+              <li>
+                <a
+                  class="tab-link"
+                  href={path}
+                  aria-current={activePath === path ? 'page' : undefined}
+                  title={article.title}
+                >
+                  {shortTitle}
+                </a>
+              </li>
+            {/each}
+          </ul>
+        </details>
+      {/if}
     </aside>
   {/if}
 
@@ -126,6 +159,55 @@
     gap: 0.24rem;
     border-top: 1px solid var(--su-app-chrome-line, rgba(44, 42, 41, 0.08));
     padding-top: 0.52rem;
+  }
+
+  .archive-group {
+    margin-top: 0.5rem;
+    border-top: 1px solid var(--su-app-chrome-line, rgba(44, 42, 41, 0.08));
+    padding-top: 0.45rem;
+  }
+
+  .archive-group summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    border-radius: 0.4rem;
+    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.1);
+    padding: 0.34rem 0.4rem;
+    color: color-mix(in srgb, var(--su-ink, #2c2a29) 86%, white 14%);
+    background: rgba(255, 255, 255, 0.46);
+    font-size: 0.88rem;
+    line-height: 1.24;
+  }
+
+  .archive-group summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .archive-group summary:hover {
+    background: rgba(202, 162, 88, 0.16);
+    color: var(--su-maroon, #61223b);
+    box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.22);
+  }
+
+  .archive-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    height: 1.2rem;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    background: rgba(202, 162, 88, 0.24);
+    color: color-mix(in srgb, var(--su-maroon, #61223b) 88%, black 12%);
+  }
+
+  .tab-list-archive {
+    border-top: none;
+    padding-top: 0.34rem;
   }
 
   .tab-list li {

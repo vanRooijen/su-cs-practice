@@ -1,5 +1,6 @@
 <script>
   import { tick } from 'svelte';
+  import { enhanceContentImages } from '../lib/content/enhanceContentImages.js';
   import DefaultContentShell from './content-shells/DefaultContentShell.svelte';
   import HomeLandingShell from './content-shells/HomeLandingShell.svelte';
   import ReaderArticlesShell from './content-shells/ReaderArticlesShell.svelte';
@@ -121,6 +122,7 @@
         key: cachedArtifact.key,
         isActive: cachedArtifact.key === activeKey,
       }}
+      use:enhanceContentImages
     >
       <svelte:component this={resolveContentShell(cachedArtifact?.shell)} artifact={cachedArtifact} />
     </section>
@@ -150,6 +152,54 @@
     opacity: 1;
     z-index: 1;
     pointer-events: auto;
+  }
+
+  .content-pane :global(.content-document img.content-image-fluid) {
+    display: block;
+    width: auto;
+    max-width: min(100%, 44rem);
+    max-height: 68vh;
+    height: auto;
+    margin: 0.5rem auto 0.72rem;
+    border-radius: 0.36rem;
+    object-fit: contain;
+    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.1);
+    background: rgba(255, 255, 255, 0.92);
+  }
+
+  .content-pane :global(.content-document img.content-image-inline) {
+    display: inline-block;
+    margin: 0;
+    max-width: 6rem;
+    max-height: 6rem;
+    vertical-align: middle;
+    border-radius: 0.2rem;
+    box-shadow: none;
+  }
+
+  .content-pane :global(.content-document .image-gallery) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+    gap: 0.34rem;
+    margin: 0.5rem 0 0.72rem;
+    padding: 0;
+  }
+
+  .content-pane :global(.content-document .image-gallery a) {
+    display: block;
+    text-decoration: none;
+    line-height: 0;
+  }
+
+  .content-pane :global(.content-document .image-gallery img) {
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 4 / 3;
+    height: auto;
+    object-fit: cover;
+    margin: 0;
+    border-radius: 0.24rem;
+    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.14);
   }
 
 </style>

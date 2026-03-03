@@ -196,14 +196,14 @@ async function syncStaff() {
   const academicTable = [
     tableHeader(['Photo', 'Name', 'Role', 'Contact', 'Research Interests']),
     ...academicRows.map((row) =>
-      `| ${escapeMdCell(`<img src="${row.image}" alt="${row.name}" width="48" height="48" />`)} | ${escapeMdCell(row.name)} | ${escapeMdCell(row.role)} | ${escapeMdCell(row.contact)} | ${escapeMdCell(row.research)} |`,
+      `| ${escapeMdCell(`<img src="${row.image}" alt="${row.name}" width="96" height="96" />`)} | ${escapeMdCell(row.name)} | ${escapeMdCell(row.role)} | ${escapeMdCell(row.contact)} | ${escapeMdCell(row.research)} |`,
     ),
   ].join('\n');
 
   const adminTable = [
     tableHeader(['Photo', 'Name', 'Role', 'Contact']),
     ...adminRows.map((row) =>
-      `| ${escapeMdCell(`<img src="${row.image}" alt="${row.name}" width="48" height="48" />`)} | ${escapeMdCell(row.name)} | ${escapeMdCell(row.role)} | ${escapeMdCell(row.contact)} |`,
+      `| ${escapeMdCell(`<img src="${row.image}" alt="${row.name}" width="96" height="96" />`)} | ${escapeMdCell(row.name)} | ${escapeMdCell(row.role)} | ${escapeMdCell(row.contact)} |`,
     ),
   ].join('\n');
 
@@ -239,7 +239,7 @@ async function syncStudents() {
     tableHeader(['Photo', 'Name', 'Supervisor', 'Research Topic']),
     ...doctoralRows.map(
       (row) =>
-        `| ${escapeMdCell(`<img src="${row.image}" alt="${row.name}" width="48" height="48" />`)} | ${escapeMdCell(row.name)} | ${escapeMdCell(row.supervisor)} | ${escapeMdCell(row.research)} |`,
+        `| ${escapeMdCell(`<img src="${row.image}" alt="${row.name}" width="96" height="96" />`)} | ${escapeMdCell(row.name)} | ${escapeMdCell(row.supervisor)} | ${escapeMdCell(row.research)} |`,
     ),
   ].join('\n');
 
@@ -247,7 +247,7 @@ async function syncStudents() {
     tableHeader(['Photo', 'Name', 'Supervisor', 'Research Topic']),
     ...mastersRows.map(
       (row) =>
-        `| ${escapeMdCell(`<img src="${row.image}" alt="${row.name}" width="48" height="48" />`)} | ${escapeMdCell(row.name)} | ${escapeMdCell(row.supervisor)} | ${escapeMdCell(row.research)} |`,
+        `| ${escapeMdCell(`<img src="${row.image}" alt="${row.name}" width="96" height="96" />`)} | ${escapeMdCell(row.name)} | ${escapeMdCell(row.supervisor)} | ${escapeMdCell(row.research)} |`,
     ),
   ].join('\n');
 

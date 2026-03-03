@@ -1,5 +1,5 @@
 <script>
-  import { listReaderArticles } from '../../lib/content/resolveContent.js';
+  import { listReaderArticleCollections } from '../../lib/content/resolveContent.js';
 
   export let artifact;
 
@@ -64,7 +64,7 @@
     const slot = toSlot(section?.slot);
     return slot !== 'intro' && slot !== 'main' && slot !== 'body';
   });
-  $: featuredArticles = listReaderArticles().slice(0, 8);
+  $: featuredArticles = listReaderArticleCollections().primary.slice(0, 8);
 </script>
 
 <article class="home-shell">

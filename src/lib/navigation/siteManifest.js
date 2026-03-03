@@ -124,6 +124,7 @@ export const APP_NAV_LINKS = {
   ],
   reader: [
     { label: 'Overview', href: '/reader/overview' },
+    { label: 'Newsroll Archive', href: '/reader/newsfeed-archive' },
   ],
   programs: [
     { label: 'Overview', href: '/programs' },

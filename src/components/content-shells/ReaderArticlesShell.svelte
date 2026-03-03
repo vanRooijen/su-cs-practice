@@ -1,5 +1,5 @@
 <script>
-  import { listReaderArticles } from '../../lib/content/resolveContent.js';
+  import { listReaderArticleCollections } from '../../lib/content/resolveContent.js';
 
   export let artifact;
 
@@ -51,7 +51,9 @@
   }
 
   $: sections = normalizeSections(artifact);
-  $: articleEntries = listReaderArticles();
+  $: articleCollections = listReaderArticleCollections();
+  $: articleEntries = articleCollections.primary;
+  $: archiveEntries = articleCollections.archive;
   $: firstSectionHtml = sections[0]?.html ?? '';
   $: hasEmbeddedHeading = /<h[1-6]\b/i.test(firstSectionHtml);
   $: showShellTitle = Boolean(artifact?.title) && !hasEmbeddedHeading;
@@ -95,6 +97,21 @@
       {/each}
     </ul>
   </section>
+
+  {#if archiveEntries.length > 0}
+    <section class="archive-list">
+      <header class="archive-header">
+        <h3>Newsroll Archive</h3>
+        <a href="/reader/newsfeed-archive">Open Full Archive Page</a>
+      </header>
+
+      <ul class="archive-links">
+        {#each archiveEntries as article (article.key)}
+          <li><a href={`/reader/${article.subroute}`}>{articleCardTitle(article)}</a></li>
+        {/each}
+      </ul>
+    </section>
+  {/if}
 </article>
 
 <style>
@@ -206,5 +223,55 @@
     font-size: 0.82rem;
     color: color-mix(in srgb, var(--su-maroon, #61223b) 90%, black 10%);
     text-underline-offset: 2px;
+  }
+
+  .archive-list {
+    display: grid;
+    gap: 0.4rem;
+    padding-top: 0.24rem;
+    border-top: 1px solid rgba(44, 42, 41, 0.1);
+  }
+
+  .archive-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .archive-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.2;
+    color: color-mix(in srgb, var(--su-maroon, #61223b) 82%, black 18%);
+  }
+
+  .archive-header a {
+    font-size: 0.8rem;
+    text-underline-offset: 2px;
+    color: color-mix(in srgb, var(--su-maroon, #61223b) 86%, black 14%);
+  }
+
+  .archive-links {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.2rem;
+  }
+
+  .archive-links a {
+    color: color-mix(in srgb, var(--su-ink, #2c2a29) 90%, black 10%);
+    text-decoration: none;
+    padding: 0.24rem 0.36rem;
+    border-radius: 0.34rem;
+    background: rgba(255, 255, 255, 0.52);
+    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.1);
+  }
+
+  .archive-links a:hover {
+    color: var(--su-maroon, #61223b);
+    background: rgba(202, 162, 88, 0.16);
+    box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.22);
   }
 </style>

@@ -1030,7 +1030,7 @@
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
     column-gap: 0.86rem;
-    min-height: 3.72rem;
+    min-height: 2.98rem;
     padding: 0 0.56rem;
     box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.75);
   }
@@ -1044,7 +1044,7 @@
   }
 
   .site-logo {
-    height: 4.5rem;
+    height: 3.6rem;
     max-width: clamp(20.8rem, 39vw, 26.8rem);
     width: auto;
     display: block;

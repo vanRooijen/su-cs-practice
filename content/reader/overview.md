@@ -4,7 +4,7 @@ excerpt: Browse all published department stories and updates.
 shell: reader-articles
 ---
 
-Browse all Reader articles below. Articles are rendered from content artifacts, so new markdown files appear automatically once compiled and deployed.
+Browse Reader articles below. Primary cards focus on current or timeless content, while older newsfeed items are grouped under **Newsroll Archive**.
 
 Current entries in this snapshot are sourced from:
 
