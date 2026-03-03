@@ -87,6 +87,22 @@ Markdown content is authored separately and compiled before `dev/build`:
 - Builder: `scripts/build-content.mjs`
 - Generated artifacts: `src/generated/content-artifacts.js`
 
+### Syncing Real Data Snapshots
+
+Local source snapshots are kept under `external/cs-sun-pages/` (ignored by git).
+To refresh content from those snapshots:
+
+```bash
+# Sync People app markdown from downloaded people pages
+npm run content:sync:people
+
+# Sync Programs + Research app markdown from downloaded teaching/research pages
+npm run content:sync:programs-research
+
+# Run both syncs and rebuild generated artifacts
+npm run content:sync:all
+```
+
 ## Core Files
 
 - `src/lib/navigation/historyRouter.js`
