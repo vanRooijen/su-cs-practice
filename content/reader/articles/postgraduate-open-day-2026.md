@@ -3,6 +3,7 @@ title: Open Day 2019
 excerpt: Department invitation to visit the Computer Science stall during university open day.
 sort_order: 3
 card_badge: Newsfeed
+card_image: /cs-assets/newsfeed/openday2019-small.jpg
 ---
 
 ## Open Day 2019

@@ -3,6 +3,7 @@ title: Computer Science Career Fair 2019
 excerpt: Reminder announcement for the sixth annual Computer Science Career Fair.
 sort_order: 4
 card_badge: Newsfeed
+card_image: /cs-assets/newsfeed/careerday2017/cd2017.jpg
 ---
 
 ## Computer Science Career Fair 2019

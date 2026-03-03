@@ -50,6 +50,10 @@
     return fromMeta(article, 'card_variant', 'cardVariant') || 'standard';
   }
 
+  function articleCardImage(article) {
+    return fromMeta(article, 'card_image', 'cardImage');
+  }
+
   $: sections = normalizeSections(artifact);
   $: introSections = sections.filter((section) => toSlot(section?.slot) === 'intro');
   $: bodySections = sections.filter((section) => {
@@ -98,8 +102,12 @@
         {@const path = `/reader/${article.subroute}`}
         {@const badge = articleCardBadge(article)}
         {@const variant = articleCardVariant(article)}
+        {@const image = articleCardImage(article)}
         <li class="news-card" data-variant={variant}>
           <article>
+            {#if image}
+              <img src={image} alt={articleCardTitle(article)} loading="lazy" />
+            {/if}
             {#if badge}
               <p class="news-badge">{badge}</p>
             {/if}
@@ -245,6 +253,14 @@
     display: grid;
     gap: 0.26rem;
     align-content: start;
+  }
+
+  .news-card img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 0.34rem;
+    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.08);
   }
 
   .news-card[data-variant='feature'] article {

@@ -5,6 +5,8 @@ excerpt: Official postal, physical, and communication details.
 
 ## Contact Details
 
+![Department aerial view](/cs-assets/aerial-300x235.jpg)
+
 ### Postal address
 
 Computer Science Division  

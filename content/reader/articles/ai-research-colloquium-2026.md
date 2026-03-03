@@ -3,6 +3,7 @@ title: Jane Street Depth First Learning Fellows
 excerpt: Dr Steve Kroon selected among inaugural Depth First Learning fellows.
 sort_order: 2
 card_badge: Newsfeed
+card_image: /cs-assets/newsfeed/deep-learning-hackathon.png
 ---
 
 ## Jane Street Depth First Learning Fellows
