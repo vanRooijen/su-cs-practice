@@ -3,6 +3,8 @@ title: Students
 excerpt: Postgraduate student listings from the official department people page.
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 ## Postgraduate Students
 
 Source snapshot: [cs.sun.ac.za/people/students](https://cs.sun.ac.za/people/students/) (fetched on March 3, 2026).

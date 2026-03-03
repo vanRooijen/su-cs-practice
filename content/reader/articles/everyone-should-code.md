@@ -6,6 +6,8 @@ card_badge: Feature
 card_image: /cs-assets/features/everyone-should-code.jpg
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 ## Everyone Should Code
 
 The department feature page highlights code.org's message that every student should have access to computer science education.

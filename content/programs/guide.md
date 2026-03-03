@@ -3,6 +3,8 @@ title: Computer Science Programmes
 excerpt: BSc Computer Science is the primary option for students who want to pursue a career in software development. This degree is an international qualification that enables you to find...
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 Source snapshot: [cs.sun.ac.za/teaching/programmes/](https://cs.sun.ac.za/teaching/programmes/) (fetched on March 3, 2026).
 
 ## Overview

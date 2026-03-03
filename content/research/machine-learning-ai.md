@@ -3,6 +3,8 @@ title: Machine Learning and Artificial Intelligence
 excerpt: This group considers almost any aspect of the general decision-making problem, including sequential decision-making under uncertainty. Major sub-problems we consider are planning,...
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 ## Machine Learning and Artificial Intelligence
 
 This group considers almost any aspect of the general decision-making problem, including sequential decision-making under uncertainty. Major sub-problems we consider are planning, machine learning, and search algorithms. Our approach is grounded in probability theory and game theory for managing uncertainty and multi-agent systems. We also investigate the combination of machine learning and big data, and specifically data from earth observation satellite sensors and radio interferometers.

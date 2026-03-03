@@ -7,10 +7,10 @@ function makeWindowState(overrides = {}) {
     windowId: 1,
     appId: 'reader',
     title: 'Reader',
-    path: '/reader/articles',
-    subroute: 'articles',
-    routeKey: 'reader::/reader/articles',
-    routeLabel: 'Articles',
+    path: '/reader/overview',
+    subroute: 'overview',
+    routeKey: 'reader::/reader/overview',
+    routeLabel: 'Overview',
     hasSidebar: true,
     showWindowHistoryNavigation: true,
     isSidebarCollapsed: false,
@@ -25,9 +25,9 @@ function makeWindowState(overrides = {}) {
     history: {
       entries: [
         {
-          path: '/reader/articles',
-          subroute: 'articles',
-          routeKey: 'reader::/reader/articles',
+          path: '/reader/overview',
+          subroute: 'overview',
+          routeKey: 'reader::/reader/overview',
         },
       ],
       index: 0,
@@ -59,15 +59,15 @@ describe('AppWindow component', () => {
     expect(getByRole('button', { name: 'Minimize window' })).toBeTruthy();
     expect(getByRole('button', { name: 'Maximize window' })).toBeTruthy();
     expect(getByRole('button', { name: 'Close window' })).toBeTruthy();
-    expect(getByText('/reader/articles')).toBeTruthy();
+    expect(getByText('/reader/overview')).toBeTruthy();
   });
 
   it('toggles history button enabled states at history boundaries', async () => {
     const historyEntries = [
       {
-        path: '/reader/articles',
-        subroute: 'articles',
-        routeKey: 'reader::/reader/articles',
+        path: '/reader/overview',
+        subroute: 'overview',
+        routeKey: 'reader::/reader/overview',
       },
       {
         path: '/reader/help',

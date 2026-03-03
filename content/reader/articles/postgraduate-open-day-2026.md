@@ -6,6 +6,8 @@ card_badge: Newsfeed
 card_image: /cs-assets/newsfeed/openday2019-small.jpg
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 ## Open Day 2019
 
 The department newsfeed announced Open Day 2019 on 21 February 2019, inviting prospective students to visit the Computer Science stall during the university open day on Saturday 23 February.

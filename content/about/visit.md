@@ -3,6 +3,8 @@ title: Visit the Department
 excerpt: Campus visit orientation and map/location pointers.
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 ## Visit the Department
 
 ![Campus location view](/cs-assets/aerial.jpg)

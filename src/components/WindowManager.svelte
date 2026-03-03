@@ -591,7 +591,7 @@
             type="button"
             class="sidebar-tool"
             aria-label="Open Articles"
-            on:click={() => openPath('/reader/articles')}
+            on:click={() => openPath('/reader/overview')}
           >
             <span class="inline-icon" aria-hidden="true">{@html iconNewspaper}</span>
           </button>
@@ -820,9 +820,10 @@
     --su-sidebar: #f4f0e8;
     --su-surface: #fffdf9;
     --su-surface-subtle: #f8f4ed;
+    --su-workspace: #f2ede4;
     --su-line: #ddd6cb;
     --su-line-strong: #cec6b9;
-    --su-app-content-bg: var(--su-surface);
+    --su-app-content-bg: #fcf8f2;
     --su-app-sidebar-bg: color-mix(in srgb, var(--su-surface-subtle) 82%, white 18%);
     --su-app-chrome-line: rgba(44, 42, 41, 0.08);
     --su-content-max-width: 72rem;
@@ -1305,7 +1306,7 @@
     position: relative;
     min-height: 0;
     overflow: hidden;
-    background: #faf8f3;
+    background: var(--su-workspace);
     padding-bottom: 0;
   }
 

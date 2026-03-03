@@ -15,7 +15,7 @@ test('resolveContent returns shell metadata for shell-backed routes', () => {
   const homeContent = resolveContent('home', '');
   assert.equal(homeContent.shell, 'home-landing');
 
-  const readerArticleIndex = resolveContent('reader', 'articles');
+  const readerArticleIndex = resolveContent('reader', 'overview');
   assert.equal(readerArticleIndex.shell, 'reader-articles');
 });
 

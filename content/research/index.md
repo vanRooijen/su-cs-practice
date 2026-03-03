@@ -3,6 +3,8 @@ title: Research
 excerpt: Research groups synchronized from the official Computer Science research page.
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 ## Research Groups
 
 - [Theory and Applications of Automata and Grammars](/research/automata-grammars) (5 members listed)

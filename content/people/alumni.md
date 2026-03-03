@@ -3,6 +3,8 @@ title: Alumni
 excerpt: Alumni faculty and graduate records from the official department alumni page.
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 ## Alumni Staff and Students
 
 Source snapshot: [cs.sun.ac.za/people/alumni](https://cs.sun.ac.za/people/alumni/) (fetched on March 3, 2026).

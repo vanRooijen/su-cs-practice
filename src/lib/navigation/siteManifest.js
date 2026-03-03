@@ -70,7 +70,7 @@ export const APP_DEFINITIONS = {
   reader: {
     id: 'reader',
     title: 'Reader',
-    defaultSubroute: 'articles',
+    defaultSubroute: 'overview',
     hasSidebar: true,
     enableWindowHistoryNavigation: true,
     validateSubroute: validateContentBackedSubroute,
@@ -94,7 +94,7 @@ export const APP_DEFINITIONS = {
 export const TOPBAR_LINKS = [
   { label: 'home', path: '/home' },
   { label: 'people', path: '/people' },
-  { label: 'articles', path: '/reader/articles' },
+  { label: 'articles', path: '/reader/overview' },
   { label: 'programs', path: '/programs' },
   { label: 'research', path: '/research' },
   { label: 'about', path: '/about' },
@@ -118,9 +118,7 @@ export const APP_NAV_LINKS = {
     { label: 'Alumni', href: '/people/alumni' },
   ],
   reader: [
-    { label: 'Overview', href: '/reader' },
-    { label: 'Articles', href: '/reader/articles' },
-    { label: 'Help', href: '/reader/general/help' },
+    { label: 'Overview', href: '/reader/overview' },
   ],
   programs: [
     { label: 'Overview', href: '/programs' },

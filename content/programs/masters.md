@@ -3,6 +3,8 @@ title: Masters in Computer Science
 excerpt: Our Masters degree is a two-year programme based on thesis work. The goal is to teach students how to evaluate and conduct world-class research, and become a master in their...
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 Source snapshot: [cs.sun.ac.za/teaching/masters/](https://cs.sun.ac.za/teaching/masters/) (fetched on March 3, 2026).
 
 ## Overview

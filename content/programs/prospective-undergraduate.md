@@ -3,6 +3,8 @@ title: Come study Computer Science at Stellenbosch!
 excerpt: As explained in [our information videos, available on the University’s open-day pages](https://blogs.sun.ac.za/open-day/exhibitions/computer-science/) , Computer science is the...
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 Source snapshot: [cs.sun.ac.za/teaching/prospectiveUG/](https://cs.sun.ac.za/teaching/prospectiveUG/) (fetched on March 3, 2026).
 
 ## Overview

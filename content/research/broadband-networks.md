@@ -3,6 +3,8 @@ title: Telkom-Siemens Centre of Excellence in ATM and Broadband Networks and the
 excerpt: The University of Stellenbosch Unit of the Telkom-Siemens Centre of Excellence in ATM and Broadband Networks and their Applications aim to promote research and development in...
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 ## Telkom-Siemens Centre of Excellence in ATM and Broadband Networks and their Applications »
 
 The University of Stellenbosch Unit of the Telkom-Siemens Centre of Excellence in ATM and Broadband Networks and their Applications aim to promote research and development in broadband technologies and their applications and to train postgraduate students and professionals in the expertise required in this field of telecommunications.

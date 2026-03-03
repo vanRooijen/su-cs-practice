@@ -63,7 +63,7 @@ test('desktop root route minimizes windows and clears focus', () => {
 test('getDefaultPathForApp falls back to home for unknown app ids', () => {
   const store = createWindowManagerStore();
 
-  assert.equal(store.getDefaultPathForApp('reader'), '/reader/articles');
+  assert.equal(store.getDefaultPathForApp('reader'), '/reader/overview');
   assert.equal(store.getDefaultPathForApp('does-not-exist'), '/home');
 });
 
@@ -279,7 +279,7 @@ test('releaseWindowsOwnedByInactiveRuntimes normalizes released windows to unown
 test('window history limit is isolated per window instance', () => {
   const store = createWindowManagerStore();
 
-  store.applyRoute(makeRoute('/reader/articles', 'reader', 'articles'));
+  store.applyRoute(makeRoute('/reader/overview', 'reader', 'overview'));
   const readerWindowId = store.getSnapshot().focusedWindowId;
   assert.ok(readerWindowId, 'expected reader window to be created');
 
@@ -323,7 +323,7 @@ test('applyRoute is a strict no-op for unchanged focused route', () => {
 test('route navigation prefers exact route window match before app fallback strategy', () => {
   const store = createWindowManagerStore();
 
-  store.applyRoute(makeRoute('/reader/articles', 'reader', 'articles'));
+  store.applyRoute(makeRoute('/reader/overview', 'reader', 'overview'));
   const firstWindowId = store.getSnapshot().focusedWindowId;
   assert.ok(firstWindowId, 'expected first reader window');
 
@@ -332,11 +332,11 @@ test('route navigation prefers exact route window match before app fallback stra
   assert.ok(secondWindowId, 'expected second reader window');
   assert.notEqual(firstWindowId, secondWindowId);
 
-  store.applyRoute(makeRoute('/reader/articles', 'reader', 'articles'));
+  store.applyRoute(makeRoute('/reader/overview', 'reader', 'overview'));
   const snapshot = store.getSnapshot();
 
   assert.equal(snapshot.focusedWindowId, firstWindowId);
-  assert.equal(snapshot.windows[firstWindowId].path, '/reader/articles');
+  assert.equal(snapshot.windows[firstWindowId].path, '/reader/overview');
   assert.equal(snapshot.windows[secondWindowId].path, '/reader/help');
 });
 
@@ -451,7 +451,7 @@ test('resizeWindow respects workspace boundaries and minimum dimensions', () => 
 test('stepWindowHistory returns target paths and stops at boundaries', () => {
   const store = createWindowManagerStore();
 
-  store.applyRoute(makeRoute('/reader/articles', 'reader', 'articles'));
+  store.applyRoute(makeRoute('/reader/overview', 'reader', 'overview'));
   const windowId = store.getSnapshot().focusedWindowId;
   assert.ok(windowId, 'expected reader window');
 
@@ -462,8 +462,8 @@ test('stepWindowHistory returns target paths and stops at boundaries', () => {
 
   const backPath = store.stepWindowHistory(windowId, 'back');
   snapshot = store.getSnapshot();
-  assert.equal(backPath, '/reader/articles');
-  assert.equal(snapshot.windows[windowId].path, '/reader/articles');
+  assert.equal(backPath, '/reader/overview');
+  assert.equal(snapshot.windows[windowId].path, '/reader/overview');
   assert.equal(snapshot.windows[windowId].history.index, 0);
 
   const secondBackPath = store.stepWindowHistory(windowId, 'back');

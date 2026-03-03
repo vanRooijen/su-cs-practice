@@ -6,6 +6,8 @@ card_badge: Feature
 card_image: /cs-assets/features/career.jpg
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 ## Looking for a Great Career?
 
 This long-form department feature discusses long-term demand for software and computing careers and emphasizes the range of available roles across engineering, design, security, data, and applied domains.

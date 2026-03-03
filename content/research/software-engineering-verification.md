@@ -3,6 +3,8 @@ title: Software Engineering and Verification
 excerpt: The Software Engineering and Verification group at the University of Stellenbosch has been involved in the development of operating system kernels, protocols, and verification...
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 ## Software Engineering and Verification
 
 The Software Engineering and Verification group at the University of Stellenbosch has been involved in the development of operating system kernels, protocols, and verification tools since 1990. We investigate the development of highly reliable system software by using a combination of computer-aided verification of designs, systematic testing, and defensive programming techniques.

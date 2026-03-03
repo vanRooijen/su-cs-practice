@@ -3,6 +3,8 @@ title: Programs
 excerpt: Undergraduate and postgraduate program information synchronized from official teaching pages.
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 ## Programmes and Teaching
 
 Use the sidebar to navigate the synchronized programme pages below:

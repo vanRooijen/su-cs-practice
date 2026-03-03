@@ -3,6 +3,8 @@ title: About the Department
 excerpt: Department overview and practical orientation information.
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 ## About the Computer Science Division
 
 The Computer Science Division is part of the Department of Mathematical Sciences at Stellenbosch University.

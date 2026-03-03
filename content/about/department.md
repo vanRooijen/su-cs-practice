@@ -3,6 +3,8 @@ title: Department Profile
 excerpt: Snapshot profile of the Computer Science Division at Stellenbosch.
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 ## Department Profile
 
 From the current website content:

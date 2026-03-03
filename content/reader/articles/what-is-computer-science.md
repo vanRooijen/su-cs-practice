@@ -6,6 +6,8 @@ card_badge: Feature
 card_image: /cs-assets/features/SzJ46YA_RaA.jpg
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 ## What is Computer Science?
 
 The feature page points to Dominic Walliman's concise high-level overview of Computer Science and positions it as an accessible entry point for prospective students.

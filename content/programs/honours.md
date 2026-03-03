@@ -3,6 +3,8 @@ title: Honours in Computer Science
 excerpt: The Honours degree is a one-year full-time postgraduate programme that usually follows after the three-year BSc or BCom degree. Over the last forty-five years more than 600...
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 Source snapshot: [cs.sun.ac.za/teaching/honours/](https://cs.sun.ac.za/teaching/honours/) (fetched on March 3, 2026).
 
 ## Overview

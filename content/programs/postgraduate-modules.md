@@ -3,6 +3,8 @@ title: Postgraduate Modules
 excerpt: Source-synced content for Postgraduate Modules.
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 Source snapshot: [cs.sun.ac.za/teaching/PG/](https://cs.sun.ac.za/teaching/PG/) (fetched on March 3, 2026).
 
 ## Programmes

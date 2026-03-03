@@ -3,6 +3,8 @@ title: Staff
 excerpt: Academic and administrative staff listings from the official department people page.
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 ## Staff
 
 Source snapshot: [cs.sun.ac.za/people/staff](https://cs.sun.ac.za/people/staff/) (fetched on March 3, 2026).

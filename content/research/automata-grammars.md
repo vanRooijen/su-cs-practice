@@ -3,6 +3,8 @@ title: Theory and Applications of Automata and Grammars
 excerpt: We are interested in the theory of nondeterministic finite automata (NFA), and in particular the descriptional complexity of symmetric difference NFA. More generally, we also...
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 ## Theory and Applications of Automata and Grammars
 
 We are interested in the theory of nondeterministic finite automata (NFA), and in particular the descriptional complexity of symmetric difference NFA. More generally, we also consider the application of automata and grammars to a wide selection of problems, such as pattern layout optimization with cellular automata, image processing with cellular automata, music generation in the style of a given composer using probabilistic automata, and using probabilistic automata on parse trees of English sentences for automatic grammar correction of English text.

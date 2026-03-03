@@ -3,6 +3,8 @@ title: Contact Details
 excerpt: Official postal, physical, and communication details.
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 ## Contact Details
 
 ![Department aerial view](/cs-assets/aerial-300x235.jpg)

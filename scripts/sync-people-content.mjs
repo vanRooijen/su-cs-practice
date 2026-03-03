@@ -1,3 +1,4 @@
+// TODO(legacy-link-migration): This script contains legacy *.cs.sun.ac.za URLs. Replace direct links with internal route targets or resolver mappings when migration rules are finalized.
 import { access, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

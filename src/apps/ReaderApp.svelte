@@ -7,10 +7,21 @@
   export let sidebarCollapsed = false;
 
   const articleEntries = listReaderArticles();
+  const ARTICLE_TITLE_MAX_LENGTH = 40;
+
+  function truncateLabel(value = '', maxLength = ARTICLE_TITLE_MAX_LENGTH) {
+    const text = String(value).trim();
+    if (text.length <= maxLength) {
+      return text;
+    }
+
+    return `${text.slice(0, Math.max(1, maxLength - 1)).trimEnd()}…`;
+  }
 
   $: normalizedSubroute = subroute.replace(/^\/+|\/+$/g, '');
-  $: activePath = normalizedSubroute ? `/reader/${normalizedSubroute}` : '/reader';
-  $: content = resolveContent('reader', normalizedSubroute);
+  $: effectiveSubroute = normalizedSubroute || 'overview';
+  $: activePath = `/reader/${effectiveSubroute}`;
+  $: content = resolveContent('reader', effectiveSubroute);
 </script>
 
 <div class="app-layout" data-sidebar-collapsed={sidebarCollapsed}>
@@ -30,9 +41,15 @@
       <ul class="tab-list">
         {#each articleEntries as article (article.key)}
           {@const path = `/reader/${article.subroute}`}
+          {@const shortTitle = truncateLabel(article.title)}
           <li>
-            <a class="tab-link" href={path} aria-current={activePath === path ? 'page' : undefined}>
-              {article.title}
+            <a
+              class="tab-link"
+              href={path}
+              aria-current={activePath === path ? 'page' : undefined}
+              title={article.title}
+            >
+              {shortTitle}
             </a>
           </li>
         {/each}
@@ -89,11 +106,16 @@
 
   nav a,
   .tab-link {
+    display: block;
     color: color-mix(in srgb, var(--su-ink, #2c2a29) 86%, white 14%);
     text-decoration: none;
     padding: 0.34rem 0.4rem;
+    line-height: 1.26;
     border-radius: 0.4rem;
     box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.1);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     transition: background-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
   }
 
@@ -116,7 +138,7 @@
     padding: 0;
     list-style: none;
     display: grid;
-    gap: 0.22rem;
+    gap: 0.28rem;
   }
 
   .tab-list li {

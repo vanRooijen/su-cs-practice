@@ -1,6 +1,6 @@
 ---
-title: Articles
-excerpt: Collection of published department stories and updates.
+title: Reader Overview
+excerpt: Browse all published department stories and updates.
 shell: reader-articles
 ---
 

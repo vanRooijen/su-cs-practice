@@ -6,6 +6,8 @@ card_badge: Newsfeed
 card_image: /cs-assets/newsfeed/deep-learning-hackathon.png
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 ## Jane Street Depth First Learning Fellows
 
 On 15 April 2019, the department newsfeed reported that Dr Steve Kroon was selected as one of the inaugural Jane Street Depth First Learning fellows.

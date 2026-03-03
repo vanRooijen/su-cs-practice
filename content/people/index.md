@@ -3,6 +3,8 @@ title: People Directory
 excerpt: Staff, students, and alumni snapshots sourced from cs.sun.ac.za people pages.
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 ## People
 
 This app mirrors key public listings from the official department people pages.

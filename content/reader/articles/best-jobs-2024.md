@@ -6,6 +6,8 @@ card_badge: Feature
 card_image: /cs-assets/features/jobs.png
 ---
 
+<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
+
 ## The Best Jobs of 2024
 
 A department feature article summarizes career rankings where Computer Science-related roles continue to feature prominently.

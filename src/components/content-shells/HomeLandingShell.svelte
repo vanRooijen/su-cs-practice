@@ -94,7 +94,7 @@
   <section class="news">
     <header class="news-header">
       <h3>Latest News and Articles</h3>
-      <a href="/reader/articles">View All Articles</a>
+      <a href="/reader/overview">View All Articles</a>
     </header>
 
     <ul class="news-grid">
