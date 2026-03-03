@@ -11,7 +11,7 @@ This website works like a browser-based desktop workspace.
 
 - Open **Home** for the landing page.
 - Open **Articles** for news and updates.
-- Open **People / Programs / Research / About** from the top bar.
+- Open **People / Programs / Research / About** from **Applications**.
 
 ### Window Basics
 
@@ -32,7 +32,6 @@ This website works like a browser-based desktop workspace.
 Try the built-in demo flow:
 
 - [Start Demo](/demo)
-- [Open Step 2 Directly](/relay/pull-over)
 
 ### Need Help Quickly?
 

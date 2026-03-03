@@ -130,10 +130,10 @@ export const APP_DEFINITIONS = {
 
 export const TOPBAR_LINKS = [
   { label: 'home', path: '/home' },
-  { label: 'people', path: '/people' },
   { label: 'articles', path: '/reader/overview' },
   { label: 'programs', path: '/programs' },
   { label: 'research', path: '/research' },
+  { label: 'people', path: '/people' },
   { label: 'about', path: '/about' },
 ];
 
