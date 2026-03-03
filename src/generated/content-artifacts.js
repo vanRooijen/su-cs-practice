@@ -69,80 +69,6 @@ export const CONTENT_ARTIFACTS = {
       }
     ]
   },
-  "demo.final": {
-    "key": "demo.final",
-    "appId": "demo",
-    "subroute": "final",
-    "title": "Demo Step 4 Destination",
-    "excerpt": "",
-    "shell": "demo-step",
-    "meta": {
-      "demo_step": "step-4-new-window"
-    },
-    "html": "<h2>Step 4 Destination</h2>\n<details>\n  <summary><strong>Command</strong></summary>\n\n<p>Click Validate Step 4 now.</p>\n</details>\n",
-    "sections": [
-      {
-        "key": "000-main",
-        "slot": "main",
-        "html": "<h2>Step 4 Destination</h2>\n<details>\n  <summary><strong>Command</strong></summary>\n\n<p>Click Validate Step 4 now.</p>\n</details>\n"
-      }
-    ]
-  },
-  "demo.history-a": {
-    "key": "demo.history-a",
-    "appId": "demo",
-    "subroute": "history-a",
-    "title": "Demo Step 3",
-    "excerpt": "",
-    "shell": "demo-step",
-    "meta": {
-      "demo_step": "step-3-history-back"
-    },
-    "html": "<h2>Step 3</h2>\n<details>\n  <summary><strong>Command</strong></summary>\n\n<p>Click this link to open Step 4 in this window, then press browser Back once: <a href=\"/demo/history-b\">Click me</a>.</p>\n</details>\n",
-    "sections": [
-      {
-        "key": "000-main",
-        "slot": "main",
-        "html": "<h2>Step 3</h2>\n<details>\n  <summary><strong>Command</strong></summary>\n\n<p>Click this link to open Step 4 in this window, then press browser Back once: <a href=\"/demo/history-b\">Click me</a>.</p>\n</details>\n"
-      }
-    ]
-  },
-  "demo.history-b": {
-    "key": "demo.history-b",
-    "appId": "demo",
-    "subroute": "history-b",
-    "title": "Demo Step 4",
-    "excerpt": "",
-    "shell": "default",
-    "meta": {},
-    "html": "<h2>Step 4</h2>\n<details>\n  <summary><strong>Command</strong></summary>\n\n<p>Right-click this link and choose Open in New App Window: <a href=\"/demo/final\">Right-click me</a>.</p>\n</details>\n",
-    "sections": [
-      {
-        "key": "000-main",
-        "slot": "main",
-        "html": "<h2>Step 4</h2>\n<details>\n  <summary><strong>Command</strong></summary>\n\n<p>Right-click this link and choose Open in New App Window: <a href=\"/demo/final\">Right-click me</a>.</p>\n</details>\n"
-      }
-    ]
-  },
-  "demo.index": {
-    "key": "demo.index",
-    "appId": "demo",
-    "subroute": "",
-    "title": "Demo Step 1",
-    "excerpt": "",
-    "shell": "demo-step",
-    "meta": {
-      "demo_step": "step-2-pull-over"
-    },
-    "html": "<h2>Step 1</h2>\n<details>\n  <summary><strong>Command</strong></summary>\n\n<p>Right-click this link and choose Open in New Browser Tab: <a href=\"/relay/pull-over\">Right-click me</a>.</p>\n</details>\n",
-    "sections": [
-      {
-        "key": "000-main",
-        "slot": "main",
-        "html": "<h2>Step 1</h2>\n<details>\n  <summary><strong>Command</strong></summary>\n\n<p>Right-click this link and choose Open in New Browser Tab: <a href=\"/relay/pull-over\">Right-click me</a>.</p>\n</details>\n"
-      }
-    ]
-  },
   "error.app-not-found": {
     "key": "error.app-not-found",
     "appId": "error",
@@ -1221,42 +1147,6 @@ export const CONTENT_ARTIFACTS = {
         "key": "000-main",
         "slot": "main",
         "html": "<p>Browse Reader articles below. Primary cards focus on current or timeless content, while older newsfeed items are grouped under <strong>Newsroll Archive</strong>.</p>\n<p>Current entries in this snapshot are sourced from:</p>\n<ul>\n<li>cs.sun.ac.za feature pages</li>\n<li>cs.sun.ac.za newsfeed posts</li>\n</ul>\n"
-      }
-    ]
-  },
-  "relay.index": {
-    "key": "relay.index",
-    "appId": "relay",
-    "subroute": "",
-    "title": "Relay",
-    "excerpt": "Hidden relay app used for interactive walkthroughs.",
-    "shell": "default",
-    "meta": {},
-    "html": "<h2>Relay</h2>\n<p>Use the main relay step here: <a href=\"/relay/pull-over\">Pull-Over Step</a>.</p>\n",
-    "sections": [
-      {
-        "key": "000-main",
-        "slot": "main",
-        "html": "<h2>Relay</h2>\n<p>Use the main relay step here: <a href=\"/relay/pull-over\">Pull-Over Step</a>.</p>\n"
-      }
-    ]
-  },
-  "relay.pull-over": {
-    "key": "relay.pull-over",
-    "appId": "relay",
-    "subroute": "pull-over",
-    "title": "Demo Step 2",
-    "excerpt": "",
-    "shell": "demo-step",
-    "meta": {
-      "demo_step": "step-1-new-tab"
-    },
-    "html": "<h2>Step 2</h2>\n<details>\n  <summary><strong>Command</strong></summary>\n\n<p>Click the Demo sidebar entry once.</p>\n</details>\n",
-    "sections": [
-      {
-        "key": "000-main",
-        "slot": "main",
-        "html": "<h2>Step 2</h2>\n<details>\n  <summary><strong>Command</strong></summary>\n\n<p>Click the Demo sidebar entry once.</p>\n</details>\n"
       }
     ]
   },

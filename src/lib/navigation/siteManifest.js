@@ -1,10 +1,15 @@
 import { hasContent } from '../content/resolveContent.js';
+import { hasDemoContent } from '../demo/resolveDemoContent.js';
 
 export const DEFAULT_APP_ID = 'home';
 export const ERROR_APP_ID = 'error';
 
 function validateContentBackedSubroute({ appId, subroute }) {
   return hasContent(appId, subroute);
+}
+
+function validateCodeBackedDemoSubroute({ appId, subroute }) {
+  return hasDemoContent(appId, subroute);
 }
 
 function reuseFocusedOrTopMostWindow(context) {
@@ -29,6 +34,7 @@ export const APP_DEFINITIONS = {
     hasSidebar: false,
     enableWindowHistoryNavigation: false,
     validateSubroute: validateContentBackedSubroute,
+    isContentBacked: true,
     resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
   },
   people: {
@@ -39,6 +45,7 @@ export const APP_DEFINITIONS = {
     mobileSidebarDefaultOpen: false,
     enableWindowHistoryNavigation: true,
     validateSubroute: validateContentBackedSubroute,
+    isContentBacked: true,
     resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
   },
   programs: {
@@ -49,6 +56,7 @@ export const APP_DEFINITIONS = {
     mobileSidebarDefaultOpen: true,
     enableWindowHistoryNavigation: true,
     validateSubroute: validateContentBackedSubroute,
+    isContentBacked: true,
     resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
   },
   research: {
@@ -59,6 +67,7 @@ export const APP_DEFINITIONS = {
     mobileSidebarDefaultOpen: false,
     enableWindowHistoryNavigation: true,
     validateSubroute: validateContentBackedSubroute,
+    isContentBacked: true,
     resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
   },
   about: {
@@ -69,6 +78,7 @@ export const APP_DEFINITIONS = {
     mobileSidebarDefaultOpen: false,
     enableWindowHistoryNavigation: true,
     validateSubroute: validateContentBackedSubroute,
+    isContentBacked: true,
     resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
   },
   reader: {
@@ -79,6 +89,7 @@ export const APP_DEFINITIONS = {
     mobileSidebarDefaultOpen: false,
     enableWindowHistoryNavigation: true,
     validateSubroute: validateContentBackedSubroute,
+    isContentBacked: true,
     resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
   },
   demo: {
@@ -87,16 +98,18 @@ export const APP_DEFINITIONS = {
     defaultSubroute: '',
     hasSidebar: false,
     enableWindowHistoryNavigation: true,
-    validateSubroute: validateContentBackedSubroute,
+    validateSubroute: validateCodeBackedDemoSubroute,
+    isContentBacked: false,
     resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
   },
   relay: {
     id: 'relay',
     title: 'Relay',
-    defaultSubroute: '',
+    defaultSubroute: 'pull-over',
     hasSidebar: false,
     enableWindowHistoryNavigation: true,
-    validateSubroute: validateContentBackedSubroute,
+    validateSubroute: validateCodeBackedDemoSubroute,
+    isContentBacked: false,
     resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
   },
   [ERROR_APP_ID]: {
@@ -106,6 +119,7 @@ export const APP_DEFINITIONS = {
     hasSidebar: false,
     enableWindowHistoryNavigation: false,
     validateSubroute: validateContentBackedSubroute,
+    isContentBacked: true,
     resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
     initialBounds: {
       width: 560,

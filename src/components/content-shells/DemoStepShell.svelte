@@ -40,6 +40,32 @@
   let stepPassed = false;
   let nextPath = '';
   let validateButtonLabel = 'Validate Step';
+  let validationPosition = 'before';
+  let headerSections = [];
+  let bodySections = [];
+
+  function normalizeValidationPosition(value) {
+    const normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
+    if (normalized === 'middle' || normalized === 'after' || normalized === 'hidden') {
+      return normalized;
+    }
+    return 'before';
+  }
+
+  function splitSectionsForPosition(nextSections, position) {
+    const orderedSections = Array.isArray(nextSections) ? nextSections : [];
+    if (position !== 'middle' || orderedSections.length < 2) {
+      return {
+        header: [],
+        body: orderedSections,
+      };
+    }
+
+    return {
+      header: [orderedSections[0]],
+      body: orderedSections.slice(1),
+    };
+  }
 
   async function expandAllDetails() {
     await tick();
@@ -130,31 +156,66 @@
   $: stepPassed = stepId ? isDemoStepPassed(stepId) : false;
   $: nextPath = stepId ? getDemoStepNextPath(stepId) : '';
   $: validateButtonLabel = getDemoStepLabel(stepId);
+  $: validationPosition = normalizeValidationPosition(artifact?.meta?.validation_position);
+  $: {
+    const sectionBuckets = splitSectionsForPosition(sections, validationPosition);
+    headerSections = sectionBuckets.header;
+    bodySections = sectionBuckets.body;
+  }
+  $: showValidationControls = Boolean(stepId) && validationPosition !== 'hidden';
 </script>
 
 <article class="demo-step-shell" bind:this={shellElement}>
-  {#if sections.length > 0}
+  {#if headerSections.length > 0}
     <section class="step-content">
-      {#each sections as section (section.key)}
+      {#each headerSections as section (section.key)}
         <article class="content-document">{@html section.html}</article>
       {/each}
     </section>
   {/if}
 
-  <section class="step-actions">
-    <button type="button" on:click={runStepCheck} disabled={isChecking}>
-      {isChecking ? 'Checking...' : validateButtonLabel}
-    </button>
-
-    {#if stepPassed && nextPath}
-      <button type="button" class="next-step" on:click={openNextStep}>
-        Next Step
+  {#if showValidationControls && (validationPosition === 'before' || validationPosition === 'middle')}
+    <section class="step-actions">
+      <button type="button" on:click={runStepCheck} disabled={isChecking}>
+        {isChecking ? 'Checking...' : validateButtonLabel}
       </button>
-    {/if}
-  </section>
 
-  {#if checkMessage}
-    <p class="step-message" data-pass={stepPassed}>{checkMessage}</p>
+      {#if stepPassed && nextPath}
+        <button type="button" class="next-step" on:click={openNextStep}>
+          Next Step
+        </button>
+      {/if}
+    </section>
+
+    {#if checkMessage}
+      <p class="step-message" data-pass={stepPassed}>{checkMessage}</p>
+    {/if}
+  {/if}
+
+  {#if bodySections.length > 0}
+    <section class="step-content">
+      {#each bodySections as section (section.key)}
+        <article class="content-document">{@html section.html}</article>
+      {/each}
+    </section>
+  {/if}
+
+  {#if showValidationControls && validationPosition === 'after'}
+    <section class="step-actions">
+      <button type="button" on:click={runStepCheck} disabled={isChecking}>
+        {isChecking ? 'Checking...' : validateButtonLabel}
+      </button>
+
+      {#if stepPassed && nextPath}
+        <button type="button" class="next-step" on:click={openNextStep}>
+          Next Step
+        </button>
+      {/if}
+    </section>
+
+    {#if checkMessage}
+      <p class="step-message" data-pass={stepPassed}>{checkMessage}</p>
+    {/if}
   {/if}
 
   {#if retryDialogOpen}
@@ -188,6 +249,10 @@
   .step-content {
     display: grid;
     gap: 0.44rem;
+  }
+
+  .demo-step-shell :global(.demo-command-mobile) {
+    display: none;
   }
 
   .step-actions {
@@ -303,6 +368,16 @@
     line-height: 1;
     color: #2e7d32;
     font-weight: 700;
+  }
+
+  @media (max-width: 860px) {
+    .demo-step-shell :global(.demo-command-desktop) {
+      display: none;
+    }
+
+    .demo-step-shell :global(.demo-command-mobile) {
+      display: block;
+    }
   }
 
   @keyframes overlayFade {

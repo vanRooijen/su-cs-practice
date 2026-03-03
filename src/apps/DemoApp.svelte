@@ -1,11 +1,11 @@
 <script>
   import ContentRegion from '../components/ContentRegion.svelte';
-  import { resolveContent } from '../lib/content/resolveContent.js';
+  import { resolveDemoContent } from '../lib/demo/resolveDemoContent.js';
 
   export let appId = 'demo';
   export let subroute = '';
 
-  $: content = resolveContent(appId, subroute);
+  $: content = resolveDemoContent(appId, subroute);
 </script>
 
 <div class="app-layout">

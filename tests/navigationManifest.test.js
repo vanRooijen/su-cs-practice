@@ -32,7 +32,7 @@ test('app sidebar links resolve to valid internal routes', () => {
 
 test('app default subroutes resolve to existing content for content-backed apps', () => {
   for (const definition of Object.values(APP_DEFINITIONS)) {
-    if (definition.id === 'error') {
+    if (definition.id === 'error' || definition.isContentBacked === false) {
       continue;
     }
 

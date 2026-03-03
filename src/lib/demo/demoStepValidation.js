@@ -63,10 +63,10 @@ const STEP_CONFIG = {
       }
 
       const historyPaths = collectHistoryPaths(historyAWindow);
-      if (!historyPaths.has('/demo/history-b')) {
+      if (!historyPaths.has('/demo/checkpoint')) {
         return {
           ok: false,
-          message: 'Open History State B, go back once, then try again.',
+          message: 'Open Checkpoint, go back once, then try again.',
         };
       }
 
@@ -78,7 +78,7 @@ const STEP_CONFIG = {
   },
   'step-4-new-window': {
     label: 'Validate Step 4',
-    nextPath: '/reader/articles/why-this-site',
+    nextPath: '',
     validate: ({ runtimeId, snapshot }) => {
       const hasLocalHistoryB = Boolean(findLocalWindowByPath(snapshot, runtimeId, '/demo/history-b'));
       const hasLocalFinal = Boolean(findLocalWindowByPath(snapshot, runtimeId, '/demo/final'));
