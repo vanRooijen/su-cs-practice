@@ -25,6 +25,7 @@
   let attentionOverlayElement;
   let attentionAnimation = null;
   let lastAttentionToken = 0;
+  const MAXIMIZED_DRAG_RESTORE_THRESHOLD_PX = 6;
 
   function setGlobalDragCursor(isActive) {
     if (typeof document === 'undefined' || !document.body) {
@@ -136,6 +137,10 @@
       return;
     }
 
+    if (interactionState.kind === 'drag-pending-maximized') {
+      return;
+    }
+
     if (interactionState.kind === 'drag') {
       const nextPosition = toDraggedPosition(interactionState, clientX, clientY);
       dispatch('move', {
@@ -173,7 +178,48 @@
       return;
     }
 
-    emitInteractionAt(latestPointerPosition.x, latestPointerPosition.y);
+    if (interactionState.kind === 'resize') {
+      emitInteractionAt(latestPointerPosition.x, latestPointerPosition.y);
+    }
+  }
+
+  function beginDragInteraction(pointerId, startPointerX, startPointerY, startingBounds) {
+    interactionState = {
+      kind: 'drag',
+      pointerId,
+      startPointerX,
+      startPointerY,
+      startWindowX: startingBounds.x,
+      startWindowY: startingBounds.y,
+      windowWidth: startingBounds.width,
+      windowHeight: startingBounds.height,
+    };
+    setGlobalDragCursor(true);
+    dragPreviewOffset = { x: 0, y: 0 };
+  }
+
+  function maybePromotePendingMaximizedDrag(clientX, clientY) {
+    if (!interactionState || interactionState.kind !== 'drag-pending-maximized') {
+      return false;
+    }
+
+    const deltaX = clientX - interactionState.startPointerX;
+    const deltaY = clientY - interactionState.startPointerY;
+    const movedEnough =
+      deltaX * deltaX + deltaY * deltaY >= MAXIMIZED_DRAG_RESTORE_THRESHOLD_PX * MAXIMIZED_DRAG_RESTORE_THRESHOLD_PX;
+
+    if (!movedEnough) {
+      return false;
+    }
+
+    const startingBounds = resolveRestorePositionForDrag({ clientX, clientY });
+    dispatch('restoreForDrag', {
+      windowId: windowState.windowId,
+      x: startingBounds.x,
+      y: startingBounds.y,
+    });
+    beginDragInteraction(interactionState.pointerId, clientX, clientY, startingBounds);
+    return true;
   }
 
   function requestInteractionFrame() {
@@ -300,35 +346,23 @@
     }
 
     requestFocus();
-    const startingBounds = windowState.isMaximized
-      ? resolveRestorePositionForDrag(event)
-      : {
-          x: windowState.bounds.x,
-          y: windowState.bounds.y,
-          width: windowState.bounds.width,
-          height: windowState.bounds.height,
-        };
-
     if (windowState.isMaximized) {
-      dispatch('restoreForDrag', {
-        windowId: windowState.windowId,
-        x: startingBounds.x,
-        y: startingBounds.y,
+      interactionState = {
+        kind: 'drag-pending-maximized',
+        pointerId: event.pointerId,
+        startPointerX: event.clientX,
+        startPointerY: event.clientY,
+      };
+      dragPreviewOffset = null;
+    } else {
+      beginDragInteraction(event.pointerId, event.clientX, event.clientY, {
+        x: windowState.bounds.x,
+        y: windowState.bounds.y,
+        width: windowState.bounds.width,
+        height: windowState.bounds.height,
       });
     }
 
-    interactionState = {
-      kind: 'drag',
-      pointerId: event.pointerId,
-      startPointerX: event.clientX,
-      startPointerY: event.clientY,
-      startWindowX: startingBounds.x,
-      startWindowY: startingBounds.y,
-      windowWidth: startingBounds.width,
-      windowHeight: startingBounds.height,
-    };
-    setGlobalDragCursor(true);
-    dragPreviewOffset = { x: 0, y: 0 };
     interactionSourceElement = event.currentTarget instanceof Element ? event.currentTarget : windowElement;
 
     capturePointer(interactionSourceElement, event.pointerId);
@@ -365,6 +399,10 @@
       return;
     }
 
+    if (interactionState.kind === 'drag-pending-maximized' && !maybePromotePendingMaximizedDrag(event.clientX, event.clientY)) {
+      return;
+    }
+
     latestPointerPosition = {
       x: event.clientX,
       y: event.clientY,
@@ -386,7 +424,9 @@
     const finalClientY =
       typeof event.clientY === 'number' ? event.clientY : (latestPointerPosition?.y ?? interactionState.startPointerY);
 
-    emitInteractionAt(finalClientX, finalClientY);
+    if (interactionState.kind !== 'drag-pending-maximized') {
+      emitInteractionAt(finalClientX, finalClientY);
+    }
 
     const pointerId = interactionState.pointerId;
     const sourceElement = interactionSourceElement;

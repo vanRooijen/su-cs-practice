@@ -1,25 +1,13 @@
 ---
-title: Relay Pull-Over Step
-excerpt: Bring a window from another browser tab into this one.
+title: Demo Step 2
+shell: demo-step
+demo_step: step-1-new-tab
 ---
 
-## Relay Pull-Over Step
-
-<details open>
-  <summary><strong>Step 2: Pull A Window Over From Another Tab</strong></summary>
-
-In the sidebar:
-
-- Find the **Demo** window entry that came from your first tab
-- Click it once
-
-That action pulls the window into this tab and focuses it.
-</details>
+## Step 2
 
 <details>
-  <summary><strong>Step 4: Use Browser Back</strong></summary>
+  <summary><strong>Command</strong></summary>
 
-Now press your browser **Back** button once.
-
-You should land back on the Demo Mission page and continue with Step 5.
+Click the Demo sidebar entry once.
 </details>

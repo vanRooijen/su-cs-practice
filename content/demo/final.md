@@ -1,28 +1,13 @@
 ---
-title: Demo Final
-excerpt: What this workflow proves.
+title: Demo Step 4 Destination
+shell: demo-step
+demo_step: step-4-new-window
 ---
 
-## Demo Final
-
-<details open>
-  <summary><strong>Step 7: Close All Windows</strong></summary>
-
-You are in a new app window now. Final drill:
-
-1. In the sidebar toolbar, click the **trash / clear windows** button
-2. Choose **Close All Instances**
-
-That is the full mission complete.
-</details>
+## Step 4 Destination
 
 <details>
-  <summary><strong>What You Just Proved</strong></summary>
+  <summary><strong>Command</strong></summary>
 
-- Browser tabs still work normally
-- Browser history still works normally
-- You also gained in-tab app windows and cross-tab pull-over
-
+Click Validate Step 4 now.
 </details>
-
-Back to the article: [Why This Site](/reader/articles/why-this-site).

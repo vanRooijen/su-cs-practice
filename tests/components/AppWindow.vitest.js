@@ -156,7 +156,38 @@ describe('AppWindow component', () => {
     expect(onMinimize.mock.calls[0][0]?.detail?.windowId).toBe(1);
   });
 
-  it('dragging a maximized header requests restore-for-drag with a clamped position', async () => {
+  it('clicking a maximized header without movement does not request restore-for-drag', async () => {
+    const onRestoreForDrag = vi.fn();
+    const onMove = vi.fn();
+    const { getByRole } = render(AppWindow, {
+      props: makeProps({
+        isMaximized: true,
+      }),
+      events: {
+        restoreForDrag: onRestoreForDrag,
+        move: onMove,
+      },
+    });
+
+    const header = getByRole('group', { name: 'Window header' });
+    await fireEvent.pointerDown(header, {
+      button: 0,
+      pointerId: 1,
+      clientX: 600,
+      clientY: 18,
+    });
+    await fireEvent.pointerUp(window, {
+      button: 0,
+      pointerId: 1,
+      clientX: 600,
+      clientY: 18,
+    });
+
+    expect(onRestoreForDrag).not.toHaveBeenCalled();
+    expect(onMove).not.toHaveBeenCalled();
+  });
+
+  it('dragging a maximized header requests restore-for-drag with a clamped position after movement threshold', async () => {
     const onRestoreForDrag = vi.fn();
     const onMove = vi.fn();
     const { container, getByRole } = render(AppWindow, {
@@ -204,6 +235,11 @@ describe('AppWindow component', () => {
       clientX: 1050,
       clientY: 112,
     });
+    await fireEvent.pointerMove(window, {
+      pointerId: 1,
+      clientX: 1058,
+      clientY: 112,
+    });
     await fireEvent.pointerUp(window, {
       button: 0,
       pointerId: 1,
@@ -218,7 +254,7 @@ describe('AppWindow component', () => {
     expect(restoreDetail?.x).toBeLessThanOrEqual(440);
     expect(restoreDetail?.y).toBe(0);
 
-    expect(onMove).toHaveBeenCalledTimes(1);
+    expect(onMove).toHaveBeenCalled();
     const moveDetail = onMove.mock.calls[0][0]?.detail;
     expect(moveDetail?.windowId).toBe(1);
     expect(moveDetail?.x).toBeGreaterThanOrEqual(restoreDetail.x);

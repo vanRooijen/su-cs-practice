@@ -2,6 +2,7 @@
   import { tick } from 'svelte';
   import { enhanceContentImages } from '../lib/content/enhanceContentImages.js';
   import DefaultContentShell from './content-shells/DefaultContentShell.svelte';
+  import DemoStepShell from './content-shells/DemoStepShell.svelte';
   import HomeLandingShell from './content-shells/HomeLandingShell.svelte';
   import ReaderArticlesShell from './content-shells/ReaderArticlesShell.svelte';
 
@@ -10,6 +11,7 @@
 
   const CONTENT_SHELL_REGISTRY = {
     default: DefaultContentShell,
+    'demo-step': DemoStepShell,
     'home-landing': HomeLandingShell,
     'reader-articles': ReaderArticlesShell,
   };

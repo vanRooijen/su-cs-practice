@@ -73,16 +73,54 @@ export const CONTENT_ARTIFACTS = {
     "key": "demo.final",
     "appId": "demo",
     "subroute": "final",
-    "title": "Demo Final",
-    "excerpt": "What this workflow proves.",
-    "shell": "default",
-    "meta": {},
-    "html": "<h2>Demo Final</h2>\n<details open>\n  <summary><strong>Step 7: Close All Windows</strong></summary>\n\n<p>You are in a new app window now. Final drill:</p>\n<ol>\n<li>In the sidebar toolbar, click the <strong>trash / clear windows</strong> button</li>\n<li>Choose <strong>Close All Instances</strong></li>\n</ol>\n<p>That is the full mission complete.</p>\n</details>\n\n<details>\n  <summary><strong>What You Just Proved</strong></summary>\n\n<ul>\n<li>Browser tabs still work normally</li>\n<li>Browser history still works normally</li>\n<li>You also gained in-tab app windows and cross-tab pull-over</li>\n</ul>\n</details>\n\n<p>Back to the article: <a href=\"/reader/articles/why-this-site\">Why This Site</a>.</p>\n",
+    "title": "Demo Step 4 Destination",
+    "excerpt": "",
+    "shell": "demo-step",
+    "meta": {
+      "demo_step": "step-4-new-window"
+    },
+    "html": "<h2>Step 4 Destination</h2>\n<details>\n  <summary><strong>Command</strong></summary>\n\n<p>Click Validate Step 4 now.</p>\n</details>\n",
     "sections": [
       {
         "key": "000-main",
         "slot": "main",
-        "html": "<h2>Demo Final</h2>\n<details open>\n  <summary><strong>Step 7: Close All Windows</strong></summary>\n\n<p>You are in a new app window now. Final drill:</p>\n<ol>\n<li>In the sidebar toolbar, click the <strong>trash / clear windows</strong> button</li>\n<li>Choose <strong>Close All Instances</strong></li>\n</ol>\n<p>That is the full mission complete.</p>\n</details>\n\n<details>\n  <summary><strong>What You Just Proved</strong></summary>\n\n<ul>\n<li>Browser tabs still work normally</li>\n<li>Browser history still works normally</li>\n<li>You also gained in-tab app windows and cross-tab pull-over</li>\n</ul>\n</details>\n\n<p>Back to the article: <a href=\"/reader/articles/why-this-site\">Why This Site</a>.</p>\n"
+        "html": "<h2>Step 4 Destination</h2>\n<details>\n  <summary><strong>Command</strong></summary>\n\n<p>Click Validate Step 4 now.</p>\n</details>\n"
+      }
+    ]
+  },
+  "demo.history-a": {
+    "key": "demo.history-a",
+    "appId": "demo",
+    "subroute": "history-a",
+    "title": "Demo Step 3",
+    "excerpt": "",
+    "shell": "demo-step",
+    "meta": {
+      "demo_step": "step-3-history-back"
+    },
+    "html": "<h2>Step 3</h2>\n<details>\n  <summary><strong>Command</strong></summary>\n\n<p>Click this link to open Step 4 in this window, then press browser Back once: <a href=\"/demo/history-b\">Click me</a>.</p>\n</details>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>Step 3</h2>\n<details>\n  <summary><strong>Command</strong></summary>\n\n<p>Click this link to open Step 4 in this window, then press browser Back once: <a href=\"/demo/history-b\">Click me</a>.</p>\n</details>\n"
+      }
+    ]
+  },
+  "demo.history-b": {
+    "key": "demo.history-b",
+    "appId": "demo",
+    "subroute": "history-b",
+    "title": "Demo Step 4",
+    "excerpt": "",
+    "shell": "default",
+    "meta": {},
+    "html": "<h2>Step 4</h2>\n<details>\n  <summary><strong>Command</strong></summary>\n\n<p>Right-click this link and choose Open in New App Window: <a href=\"/demo/final\">Right-click me</a>.</p>\n</details>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>Step 4</h2>\n<details>\n  <summary><strong>Command</strong></summary>\n\n<p>Right-click this link and choose Open in New App Window: <a href=\"/demo/final\">Right-click me</a>.</p>\n</details>\n"
       }
     ]
   },
@@ -90,16 +128,18 @@ export const CONTENT_ARTIFACTS = {
     "key": "demo.index",
     "appId": "demo",
     "subroute": "",
-    "title": "Demo Mission",
-    "excerpt": "Hands-on walkthrough of window, tab, and pull-over behavior.",
-    "shell": "default",
-    "meta": {},
-    "html": "<h2>Demo Mission</h2>\n<p>Do the steps in order. Keep this page open in one tab while you run the drill.</p>\n<details open>\n  <summary><strong>Step 1: Use Browser Tabs On Purpose</strong></summary>\n\n<p>Open the next step in a <strong>new browser tab</strong>:</p>\n<ol>\n<li>Right-click this link: <a href=\"/relay/pull-over\">Step 2 Page</a></li>\n<li>Choose <strong>Open in New Browser Tab</strong></li>\n</ol>\n<p>This proves we are adding workflow, not replacing browser features.</p>\n</details>\n\n<details>\n  <summary><strong>Step 3: Forward Navigation Preview</strong></summary>\n\n<p>After Step 2, you will use browser history to move around:</p>\n<ul>\n<li>Step 4 will send you back here with <strong>Back</strong></li>\n<li>Step 5 will send you forward again with <strong>Forward</strong></li>\n</ul>\n<p>You are testing normal browser history, not a fake in-app version.</p>\n</details>\n\n<details>\n  <summary><strong>Step 5: Use Browser Forward</strong></summary>\n\n<p>After Step 4 sends you back here:</p>\n<ol>\n<li>Press your browser <strong>Forward</strong> button once</li>\n<li>You should return to the Step 2 page</li>\n<li>Come back here again (Back is fine)</details></li>\n</ol>\n<details>\n  <summary><strong>Step 6: Open The Final Step In A New App Window</strong></summary>\n\n<p>Now test in-tab windowing:</p>\n<ol>\n<li>Right-click this link: <a href=\"/demo/final\">Step 7 Final</a></li>\n<li>Choose <strong>Open in New App Window</strong></details></li>\n</ol>\n",
+    "title": "Demo Step 1",
+    "excerpt": "",
+    "shell": "demo-step",
+    "meta": {
+      "demo_step": "step-2-pull-over"
+    },
+    "html": "<h2>Step 1</h2>\n<details>\n  <summary><strong>Command</strong></summary>\n\n<p>Right-click this link and choose Open in New Browser Tab: <a href=\"/relay/pull-over\">Right-click me</a>.</p>\n</details>\n",
     "sections": [
       {
         "key": "000-main",
         "slot": "main",
-        "html": "<h2>Demo Mission</h2>\n<p>Do the steps in order. Keep this page open in one tab while you run the drill.</p>\n<details open>\n  <summary><strong>Step 1: Use Browser Tabs On Purpose</strong></summary>\n\n<p>Open the next step in a <strong>new browser tab</strong>:</p>\n<ol>\n<li>Right-click this link: <a href=\"/relay/pull-over\">Step 2 Page</a></li>\n<li>Choose <strong>Open in New Browser Tab</strong></li>\n</ol>\n<p>This proves we are adding workflow, not replacing browser features.</p>\n</details>\n\n<details>\n  <summary><strong>Step 3: Forward Navigation Preview</strong></summary>\n\n<p>After Step 2, you will use browser history to move around:</p>\n<ul>\n<li>Step 4 will send you back here with <strong>Back</strong></li>\n<li>Step 5 will send you forward again with <strong>Forward</strong></li>\n</ul>\n<p>You are testing normal browser history, not a fake in-app version.</p>\n</details>\n\n<details>\n  <summary><strong>Step 5: Use Browser Forward</strong></summary>\n\n<p>After Step 4 sends you back here:</p>\n<ol>\n<li>Press your browser <strong>Forward</strong> button once</li>\n<li>You should return to the Step 2 page</li>\n<li>Come back here again (Back is fine)</details></li>\n</ol>\n<details>\n  <summary><strong>Step 6: Open The Final Step In A New App Window</strong></summary>\n\n<p>Now test in-tab windowing:</p>\n<ol>\n<li>Right-click this link: <a href=\"/demo/final\">Step 7 Final</a></li>\n<li>Choose <strong>Open in New App Window</strong></details></li>\n</ol>\n"
+        "html": "<h2>Step 1</h2>\n<details>\n  <summary><strong>Command</strong></summary>\n\n<p>Right-click this link and choose Open in New Browser Tab: <a href=\"/relay/pull-over\">Right-click me</a>.</p>\n</details>\n"
       }
     ]
   },
@@ -1205,16 +1245,18 @@ export const CONTENT_ARTIFACTS = {
     "key": "relay.pull-over",
     "appId": "relay",
     "subroute": "pull-over",
-    "title": "Relay Pull-Over Step",
-    "excerpt": "Bring a window from another browser tab into this one.",
-    "shell": "default",
-    "meta": {},
-    "html": "<h2>Relay Pull-Over Step</h2>\n<details open>\n  <summary><strong>Step 2: Pull A Window Over From Another Tab</strong></summary>\n\n<p>In the sidebar:</p>\n<ul>\n<li>Find the <strong>Demo</strong> window entry that came from your first tab</li>\n<li>Click it once</li>\n</ul>\n<p>That action pulls the window into this tab and focuses it.</p>\n</details>\n\n<details>\n  <summary><strong>Step 4: Use Browser Back</strong></summary>\n\n<p>Now press your browser <strong>Back</strong> button once.</p>\n<p>You should land back on the Demo Mission page and continue with Step 5.</p>\n</details>\n",
+    "title": "Demo Step 2",
+    "excerpt": "",
+    "shell": "demo-step",
+    "meta": {
+      "demo_step": "step-1-new-tab"
+    },
+    "html": "<h2>Step 2</h2>\n<details>\n  <summary><strong>Command</strong></summary>\n\n<p>Click the Demo sidebar entry once.</p>\n</details>\n",
     "sections": [
       {
         "key": "000-main",
         "slot": "main",
-        "html": "<h2>Relay Pull-Over Step</h2>\n<details open>\n  <summary><strong>Step 2: Pull A Window Over From Another Tab</strong></summary>\n\n<p>In the sidebar:</p>\n<ul>\n<li>Find the <strong>Demo</strong> window entry that came from your first tab</li>\n<li>Click it once</li>\n</ul>\n<p>That action pulls the window into this tab and focuses it.</p>\n</details>\n\n<details>\n  <summary><strong>Step 4: Use Browser Back</strong></summary>\n\n<p>Now press your browser <strong>Back</strong> button once.</p>\n<p>You should land back on the Demo Mission page and continue with Step 5.</p>\n</details>\n"
+        "html": "<h2>Step 2</h2>\n<details>\n  <summary><strong>Command</strong></summary>\n\n<p>Click the Demo sidebar entry once.</p>\n</details>\n"
       }
     ]
   },
