@@ -5,10 +5,6 @@ excerpt: BSc Computer Science is the primary option for students who want to pur
 
 <!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
 
-Source snapshot: [cs.sun.ac.za/teaching/programmes/](https://cs.sun.ac.za/teaching/programmes/) (fetched on March 3, 2026).
-
-<!-- TODO(source-attribution-remove): Local content currently mirrors the legacy source snapshot. Remove the source citation after final migration review. -->
-
 ## Overview
 
 BSc Computer Science is the primary option for students who want to pursue a career in software development. This degree is an international qualification that enables you to find work at national and international companies. With the appropriate electives it can also lead to an honours programme in Computer Science (see our [information for prospective PG students](/programs/prospective-postgraduate) for more information on the appropriate electives) or to an honours programme in another subject, such as Applied Mathematics, Economics, General Linguistics, Mathematical Statistics, Mathematics, Operations Research, and Statistics.

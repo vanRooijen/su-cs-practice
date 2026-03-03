@@ -1,19 +1,23 @@
 ---
-title: PhD Student on His Way to Naples
-excerpt: Department news item on conference participation in robotic computing.
+title: PhD student on his way to Naples
+excerpt: PhD student Jordan Masakuna will be presenting his work on effectively coordinating autonomous robots at The Third IEEE International Conference on Robotic Computing (IEEE IRC) in…
 sort_order: 10
 card_badge: Newsfeed
-card_image: /cs-assets/newsfeed/zebroid.jpeg
+source_url: https://cs.sun.ac.za/newsfeed/2019/02/21/ieeeeirc.html
+source_mirrored_at: 2026-03-03
 ---
-
-<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
-
-## PhD Student on His Way to Naples
-
-The newsfeed reported that PhD student Jordan Masakuna would present work on coordinating autonomous robots at the IEEE International Conference on Robotic Computing (IRC) in Naples.
-
-The note credits supervision by Simukai Utete and Steve Kroon.
-
-### Source
-
-- News item: https://cs.sun.ac.za/newsfeed/2019/02/21/ieeeeirc.html
+<div class="newsitem">
+          <h1>PhD student on his way to Naples</h1>
+          <div class="newsdate">
+            <span class="day"> Thursday </span>
+            <span class="date"> 21 </span>
+            <span class="month">February</span>
+            <span class="year">2019</span>
+          </div>
+          <p>PhD student Jordan Masakuna will be presenting his work on effectively
+            coordinating autonomous robots at The Third IEEE International Conference on
+            Robotic Computing (IEEE IRC) in Naples at the end of February.  Jordan is
+            supervised by Simukai Utete at the African Institute for Mathematical Sciences,
+            and Steve Kroon.</p>
+          <!--more-->
+        </div>

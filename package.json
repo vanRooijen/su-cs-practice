@@ -15,8 +15,9 @@
     "test:gui": "playwright test",
     "test:all": "npm run test:unit && npm run test:component && npm run test:gui",
     "content:sync:people": "node scripts/sync-people-content.mjs",
+    "content:sync:reader": "node scripts/sync-reader-content.mjs",
     "content:sync:programs-research": "node scripts/sync-programs-research-content.mjs",
-    "content:sync:all": "npm run content:sync:people && npm run content:sync:programs-research && npm run content:build",
+    "content:sync:all": "npm run content:sync:people && npm run content:sync:reader && npm run content:sync:programs-research && npm run content:build",
     "content:build": "node scripts/build-content.mjs",
     "predev": "npm run content:build",
     "prebuild": "npm run content:build"

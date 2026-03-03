@@ -7,10 +7,6 @@ excerpt: Alumni faculty and graduate records from the official department alumni
 
 ## Alumni Staff and Students
 
-Source snapshot: [cs.sun.ac.za/people/alumni](https://cs.sun.ac.za/people/alumni/) (fetched on March 3, 2026).
-
-<!-- TODO(source-attribution-revisit): Legacy source still contains additional relevant information. Keep citation and merge missing details before removing it. -->
-
 ### Alumni Faculty
 
 - Bagula, BA
@@ -34,7 +30,7 @@ Source snapshot: [cs.sun.ac.za/people/alumni](https://cs.sun.ac.za/people/alumni
 - Van Deventer, MH
 - Van der Walt, APJ (Prof)
 
-### Doctoral Graduates (Recent Snapshot)
+### Doctoral Graduates
 
 - Erwin, W: Landscape aware algorithm selection for feature selection, 2025
 - Baker Effendi, S: An Approach to Modern Static Analysis with Property Graphs, 2025
@@ -58,7 +54,7 @@ Source snapshot: [cs.sun.ac.za/people/alumni](https://cs.sun.ac.za/people/alumni
 - Ludik, J: [Training, Dynamics, and Complexity of Architecture-Specific Recurrent Neural Networks](http://scholar.sun.ac.za/handle/10019.1/58622), 1994
 - Theron, H: [Specialization by Exclusion: An Approach to Concept Learning](http://scholar.sun.ac.za/handle/10019.1/54616), 1994
 
-### Masters Graduates (Recent Snapshot)
+### Masters Graduates
 
 - Miller, GD: [Constructing a Knowledge Graph from an Institutional Repository](https://scholar.sun.ac.za/handle/10019.1/131839), 2024
 - Brand, K: [Applied machine learning for radio galaxy classification and anomalous source detection](https://scholar.sun.ac.za/handle/10019.1/131591), 2024
@@ -100,5 +96,111 @@ Source snapshot: [cs.sun.ac.za/people/alumni](https://cs.sun.ac.za/people/alumni
 - Mwale, M: [Modelling the Dynamics of the Bitcoin Blockchain](http://scholar.sun.ac.za/handle/10019.1/98844), 2016
 - Brand, DJ: [Automatic Prediction of Comment Quality](http://scholar.sun.ac.za/handle/10019.1/98818), 2016
 - Jordaan, PJG: [Impendulo: A Tool for Analysing Programmer Behaviour](http://scholar.sun.ac.za/handle/10019.1/97081), 2015
-
-For the complete historical list, use the official alumni page.
+- Fourie, R: [A Parallel Cellular Automaton Simulation Framework Using CUDA](http://scholar.sun.ac.za/handle/10019.1/96961), 2015
+- Coetzee, AL: [Combining Reverse Debugging and Live Programming Towards Visual Thinking in Computer Programming](http://scholar.sun.ac.za/handle/10019.1/96853), 2015
+- Babalola, OT: [Automatic Recognition and Interpretation of Finite State Automata Diagrams](http://scholar.sun.ac.za/handle/10019.1/97814), 2015
+- Van Niekerk, F: [Decision Forests for Computer Go Feature Learning](http://scholar.sun.ac.za/handle/10019.1/86280), 2014
+- Kruger, RP: [Virtual World Accessibility: A Multitool Approach](http://scholar.sun.ac.za/handle/10019.1/95932), 2014
+- Dunaiski, MP: [Analysing Ranking Algorithms and Publication Trends on Scholarly Citation Networks](http://scholar.sun.ac.za/handle/10019.1/96106), 2014
+- Uwimbabazi, A: [Extended Probabilistic Symbolic Execution](http://scholar.sun.ac.za/handle/10019.1/85804), 2013
+- Theron, PJ: [Criteria for the Evaluation of Private Cloud Computing](http://scholar.sun.ac.za/handle/10019.1/85858), 2013
+- Rajaona, SF: [An Algebraic Framework for Reasoning About Security](http://scholar.sun.ac.za/handle/10019.1/79869), 2013
+- Durant, K: [Investigating the Non-termination of Affine Loops](http://scholar.sun.ac.za/handle/10019.1/80052), 2013
+- De Villiers, PF: [Constructing Topic-Based Twitter Lists](http://scholar.sun.ac.za/handle/10019.1/80054), 2013
+- Buys, JM: [Probabilistic Tree Transducers for Grammatical Error Correction](http://scholar.sun.ac.za/handle/10019.1/85592), 2013
+- Bester, WHK: [Bug-Finding and Test Case Generation for Java Programs by Symbolic Execution](http://scholar.sun.ac.za/handle/10019.1/85832), 2013
+- Venter, WJ: [An Embodied Conversational Agent with Autistic Behaviour](http://scholar.sun.ac.za/handle/10019.1/20115), 2012
+- Redelinghuys, GJ-W: [Symbolic String Execution](http://scholar.sun.ac.za/handle/10019.1/20335), 2012
+- Kruger, PJH: [Cellphone Banking at the Bottom of the Pyramid](http://scholar.sun.ac.za/handle/10019.1/19975), 2012
+- Huysamen, NF: [FATKID: A Finite Automaton Toolkit](http://scholar.sun.ac.za/handle/10019.1/71684), 2012
+- Goldberg, AS: [Investigating Credit Based Mechanisms for Enhancing Performance in Wireless Ad Hoc Networks](http://scholar.sun.ac.za/handle/10019.1/71757), 2012
+- Botha, SG: [The Effect of Evolutionary Rate Estimation Methods on Correlations Observed Between Substitution Rates in Models of Evolution](http://scholar.sun.ac.za/handle/10019.1/19938), 2012
+- Bezuidenhout, JA: [Automated Program Generation: Bridging the Gap Between Model and Implementation](http://scholar.sun.ac.za/handle/10019.1/19584), 2012
+- Msiska, MF: [A Visual Programming Environment for Authoring ASD Therapy Tools](http://scholar.sun.ac.za/handle/10019.1/17939), 2011
+- Minoarivelo, HO: [Probabilistic Modelling of the Evolution of Ecological Interaction Networks](http://scholar.sun.ac.za/handle/10019.1/17990), 2011
+- Kassa, DF: [Analytic Models of TCP Performance](http://scholar.sun.ac.za/handle/10019.1/16608), 2011
+- Hayward, PJ: [Parallel Likelihood Calculations for Phylogenetic Trees](http://scholar.sun.ac.za/handle/10019.1/17919), 2011
+- Botha, LW: [Modeling Online Social Networks Using Quasi-Clique Communities](http://scholar.sun.ac.za/handle/10019.1/17859), 2011
+- Bergh, JR: [Ontology Comprehension](http://scholar.sun.ac.za/handle/10019.1/6517), 2011
+- Adams, RC: [Implementation of Cell Clustering in Cellular Automata](http://scholar.sun.ac.za/handle/10019.1/6674), 2011
+- Schulze, W: [A Formal Language Theory Approach to Music Generation](http://scholar.sun.ac.za/handle/10019.1/4157), 2010
+- Odendaal, MJ: [Business Process Modelling Using Model Checking and the Theory of Constraints](http://scholar.sun.ac.za/handle/10019.1/4269), 2010
+- Fath Elrahman, TM: [QoS Routing in IP Networks Using Multi-Constrained Computational Methods](http://scholar.sun.ac.za/handle/10019.1/4098), 2010
+- Fasan, MO: [Distributed Binary Decision Diagrams](http://scholar.sun.ac.za/handle/10019.1/5411), 2010
+- Boulkaibet, I: [Modelling Collaborative Motion in Mobile Ad Hoc Networks](http://scholar.sun.ac.za/handle/10019.1/5155), 2010
+- Stapelberg, D: [Link Failure Recovery Among Dynamic Routes in Telecommunication Networks](http://scholar.sun.ac.za/handle/10019.1/2591), 2009
+- Kriek, AM: [RoboCup Formation Modeling](http://scholar.sun.ac.za/handle/10019.1/2810), 2009
+- Greeff, GJ: [Interactive Voxel Terrain Design Using Procedural Techniques](http://scholar.sun.ac.za/handle/10019.1/2631), 2009
+- Fourie, JF: [Reducing Communication in Distributed Model Checking](http://scholar.sun.ac.za/handle/10019.1/2176), 2009
+- Crous, CB: [Autonomous Robot Path Planning](http://scholar.sun.ac.za/handle/10019.1/2519), 2009
+- Chamberlain, ME: [A 3D Virtual Environment Development Platform for ASD Therapy Tools](http://scholar.sun.ac.za/handle/10019.1/2634), 2009
+- Taha, MAMS: [Regulated Rewriting in Formal Language Theory](http://scholar.sun.ac.za/handle/10019.1/1600), 2008
+- Smal, E: [Automated Brick Sculpture Construction](http://scholar.sun.ac.za/handle/10019.1/2288), 2008
+- Lusilao-Zodi, G-A: [A Bandwidth Market in an IP Network](http://scholar.sun.ac.za/handle/10019.1/1933), 2008
+- Du Preez, H: [GrailKnights: An Automaton Mass Manipulation Package for Enhanced Pattern Analysis](http://scholar.sun.ac.za/handle/10019.1/2902), 2008
+- Welgemoed, Johan: [A Prototype System for Machine Translation from English to South African Sign Language Using Synchronous Tree Adjoining Grammars](http://scholar.sun.ac.za/handle/10019.1/19892), 2007
+- Seotsanyana, M: [Formal Specification and Verification of Safety Interlock Systems: A Comparative Case Study](http://scholar.sun.ac.za/handle/10019.1/2162), 2007
+- Mazandu, GK: [Traffic Engineering Using Multipath Routing Approaches](http://scholar.sun.ac.za/handle/10019.1/2732), 2007
+- Gerber, DB: [A Model Checker for the LF System](http://scholar.sun.ac.za/handle/10019.1/19597), 2007
+- Baruani, AJ: [Network Engineering Using Multi-Objective Evolutionary Algorithms](http://scholar.sun.ac.za/handle/10019.1/21548), 2007
+- Raitt, LA: [Random Generation of Finite Automata Over the Domain of the Regular Languages](http://scholar.sun.ac.za/handle/10019.1/19646), 2006
+- Müller, G: [Minimization of Symmetric Difference Finite Automata](http://scholar.sun.ac.za/handle/10019.1/1922), 2006
+- Louw, F: [A Program Slicer for LF](http://scholar.sun.ac.za/handle/10019.1/17378), 2006
+- Grobler, LD: [A Kernel to Support Computer-Aided Verification of Embedded Software](http://scholar.sun.ac.za/handle/10019.1/2479), 2006
+- Grift, W: [Visualizing QoS in Networks](http://scholar.sun.ac.za/handle/10019.1/17356), 2006
+- Combrink, AJ: [A Preprocessor for an English-to-Sign Language Machine Translation System](http://scholar.sun.ac.za/handle/10019.1/2832), 2005
+- Barker, DD: [Computer Facial Animation for Sign Language Visualization](http://scholar.sun.ac.za/handle/10019.1/50300), 2005
+- Swart, R: [A Language to Support Verification of Embedded Software](http://scholar.sun.ac.za/handle/10019.1/49823), 2004
+- De Jongh, AB: [Neural Network Ensembles](http://scholar.sun.ac.za/handle/10019.1/50035), 2004
+- Connan, J: [Collection, Evaluation and Selection of Scientific Literature: Machine Learning, Bibliometrics and the World Wide Web](http://scholar.sun.ac.za/handle/10019.1/49886), 2004
+- Combrink, JJ: [A Bandwidth Market for Traffic Engineering in Telecommunication Networks](http://scholar.sun.ac.za/handle/10019.1/49808), 2004
+- Botha, M: [Online Traffic Engineering for MPLS Networks](http://scholar.sun.ac.za/handle/10019.1/50049), 2004
+- Snyders, S: [Inductive Machine Learning Bias in Knowledge-Based Neurocomputing](http://scholar.sun.ac.za/handle/10019.1/53463), 2003
+- Myburgh, WD: [Development of a Tool to Test Computer Protocols](http://scholar.sun.ac.za/handle/10019.1/53363), 2003
+- Müller, KE: [MPLS-Based Recovery](http://scholar.sun.ac.za/handle/10019.1/53506), 2003
+- Kruger, AF: [Machine Learning, Data Mining, and the World Wide Web: Design of Special-Purpose Search Engines](http://scholar.sun.ac.za/handle/10019.1/53492), 2003
+- Kroon, RS: [Support Vector Machines, Generalization Bounds, and Transduction](http://scholar.sun.ac.za/handle/10019.1/16375), 2003
+- Hakl, HM: [Computer-Controlled Human Body Coordination](http://scholar.sun.ac.za/handle/10019.1/49756), 2003
+- Bull, JJD: [A Comparison of Two Different Model Checking Techniques](http://scholar.sun.ac.za/handle/10019.1/53235), 2003
+- Andrag, WH: [Reinforcement Learning for Routing in Communication Networks](http://scholar.sun.ac.za/handle/10019.1/53570), 2003
+- De Kock, JM: [Optimal Management of MPLS Networks](http://scholar.sun.ac.za/handle/10019.1/52977), 2002
+- Wessels, T: [Hidden Markov Models for On-Line Signature Verification](http://scholar.sun.ac.za/handle/10019.1/52876), 2001
+- Walsh, DA: [Automatic Detection of Image Orientation Using Support Vector Machines](http://scholar.sun.ac.za/handle/10019.1/52717), 2001
+- Wahabi, AR: [Resource Management in IP Networks](http://scholar.sun.ac.za/handle/10019.1/52436), 2001
+- Van Zyl, J: [Modelling Chaotic Systems with Neural Networks: Application to Seismic Event Predicting in Gold Mines](http://scholar.sun.ac.za/handle/10019.1/4580), 2001
+- Van Riet, FA: [LF: A Language for Reliable Embedded Systems](http://scholar.sun.ac.za/handle/10019.1/52322), 2001
+- Esterhuyse, E: [On Providing an Efficient and Reliable Virtual Block Storage Service](http://scholar.sun.ac.za/handle/10019.1/51862), 2001
+- Eloff, JJ: [A Software Restructuring Tool for Oberon](http://scholar.sun.ac.za/handle/10019.1/52134), 2001
+- Du Toit, C: [The Use of Temporal Context in the Generation of Strings](http://scholar.sun.ac.za/handle/10019.1/53183), 2001
+- Bagula, BA: [Traffic Engineering Label Switched Paths](http://scholar.sun.ac.za/handle/10019.1/53196), 2001
+- Loubser, JJ: [Device Drivers: A Comparison of Different Development Strategies](http://scholar.sun.ac.za/handle/10019.1/51690), 2000
+- Inggs, CP: [An LTL Verification System Based on Automata Theory](http://scholar.sun.ac.za/handle/10019.1/51128), 1999
+- Inggs, AM: [Efficient Call Management in Broadband Networks](http://scholar.sun.ac.za/handle/10019.1/51254), 1999
+- Geldenhuys, J: [Efficiency Issues in the Design of a Model Checker](http://scholar.sun.ac.za/handle/10019.1/51253), 1999
+- De Villiers, JA: [Micro-Kernel Support for a Lightweight Extensible Workstation Operating System](http://scholar.sun.ac.za/handle/10019.1/51341), 1999
+- De Wet, MJdV: [A Development Environment for Reactive Systems](http://scholar.sun.ac.za/handle/10019.1/55797), 1998
+- Staven, S: [Entropy Maximized Queueing Networks](http://scholar.sun.ac.za/handle/10019.1/55117), 1996
+- Keyser, PW: [Transaction Management in Multidatabase Systems](http://scholar.sun.ac.za/handle/10019.1/55322), 1996
+- Winckler, CJ: [A Comprehensive Framework for SQL Query Execution in Distributed Multidatabase Systems](http://scholar.sun.ac.za/handle/10019.1/58637), 1995
+- Phillips, GP: [Transient Models For Queueing Networks](http://scholar.sun.ac.za/handle/10019.1/54928), 1995
+- Lockley, GJ: [The Design of a Specification Language Suitable for the Generation of Compilers](http://scholar.sun.ac.za/handle/10019.1/58723), 1995
+- Kriel, CF: [Order Independent Multiclass Queues: A New Class of Quasi-Reversible Queues](http://scholar.sun.ac.za/handle/10019.1/54822), 1995
+- Zimmerman, AD: [Parallelizing a Bi-Directional Chart Parser for a Multicomputer](http://scholar.sun.ac.za/handle/10019.1/58511), 1994
+- Muller, PJ: [An Environment for Distributed Programming on a Multicomputer](http://scholar.sun.ac.za/handle/10019.1/58250), 1994
+- Visser, WC: [A Run-Time Environment for a Validation Language](http://scholar.sun.ac.za/handle/10019.1/57861), 1993
+- Van der Poel, E: [Visualizing Neural Networks](http://scholar.sun.ac.za/handle/10019.1/58223), 1993
+- Howard, WT: [An Efficient Resilient Page Store](http://scholar.sun.ac.za/handle/10019.1/57848), 1993
+- Engelbrecht, AP: [Modelling Algorithms for the South African Telephone Network](http://scholar.sun.ac.za/handle/10019.1/58040), 1993
+- Ackerman, MC: [Kernel Support for Embedded Reactive Systems](http://scholar.sun.ac.za/handle/10019.1/58022), 1993
+- Ackerman, CC: [Providing Mechanical Support for Program Development in a Weakest Precondition Calculus](http://scholar.sun.ac.za/handle/10019.1/79317), 1993
+- Viktor, HL: [A Comparative Study of Distributed Database Recovery Techniques](http://scholar.sun.ac.za/handle/10019.1/69486), 1992
+- Meumann, MD: [The Design and Implementation of a Communication Kernel for a Distributed Database System](http://scholar.sun.ac.za/handle/10019.1/69424), 1991
+- Ludik, J: ['n Meerdoelige Simulasie Omgewing vir die Ontwikkeling van Neurale Netwerke](http://scholar.sun.ac.za/handle/10019.1/69322), 1991
+- Fouche, W: [An Efficient Kernel to Support the Client-Server Model](http://scholar.sun.ac.za/handle/10019.1/69089), 1991
+- Deacon, AE: [Concurrency Control Mechanisms for Multidatabase Systems](http://scholar.sun.ac.za/handle/10019.1/69128), 1991
+- Barnard, DC: [Reducing the State Explosion Problem During Model Checking](http://scholar.sun.ac.za/handle/10019.1/69386), 1991
+- Theron, H: [A Survey and Comparison of Well-Known Concept Induction Algorithms](http://scholar.sun.ac.za/handle/10019.1/67192), 1990
+- Lamprecht, SM: [A Comparative Study of Distributed Query Optimization Methods](http://scholar.sun.ac.za/handle/10019.1/68640), 1990
+- Harmse, MFP: [The Analytic Modelling of DASD Subsystems](http://scholar.sun.ac.za/handle/10019.1/68998), 1990
+- Greeff, J: [Derivation and Implementation of an Extended Entity-Relationship Data Model](http://scholar.sun.ac.za/handle/10019.1/68699), 1990
+- Crosby, SA: [Queueing Networks with Blocking and Simultaneous Resource Possession](http://scholar.sun.ac.za/handle/10019.1/67356), 1990

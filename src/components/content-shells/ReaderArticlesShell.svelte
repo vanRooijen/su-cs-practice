@@ -52,15 +52,17 @@
 
   $: sections = normalizeSections(artifact);
   $: articleEntries = listReaderArticles();
+  $: firstSectionHtml = sections[0]?.html ?? '';
+  $: hasEmbeddedHeading = /<h[1-6]\b/i.test(firstSectionHtml);
+  $: showShellTitle = Boolean(artifact?.title) && !hasEmbeddedHeading;
 </script>
 
 <article class="reader-articles-shell">
-  <header class="shell-header">
-    <h2>{artifact?.title ?? 'Articles'}</h2>
-    {#if artifact?.excerpt}
-      <p>{artifact.excerpt}</p>
-    {/if}
-  </header>
+  {#if showShellTitle}
+    <header class="shell-header">
+      <h2>{artifact?.title ?? 'Articles'}</h2>
+    </header>
+  {/if}
 
   {#if sections.length > 0}
     <section class="shell-content">
@@ -114,12 +116,6 @@
     color: color-mix(in srgb, var(--su-maroon, #61223b) 86%, black 14%);
     font-size: 1.22rem;
     line-height: 1.16;
-  }
-
-  .shell-header p {
-    margin: 0;
-    font-size: 0.88rem;
-    color: color-mix(in srgb, var(--su-muted, #686d71) 90%, black 10%);
   }
 
   .shell-content {

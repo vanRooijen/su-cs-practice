@@ -1,20 +1,16 @@
 ---
 title: Department Profile
-excerpt: Snapshot profile of the Computer Science Division at Stellenbosch.
+excerpt: Welcome profile text from the official department homepage.
 ---
 
 <!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
 
-## Department Profile
+## Welcome
 
-From the current website content:
+The Department of Computer Science was founded in 1972. We have now merged with Mathematics and Applied Mathematics to form the Computer Science Division in the Department of Mathematical Sciences.
 
-- The department was founded in 1972.
-- It later formed part of the Computer Science Division in the Department of Mathematical Sciences.
-- It highlights research and teaching across areas such as automata theory, networks, software engineering, verification, robotics, NLP, and machine learning.
+We currently have 11 full members of academic staff whose research activities span a range of subject areas, including Automata Theory, Broadband and Mobile Networks, Software Engineering, Program Testing and Verification, Robotics, Natural Language Processing, and Machine Learning.
 
-The site positions the division as both academically strong and industry-relevant, with undergraduate and postgraduate pathways.
+Source (welcome section): https://cs.sun.ac.za/
 
-Source: https://cs.sun.ac.za/
-
-<!-- TODO(source-attribution-revisit): Legacy source still contains additional relevant information. Keep citation and merge missing details before removing it. -->
+<!-- TODO(source-attribution-revisit): This page mirrors the Welcome section of the homepage source. Keep section-level attribution until source-section policy is finalized. -->

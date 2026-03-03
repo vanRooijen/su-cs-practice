@@ -10,4 +10,3 @@ Current entries in this snapshot are sourced from:
 
 - cs.sun.ac.za feature pages
 - cs.sun.ac.za newsfeed posts
-- the local project-specific hackathon announcement page

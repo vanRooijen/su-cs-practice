@@ -1,20 +1,19 @@
 ---
-title: Jane Street Depth First Learning Fellows
-excerpt: Dr Steve Kroon selected among inaugural Depth First Learning fellows.
+title: Jane Street Depth First Learning fellows
+excerpt: Dr. Steve Kroon has been selected as one of the inaugaural Jane Street Depth First Learning fellows. Depth First Learning is an initiative to develop lesson plans building up to m…
 sort_order: 2
 card_badge: Newsfeed
-card_image: /cs-assets/newsfeed/deep-learning-hackathon.png
+source_url: https://cs.sun.ac.za/newsfeed/2019/04/15/Jane-Street-Depth-First-Learning-fellows.html
+source_mirrored_at: 2026-03-03
 ---
-
-<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
-
-## Jane Street Depth First Learning Fellows
-
-On 15 April 2019, the department newsfeed reported that Dr Steve Kroon was selected as one of the inaugural Jane Street Depth First Learning fellows.
-
-The initiative focuses on developing lesson plans and study groups around influential research papers. The cited paper in the announcement is _Variational Inference with Normalizing Flows_ by Danilo Rezende and Shakir Mohamed.
-
-### Source
-
-- News item: https://cs.sun.ac.za/newsfeed/2019/04/15/Jane-Street-Depth-First-Learning-fellows.html
-- Linked reference from the announcement: http://www.depthfirstlearning.com/2019/Announcing-DFL-Fellows
+<div class="newsitem">
+          <h1>Jane Street Depth First Learning fellows</h1>
+          <div class="newsdate">
+            <span class="day"> Monday </span>
+            <span class="date"> 15 </span>
+            <span class="month">April</span>
+            <span class="year">2019</span>
+          </div>
+          <p>Dr. Steve Kroon has been selected as one of the inaugaural Jane Street Depth First Learning fellows.  Depth First Learning is an initiative to develop lesson plans building up to mastery of significant research papers while running study groups on the required material.  Dr. Kroon will be coordinating a group for the paper “Variational Inference with Normalizing Flows”, by Danilo Rezende and Shakir Mohamed.</p>
+          <p>(<a href="http://www.depthfirstlearning.com/2019/Announcing-DFL-Fellows">http://www.depthfirstlearning.com/2019/Announcing-DFL-Fellows</a>)</p>
+        </div>

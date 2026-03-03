@@ -5,10 +5,6 @@ excerpt: As explained in [our information videos, available on the University’
 
 <!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
 
-Source snapshot: [cs.sun.ac.za/teaching/prospectiveUG/](https://cs.sun.ac.za/teaching/prospectiveUG/) (fetched on March 3, 2026).
-
-<!-- TODO(source-attribution-remove): Local content currently mirrors the legacy source snapshot. Remove the source citation after final migration review. -->
-
 ## Overview
 
 - [What is Computer Science](#what-is-computer-science)

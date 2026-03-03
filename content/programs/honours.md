@@ -5,10 +5,6 @@ excerpt: The Honours degree is a one-year full-time postgraduate programme that 
 
 <!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
 
-Source snapshot: [cs.sun.ac.za/teaching/honours/](https://cs.sun.ac.za/teaching/honours/) (fetched on March 3, 2026).
-
-<!-- TODO(source-attribution-remove): Local content currently mirrors the legacy source snapshot. Remove the source citation after final migration review. -->
-
 ## Overview
 
 The Honours degree is a one-year full-time postgraduate programme that usually follows after the three-year BSc or BCom degree. Over the last forty-five years more than 600 talented students have passed through our programme. It is excellent preparation for pursuing either an MSc degree or a career in industry. This is due in part to the composition of the programme: a mix of core Computer Science theory courses and up-to-date application courses.

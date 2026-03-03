@@ -14,7 +14,15 @@ const STAFF_SOURCE_FILE = path.join(sourceRoot, 'cs.sun.ac.za_people_staff_.html
 const STUDENTS_SOURCE_FILE = path.join(sourceRoot, 'cs.sun.ac.za_people_students_.html');
 const ALUMNI_SOURCE_FILE = path.join(sourceRoot, 'cs.sun.ac.za_people_alumni_.html');
 
-const PEOPLE_IMAGE_PLACEHOLDER = '/cs-assets/people/placeholder.jpg';
+const PEOPLE_IMAGE_PLACEHOLDER = '/cs-assets/people/missing-profile.svg';
+const KNOWN_PLACEHOLDER_IMAGE_BASENAMES = new Set([
+  'placeholder.jpg',
+  'anonymous.jpg',
+  'athele.jpg',
+  'csteenkamp.jpg',
+  'kerwin.jpg',
+  'wmostert.jpg',
+]);
 
 function cleanText(value = '') {
   return value.replace(/\s+/g, ' ').trim();
@@ -48,8 +56,17 @@ function parseImagePathFromCell(cell) {
   return `/cs-assets/${sourcePath.replace(/^\/assets\//, '')}`;
 }
 
+function isKnownPlaceholderImagePath(imagePath = '') {
+  if (!imagePath) {
+    return true;
+  }
+
+  const basename = imagePath.split('/').at(-1)?.toLowerCase() ?? '';
+  return KNOWN_PLACEHOLDER_IMAGE_BASENAMES.has(basename);
+}
+
 async function resolveImagePath(imagePath) {
-  if (!imagePath || imagePath === PEOPLE_IMAGE_PLACEHOLDER) {
+  if (!imagePath || imagePath === PEOPLE_IMAGE_PLACEHOLDER || isKnownPlaceholderImagePath(imagePath)) {
     return PEOPLE_IMAGE_PLACEHOLDER;
   }
 
@@ -264,8 +281,8 @@ async function syncAlumni() {
   const mastersItems = [...doc.querySelectorAll('#masters-graduates + ul li')].map(parseListItemText);
 
   const facultyList = facultyItems.map((item) => `- ${item}`).join('\n');
-  const doctoralList = doctoralItems.slice(0, 30).map((item) => `- ${item}`).join('\n');
-  const mastersList = mastersItems.slice(0, 40).map((item) => `- ${item}`).join('\n');
+  const doctoralList = doctoralItems.map((item) => `- ${item}`).join('\n');
+  const mastersList = mastersItems.map((item) => `- ${item}`).join('\n');
 
   const markdown = `---
 title: Alumni
@@ -280,15 +297,13 @@ Source snapshot: [cs.sun.ac.za/people/alumni](https://cs.sun.ac.za/people/alumni
 
 ${facultyList}
 
-### Doctoral Graduates (Recent Snapshot)
+### Doctoral Graduates
 
 ${doctoralList}
 
-### Masters Graduates (Recent Snapshot)
+### Masters Graduates
 
 ${mastersList}
-
-For the complete historical list, use the official alumni page.
 `;
 
   await writeFile(path.join(contentRoot, 'alumni.md'), markdown, 'utf8');
@@ -314,7 +329,7 @@ excerpt: Staff, students, and alumni snapshots sourced from cs.sun.ac.za people 
 
 ## People
 
-This app mirrors key public listings from the official department people pages.
+Staff, student, and alumni listings from the official department people pages.
 
 - Academic staff: ${academicCount}
 - Administrative staff: ${adminCount}

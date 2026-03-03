@@ -30,4 +30,4 @@ The Software Engineering and Verification group at the University of Stellenbosc
 
 Source snapshot: [cs.sun.ac.za/research/](https://cs.sun.ac.za/research/) (fetched on March 3, 2026).
 
-<!-- TODO(source-attribution-revisit): Legacy source still contains additional relevant information. Keep citation and merge missing details before removing it. -->
+<!-- TODO(source-attribution-revisit): This source page is split across multiple local research pages. Keep attribution until section-level source mapping policy is finalized. -->

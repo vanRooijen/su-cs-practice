@@ -24,9 +24,9 @@ test('listReaderArticles sorts by configured sort order', () => {
 
   assert.deepEqual(titles.slice(0, 5), [
     'Why This Site',
-    'Jane Street Depth First Learning Fellows',
+    'Jane Street Depth First Learning fellows',
     'Open Day 2019',
-    'Computer Science Career Fair 2019',
+    'Computer-Science-Career-Fair-2019',
     '2026 SUDS Div and Conquer Web Development Hackathon',
   ]);
 });

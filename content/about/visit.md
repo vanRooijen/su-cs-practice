@@ -1,25 +1,24 @@
 ---
 title: Visit the Department
-excerpt: Campus visit orientation and map/location pointers.
+excerpt: Visit information and map coordinates from the contact page.
 ---
 
 <!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
 
-## Visit the Department
+## Want to pay us a visit?
 
-![Campus location view](/cs-assets/aerial.jpg)
+The department is currently located on the fifth floor of the General Engineering building.
 
-The contact page indicates that the department is located on the fifth floor of the General Engineering building.
+### Google Maps
 
-The page also provides map guidance and geographic coordinates:
+Our geographic coordinates are [33° 55′ 30.90″ South 18° 51′ 55.10″ East](https://www.google.com/maps/place/33%C2%B055'30.9%22S+18%C2%B051'55.1%22E)
 
-- 33° 55' 30.90" South
-- 18° 51' 55.10" East
+## Also...
 
-For additional location and direction detail, use the official contact page map links.
+Here is a QR code for our website.
 
-![Website QR code](/cs-assets/qr.png)
+![Computer Science QR code](/cs-assets/qr.png)
 
 Source: https://cs.sun.ac.za/contact/
 
-<!-- TODO(source-attribution-revisit): Legacy source still contains additional relevant information. Keep citation and merge missing details before removing it. -->
+<!-- TODO(source-attribution-revisit): This page intentionally mirrors only the visit-related section of the contact source. Keep attribution until section-level source policy is finalized. -->

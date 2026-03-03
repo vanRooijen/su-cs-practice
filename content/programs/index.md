@@ -1,13 +1,13 @@
 ---
 title: Programs
-excerpt: Undergraduate and postgraduate program information synchronized from official teaching pages.
+excerpt: Undergraduate and postgraduate programme information from the department teaching pages.
 ---
 
 <!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
 
 ## Programmes and Teaching
 
-Use the sidebar to navigate the synchronized programme pages below:
+Use the sidebar to navigate the programme pages below:
 
 - [Computer Science Programmes](/programs/guide)
 - [Undergraduate programme and modules](/programs/undergraduate-modules)

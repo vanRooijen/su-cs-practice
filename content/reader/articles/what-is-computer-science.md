@@ -1,19 +1,23 @@
 ---
 title: What is Computer Science?
-excerpt: A short high-level introduction to the field from the department feature page.
+excerpt: Watch Dominic Walliman’s short overview of Computer Science. Of course it is not complete, but it is an excellent high-level view of what the subject encompasses.
 sort_order: 8
 card_badge: Feature
 card_image: /cs-assets/features/SzJ46YA_RaA.jpg
+source_url: https://cs.sun.ac.za/features/2018/03/16/what-is-computer-science.html
+source_mirrored_at: 2026-03-03
 ---
-
-<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
-
-## What is Computer Science?
-
-The feature page points to Dominic Walliman's concise high-level overview of Computer Science and positions it as an accessible entry point for prospective students.
-
-For detailed programme structure, the department routes readers to the teaching and prospective-student pages.
-
-### Source
-
-- Feature page: https://cs.sun.ac.za/features/2018/03/16/what-is-computer-science.html
+<h1>What is Computer Science?</h1>
+        <div class="youtube" style="background-image:url(/cs-assets/features/SzJ46YA_RaA.jpg);">
+          <span>
+            <!--
+		If you do not see a link to the video, click on the youtube icon to the
+		right.
+		-->
+          </span>
+          <iframe width="560px" height="315px" src="https://www.youtube.com/embed/SzJ46YA_RaA" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen=""></iframe>
+          <a href="https://youtu.be/SzJ46YA_RaA"></a>
+        </div>
+        <p>Watch Dominic Walliman’s short overview of Computer Science.  Of course it is
+          not complete, but it is an excellent high-level view of what the subject
+          encompasses.</p>

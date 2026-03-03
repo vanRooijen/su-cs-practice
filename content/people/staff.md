@@ -3,13 +3,7 @@ title: Staff
 excerpt: Academic and administrative staff listings from the official department people page.
 ---
 
-<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
-
 ## Staff
-
-Source snapshot: [cs.sun.ac.za/people/staff](https://cs.sun.ac.za/people/staff/) (fetched on March 3, 2026).
-
-<!-- TODO(source-attribution-remove): Local content currently mirrors the legacy source snapshot. Remove the source citation after final migration review. -->
 
 ### Academic Staff
 
@@ -44,6 +38,6 @@ Source snapshot: [cs.sun.ac.za/people/staff](https://cs.sun.ac.za/people/staff/)
 
 | Photo | Name | Role | Contact |
 | --- | --- | --- | --- |
-| <img src="/cs-assets/people/anonymous.jpg" alt="Emile Dreyer" width="48" height="48" /> | Emile Dreyer |  | Office: A507; [edreyer@sun.ac.za](mailto:edreyer@sun.ac.za); Telephone: +27 21 808 4232 |
+| <img src="/cs-assets/people/missing-profile.svg" alt="Emile Dreyer" width="48" height="48" /> | Emile Dreyer |  | Office: A507; [edreyer@sun.ac.za](mailto:edreyer@sun.ac.za); Telephone: +27 21 808 4232 |
 | <img src="/cs-assets/people/gfortuin.jpg" alt="Gaynor Fortuin" width="48" height="48" /> | Gaynor Fortuin | Administrative Officer | Office: A514; [gfortuin@sun.ac.za](mailto:gfortuin@sun.ac.za); Telephone: +27 21 808 4232 |
 | <img src="/cs-assets/people/djstep.jpg" alt="Derrick Stephanus" width="48" height="48" /> | Derrick Stephanus | Assistant | Office: A507; [djstep@sun.ac.za](mailto:djstep@sun.ac.za); Telephone: +27 21 808 4232 |

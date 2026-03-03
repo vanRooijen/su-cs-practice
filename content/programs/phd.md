@@ -5,10 +5,6 @@ excerpt: Our PhD in Computer Science is a three-year degree based solely on diss
 
 <!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
 
-Source snapshot: [cs.sun.ac.za/teaching/phd/](https://cs.sun.ac.za/teaching/phd/) (fetched on March 3, 2026).
-
-<!-- TODO(source-attribution-remove): Local content currently mirrors the legacy source snapshot. Remove the source citation after final migration review. -->
-
 ## Overview
 
 Our PhD in Computer Science is a three-year degree based solely on dissertation work. The goal is to conduct original, cutting-edge research in a particular, specialised field of Computer Science. The student must demonstrate his/her ability to propose, plan, conduct, and publish a research project.

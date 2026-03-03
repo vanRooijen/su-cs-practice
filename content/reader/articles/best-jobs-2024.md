@@ -1,19 +1,55 @@
 ---
 title: The Best Jobs of 2024
-excerpt: CS-related roles continue to rank strongly in annual career lists.
+excerpt: For nearly 30 years, CareerCast.me have produced an annual “Best jobs” list that ranks 200 occupations based on various factors. Over the last couple of years, many jobs in the to…
 sort_order: 7
 card_badge: Feature
 card_image: /cs-assets/features/jobs.png
+source_url: https://cs.sun.ac.za/features/2019/02/20/best-jobs.html
+source_mirrored_at: 2026-03-03
 ---
-
-<!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
-
-## The Best Jobs of 2024
-
-A department feature article summarizes career rankings where Computer Science-related roles continue to feature prominently.
-
-The page highlights Software Developer and Data Scientist in the top positions and emphasizes that programming skills remain valuable across many job families, including those not traditionally categorized as Computer Science careers.
-
-### Source
-
-- Feature page: https://cs.sun.ac.za/features/2019/02/20/best-jobs.html
+<h1>The Best Jobs of 2024</h1>
+        <p>For nearly 30 years,
+          <a href="https://careercast.me/">CareerCast.me</a>
+          have produced an annual “Best jobs” list that ranks 200 occupations based on
+          various factors.
+          Over the last couple of years, many jobs in the top-20 of this list are
+          frequently connected to Computer Science.  This means that they provide a
+          pleasant work environment, low stress, a good salary and strong projected
+          growth in the near future.</p>
+        <p>Here are the <a href="https://careercast.me/jobs-rated/the-2024-jobs-rated-report/">top-10 entries for
+            2024</a>, with those
+          related to Computer Science marked in bold:</p>
+        <ol>
+          <li>Actuary</li>
+          <li>Biomedical Engineer</li>
+          <li><strong><span class="hl">Software Developer</span></strong></li>
+          <li><strong><span class="hl">Data Scientist</span></strong></li>
+          <li>Financial Analyst</li>
+          <li>Mechanical Engineer</li>
+          <li>Civil Engineer</li>
+          <li>Marketing Manager</li>
+          <li>Human Resources Manager</li>
+          <li>Project Manager</li>
+        </ol>
+        <p>For the first time in many years, Software Engineer is not rated among the
+          top-10 jobs (although
+          <a href="https://www.myjobmag.co.za/blog/careers-in-demand-in-south-africa">others</a>
+          still put it in the top spot for South Africa).  The website also claims
+          that Full Stack Developer is the number 1 Top Career Roles in South Africa,
+          Data Analyst in position 3, and Network Administrator in position 7.</p>
+        <p>It is important to note that in many jobs, even if not directly related to
+          Computer Science, it is an extremely valuable skill to know how to program.</p>
+        <p>For reference, here are the <a href="https://careercast.me/jobs-rated/best-jobs-2021/">top-10 jobs of
+            2021</a>:</p>
+        <ol>
+          <li><strong><span class="hl">Data Scientist</span></strong></li>
+          <li><strong><span class="hl">Software Developer</span></strong></li>
+          <li><strong><span class="hl">Cybersecurity Analyst</span></strong></li>
+          <li><strong><span class="hl">Cloud Solutions Architect</span></strong></li>
+          <li>Digital Marketing Manager</li>
+          <li><strong><span class="hl">UX/UI Designer</span></strong></li>
+          <li>Physician Assistant</li>
+          <li>Registered Nurse</li>
+          <li>Medical and Health Services Manager</li>
+          <li>Renewable Energy Technician</li>
+        </ol>

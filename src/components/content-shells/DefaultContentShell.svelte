@@ -20,15 +20,17 @@
   }
 
   $: sections = normalizeSections(artifact);
+  $: firstSectionHtml = sections[0]?.html ?? '';
+  $: hasEmbeddedHeading = /<h[1-6]\b/i.test(firstSectionHtml);
+  $: showShellTitle = Boolean(artifact?.title) && !hasEmbeddedHeading;
 </script>
 
 <article class="default-shell">
-  <header class="default-header">
-    <h3>{artifact?.title ?? 'Untitled'}</h3>
-    {#if artifact?.excerpt}
-      <p>{artifact.excerpt}</p>
-    {/if}
-  </header>
+  {#if showShellTitle}
+    <header class="default-header">
+      <h3>{artifact?.title ?? 'Untitled'}</h3>
+    </header>
+  {/if}
 
   {#if sections.length === 0}
     <div class="default-section" data-slot="main">
@@ -61,12 +63,6 @@
     color: color-mix(in srgb, var(--su-maroon, #61223b) 86%, black 14%);
     font-size: 1.02rem;
     line-height: 1.2;
-  }
-
-  .default-header p {
-    margin: 0;
-    color: color-mix(in srgb, var(--su-muted, #686d71) 90%, black 10%);
-    font-size: 0.88rem;
   }
 
   .default-section + .default-section {

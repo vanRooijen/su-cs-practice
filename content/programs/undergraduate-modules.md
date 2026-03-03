@@ -1,13 +1,9 @@
 ---
 title: Undergraduate programme and modules
-excerpt: Source-synced content for Undergraduate programme and modules.
+excerpt: Undergraduate programmes and module offerings in Computer Science.
 ---
 
 <!-- TODO(legacy-link-migration): This file contains legacy outlinks to *.cs.sun.ac.za / www.cs.sun.ac.za. Replace with internal routes or pass through the legacy-link resolver once mapping rules are finalized. -->
-
-Source snapshot: [cs.sun.ac.za/teaching/UG/](https://cs.sun.ac.za/teaching/UG/) (fetched on March 3, 2026).
-
-<!-- TODO(source-attribution-remove): Local content currently mirrors the legacy source snapshot. Remove the source citation after final migration review. -->
 
 ## BSc Computer Science (CS) Programme
 

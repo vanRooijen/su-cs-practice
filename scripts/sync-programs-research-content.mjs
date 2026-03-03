@@ -12,7 +12,15 @@ const sourceRoot = path.join(projectRoot, 'external', 'cs-sun-pages');
 const programsContentRoot = path.join(projectRoot, 'content', 'programs');
 const researchContentRoot = path.join(projectRoot, 'content', 'research');
 
-const PEOPLE_IMAGE_PLACEHOLDER = '/cs-assets/people/placeholder.jpg';
+const PEOPLE_IMAGE_PLACEHOLDER = '/cs-assets/people/missing-profile.svg';
+const KNOWN_PLACEHOLDER_IMAGE_BASENAMES = new Set([
+  'placeholder.jpg',
+  'anonymous.jpg',
+  'athele.jpg',
+  'csteenkamp.jpg',
+  'kerwin.jpg',
+  'wmostert.jpg',
+]);
 
 const PROGRAM_SOURCE_FILES = {
   guide: {
@@ -146,6 +154,12 @@ function compactLines(lines) {
   return compacted;
 }
 
+function stripWrappingParentheses(value = '') {
+  const text = cleanText(value);
+  const wrapped = /^\((.*)\)$/.exec(text);
+  return wrapped ? cleanText(wrapped[1]) : text;
+}
+
 function inlineMarkdown(node) {
   if (!node) {
     return '';
@@ -264,7 +278,9 @@ function parseCatalogueEntry(entryElement) {
   const titleElement = entryElement.querySelector('table tr td:nth-child(2) a') ?? entryElement.querySelector('table tr td:nth-child(2)');
   const title = cleanText(titleElement?.textContent ?? 'Untitled entry');
   const link = titleElement?.getAttribute?.('href')?.trim() ?? '';
-  const meta = cleanText(entryElement.querySelector('table tr td:last-child')?.textContent ?? '');
+  const contextCell = entryElement.querySelector('table tr td:nth-child(3)');
+  const context = stripWrappingParentheses(contextCell ? nodeText(contextCell) : '');
+  const meta = stripWrappingParentheses(entryElement.querySelector('table tr td:last-child')?.textContent ?? '');
   const description = cleanText(entryElement.querySelector('p')?.textContent ?? '');
 
   const pieces = [];
@@ -273,6 +289,10 @@ function parseCatalogueEntry(entryElement) {
 
   if (code) {
     pieces.push(`(Code: ${code})`);
+  }
+
+  if (context && context !== code) {
+    pieces.push(`(${context})`);
   }
 
   if (meta && meta !== code) {
@@ -448,8 +468,17 @@ function imagePathFromStyle(styleValue = '') {
   return `/cs-assets/${sourcePath.replace(/^\/assets\//, '')}`;
 }
 
+function isKnownPlaceholderImagePath(imagePath = '') {
+  if (!imagePath) {
+    return true;
+  }
+
+  const basename = imagePath.split('/').at(-1)?.toLowerCase() ?? '';
+  return KNOWN_PLACEHOLDER_IMAGE_BASENAMES.has(basename);
+}
+
 async function resolveImagePath(imagePath) {
-  if (!imagePath || imagePath === PEOPLE_IMAGE_PLACEHOLDER) {
+  if (!imagePath || imagePath === PEOPLE_IMAGE_PLACEHOLDER || isKnownPlaceholderImagePath(imagePath)) {
     return PEOPLE_IMAGE_PLACEHOLDER;
   }
 
@@ -480,7 +509,7 @@ async function syncPrograms() {
       .flatMap((section) => section.lines)
       .find((line) => line && !line.startsWith('- ') && !line.startsWith('| '));
 
-    const excerpt = toExcerpt(firstParagraph, 180) || `Source-synced content for ${title}.`;
+    const excerpt = toExcerpt(firstParagraph, 180) || `${title} content from the department teaching pages.`;
 
     const markdown = buildPageMarkdown({
       title,
@@ -497,12 +526,12 @@ async function syncPrograms() {
   const overviewLines = [
     '---',
     'title: Programs',
-    'excerpt: Undergraduate and postgraduate program information synchronized from official teaching pages.',
+    'excerpt: Undergraduate and postgraduate programme information from the department teaching pages.',
     '---',
     '',
     '## Programmes and Teaching',
     '',
-    'Use the sidebar to navigate the synchronized programme pages below:',
+    'Use the sidebar to navigate the programme pages below:',
     '',
     ...outputs.map((entry) => `- [${entry.title}](${entry.href})`),
     '',
