@@ -961,6 +961,17 @@
     transition: background-color 140ms ease, box-shadow 140ms ease;
   }
 
+  .sidebar-entry:hover {
+    background: var(--su-surface-subtle);
+  }
+
+  .sidebar-entry:focus-within {
+    box-shadow:
+      inset 2px 0 0 color-mix(in srgb, var(--su-local-accent) 62%, white 38%),
+      inset 0 0 0 1px rgba(97, 34, 59, 0.26),
+      0 0 0 2px var(--su-focus-soft);
+  }
+
   .sidebar-entry[data-owned-local='true'] {
     box-shadow:
       inset 2px 0 0 color-mix(in srgb, var(--su-local-accent) 60%, white 40%),
@@ -1073,15 +1084,14 @@
     border: none;
     border-radius: calc(var(--su-panel-radius) - 0.04rem);
     background: transparent;
-    transition: background-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
-  }
-
-  .entry-main:hover {
-    background: var(--su-surface-subtle);
+    transition: color 140ms ease;
   }
 
   .entry-main:focus-visible,
-  .entry-close:focus-visible,
+  .entry-close:focus-visible {
+    outline: none;
+  }
+
   .sidebar-actions button:focus-visible {
     outline: none;
     box-shadow: 0 0 0 2px var(--su-focus-soft);
@@ -1097,11 +1107,11 @@
     line-height: 1;
     font-weight: 600;
     color: color-mix(in srgb, var(--su-muted) 84%, black 16%);
-    background: rgba(44, 42, 41, 0.06);
+    background: transparent;
   }
 
-  .entry-close:hover {
-    background: color-mix(in srgb, var(--su-tab-highlight) 58%, white 42%);
+  .sidebar-entry:hover .entry-close,
+  .sidebar-entry:focus-within .entry-close {
     color: var(--su-maroon);
   }
 
