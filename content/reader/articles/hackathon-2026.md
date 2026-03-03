@@ -1,6 +1,8 @@
 ---
 title: 2026 SUDS Div and Conquer Web Development Hackathon
 excerpt: Announcement and logistics for the 2026 event.
+sort_order: 5
+card_badge: Events
 ---
 
 ## 2026 SUDS Div and Conquer Web Development Hackathon

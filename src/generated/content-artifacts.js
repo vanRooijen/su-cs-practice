@@ -169,7 +169,10 @@ export const CONTENT_ARTIFACTS = {
     "title": "2026 SUDS Div and Conquer Web Development Hackathon",
     "excerpt": "Announcement and logistics for the 2026 event.",
     "shell": "default",
-    "meta": {},
+    "meta": {
+      "sort_order": "5",
+      "card_badge": "Events"
+    },
     "html": "<h2>2026 SUDS Div and Conquer Web Development Hackathon</h2>\n<p>Hey developer, we are announcing a hackathon.</p>\n<p>More information at <a href=\"https://hackathon.devsoc.co.za\">https://hackathon.devsoc.co.za</a>.</p>\n<h3>Hackathon Opening Event</h3>\n<p>Friday, 27 February 2026, 5:30pm at Math/Industrial 1005.</p>\n<p>Join us for an evening where we open DevSoc&#39;s first hackathon of 2026. Ask questions or find a team. If you cannot make it, you can still submit. We have over R8000 in cash prizes.</p>\n<p>Sign up for official communications via the MS form on the website or by scanning your student card at the opening event.</p>\n<h3>Submissions</h3>\n<p>Teams must email the official submission form to <code>devsoc@sun.ac.za</code> by 3 March at 11:59pm.</p>\n<p>Full guide: <a href=\"https://hackathon.devsoc.co.za/submissions\">https://hackathon.devsoc.co.za/submissions</a></p>\n<h3>Rulebook</h3>\n<p><a href=\"https://hackathon.devsoc.co.za/rulebook\">https://hackathon.devsoc.co.za/rulebook</a></p>\n<p>Please note submissions are only allowed on Cloudflare Pages, GitHub Pages, Vercel, WordPress, or Drupal.</p>\n",
     "sections": [
       {
@@ -185,14 +188,14 @@ export const CONTENT_ARTIFACTS = {
     "subroute": "articles",
     "title": "Articles",
     "excerpt": "Collection of published department stories and updates.",
-    "shell": "default",
+    "shell": "reader-articles",
     "meta": {},
-    "html": "<h2>Articles</h2>\n<ul>\n<li><a href=\"/reader/articles/why-this-site\">Why This Site</a></li>\n<li><a href=\"/reader/articles/ai-research-colloquium-2026\">AI Research Colloquium 2026</a></li>\n<li><a href=\"/reader/articles/postgraduate-open-day-2026\">Postgraduate Open Day 2026</a></li>\n<li><a href=\"/reader/articles/industry-innovation-summit-2026\">Industry Innovation Summit 2026</a></li>\n<li><a href=\"/reader/articles/hackathon-2026\">2026 SUDS Div and Conquer Web Development Hackathon</a></li>\n</ul>\n",
+    "html": "<p>Browse all Reader articles below. Articles are rendered from content artifacts, so new markdown files appear automatically once compiled and deployed.</p>\n",
     "sections": [
       {
         "key": "000-main",
         "slot": "main",
-        "html": "<h2>Articles</h2>\n<ul>\n<li><a href=\"/reader/articles/why-this-site\">Why This Site</a></li>\n<li><a href=\"/reader/articles/ai-research-colloquium-2026\">AI Research Colloquium 2026</a></li>\n<li><a href=\"/reader/articles/postgraduate-open-day-2026\">Postgraduate Open Day 2026</a></li>\n<li><a href=\"/reader/articles/industry-innovation-summit-2026\">Industry Innovation Summit 2026</a></li>\n<li><a href=\"/reader/articles/hackathon-2026\">2026 SUDS Div and Conquer Web Development Hackathon</a></li>\n</ul>\n"
+        "html": "<p>Browse all Reader articles below. Articles are rendered from content artifacts, so new markdown files appear automatically once compiled and deployed.</p>\n"
       }
     ]
   },

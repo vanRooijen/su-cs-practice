@@ -2,6 +2,7 @@
   import { tick } from 'svelte';
   import DefaultContentShell from './content-shells/DefaultContentShell.svelte';
   import HomeLandingShell from './content-shells/HomeLandingShell.svelte';
+  import ReaderArticlesShell from './content-shells/ReaderArticlesShell.svelte';
 
   export let artifact;
   export let cacheLimit = 10;
@@ -9,6 +10,7 @@
   const CONTENT_SHELL_REGISTRY = {
     default: DefaultContentShell,
     'home-landing': HomeLandingShell,
+    'reader-articles': ReaderArticlesShell,
   };
 
   function trimCache(entries, limit, scrollByKey) {
