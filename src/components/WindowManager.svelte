@@ -121,7 +121,7 @@
   }
 
   function openContact() {
-    openPath('/reader/general/help');
+    openPath('/about/contact');
   }
 
   function openPathInNewWindow(path) {

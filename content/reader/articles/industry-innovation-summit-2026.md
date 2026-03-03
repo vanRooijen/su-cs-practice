@@ -1,18 +1,16 @@
 ---
-title: Industry Innovation Summit 2026
-excerpt: Collaboration forum between students, faculty, and industry partners.
+title: Computer Science Career Fair 2019
+excerpt: Reminder announcement for the sixth annual Computer Science Career Fair.
 sort_order: 4
-card_badge: Partnerships
+card_badge: Newsfeed
 ---
 
-## Industry Innovation Summit 2026
+## Computer Science Career Fair 2019
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vulputate condimentum nunc, sit amet imperdiet lacus scelerisque sed. In malesuada feugiat sem, vel gravida orci euismod ac.
+The newsfeed entry dated 5 August 2019 highlights the sixth annual Computer Science Career Fair.
 
-Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam commodo vitae nisi eget posuere. Integer accumsan cursus purus, vel ultrices urna sagittis id.
+The Career Fair reflects one of the department's recurring bridges between graduating students and industry opportunities.
 
-### Summit Focus
+### Source
 
-- Applied research collaboration opportunities
-- Student project showcases
-- Discussion on future skills and emerging technology trends
+- News item: https://cs.sun.ac.za/newsfeed/2019/08/05/Career-Fair-2019.html

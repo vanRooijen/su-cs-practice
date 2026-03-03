@@ -1,18 +1,16 @@
 ---
-title: Postgraduate Open Day 2026
-excerpt: Department showcase for honours, master's, and doctoral pathways.
+title: Open Day 2019
+excerpt: Department invitation to visit the Computer Science stall during university open day.
 sort_order: 3
-card_badge: Students
+card_badge: Newsfeed
 ---
 
-## Postgraduate Open Day 2026
+## Open Day 2019
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ac lorem vitae lectus feugiat gravida. Vivamus hendrerit lorem at nunc feugiat, in porta purus bibendum.
+The department newsfeed announced Open Day 2019 on 21 February 2019, inviting prospective students to visit the Computer Science stall during the university open day on Saturday 23 February.
 
-Nulla facilisi. Etiam finibus enim non lectus sodales, sed tincidunt nisi tempus. Nam at pulvinar ipsum, et accumsan purus. Sed non turpis feugiat, scelerisque metus nec, faucibus velit.
+Prospective students can pair this with the programme pages for route planning through undergraduate study and postgraduate progression.
 
-### Event Highlights
+### Source
 
-- Programme overviews and research area introductions
-- Supervisor meet-and-greet opportunities
-- Practical guidance on applications and funding
+- News item: https://cs.sun.ac.za/newsfeed/2019/02/21/Open-Day-2019.html

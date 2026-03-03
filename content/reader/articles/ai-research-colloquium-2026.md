@@ -1,18 +1,17 @@
 ---
-title: AI Research Colloquium 2026
-excerpt: A preview of this semester's interdisciplinary AI colloquium series.
+title: Jane Street Depth First Learning Fellows
+excerpt: Dr Steve Kroon selected among inaugural Depth First Learning fellows.
 sort_order: 2
-card_badge: Research
+card_badge: Newsfeed
 ---
 
-## AI Research Colloquium 2026
+## Jane Street Depth First Learning Fellows
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur facilisis diam sed magna suscipit, nec dignissim leo feugiat. Phasellus blandit laoreet sem, vel dapibus augue ultrices a.
+On 15 April 2019, the department newsfeed reported that Dr Steve Kroon was selected as one of the inaugural Jane Street Depth First Learning fellows.
 
-Mauris vitae velit malesuada, sodales purus sed, fermentum turpis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Quisque tempus, mi non auctor tempus, neque nisi laoreet arcu, id tincidunt ipsum est at lectus.
+The initiative focuses on developing lesson plans and study groups around influential research papers. The cited paper in the announcement is _Variational Inference with Normalizing Flows_ by Danilo Rezende and Shakir Mohamed.
 
-### What to Expect
+### Source
 
-- Lorem ipsum sessions across machine learning topics
-- Cross-faculty participation and discussion
-- Short presentations followed by open Q&A
+- News item: https://cs.sun.ac.za/newsfeed/2019/04/15/Jane-Street-Depth-First-Learning-fellows.html
+- Linked reference from the announcement: http://www.depthfirstlearning.com/2019/Announcing-DFL-Fellows

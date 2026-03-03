@@ -80,9 +80,9 @@
     {/if}
 
     <div class="hero-links">
-      <a href="/reader/general/programs">Prospective Students</a>
-      <a href="/reader/general/research">Research and Labs</a>
-      <a href="/reader/general/about">About the Department</a>
+      <a href="/programs/prospective-undergraduate">Prospective Students</a>
+      <a href="/research">Research and Labs</a>
+      <a href="/about/department">About the Department</a>
       <a href="/people/staff">Staff and Contact</a>
     </div>
   </section>

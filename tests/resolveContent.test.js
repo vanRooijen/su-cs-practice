@@ -16,9 +16,9 @@ test('listReaderArticles sorts by configured sort order', () => {
 
   assert.deepEqual(titles.slice(0, 5), [
     'Why This Site',
-    'AI Research Colloquium 2026',
-    'Postgraduate Open Day 2026',
-    'Industry Innovation Summit 2026',
+    'Jane Street Depth First Learning Fellows',
+    'Open Day 2019',
+    'Computer Science Career Fair 2019',
     '2026 SUDS Div and Conquer Web Development Hackathon',
   ]);
 });
