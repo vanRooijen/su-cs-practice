@@ -47,7 +47,30 @@ export function resolveContent(appId, subroute = '') {
 }
 
 export function listReaderArticles() {
+  const toOptionalNumber = (value) => {
+    const numeric = Number(value);
+    return Number.isFinite(numeric) ? numeric : null;
+  };
+
   return Object.values(CONTENT_ARTIFACTS)
     .filter((artifact) => artifact.appId === 'reader' && artifact.subroute.startsWith('articles/'))
-    .sort((left, right) => left.title.localeCompare(right.title));
+    .sort((left, right) => {
+      const leftOrder = toOptionalNumber(left?.meta?.sort_order ?? left?.meta?.sortOrder);
+      const rightOrder = toOptionalNumber(right?.meta?.sort_order ?? right?.meta?.sortOrder);
+
+      if (leftOrder !== null || rightOrder !== null) {
+        if (leftOrder === null) {
+          return 1;
+        }
+        if (rightOrder === null) {
+          return -1;
+        }
+
+        if (leftOrder !== rightOrder) {
+          return leftOrder - rightOrder;
+        }
+      }
+
+      return left.title.localeCompare(right.title);
+    });
 }

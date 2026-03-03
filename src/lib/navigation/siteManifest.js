@@ -87,6 +87,6 @@ export const APP_NAV_LINKS = {
   reader: [
     { label: 'Overview', href: '/reader' },
     { label: 'Articles', href: '/reader/articles' },
-    { label: 'Help', href: '/reader/help' },
+    { label: 'Help', href: '/reader/general/help' },
   ],
 };

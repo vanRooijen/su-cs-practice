@@ -8,6 +8,8 @@ const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..');
 const contentRoot = path.join(projectRoot, 'content');
 const outputPath = path.join(projectRoot, 'src', 'generated', 'content-artifacts.js');
+const SECTION_CONTAINER_SUFFIX = '.sections';
+const SECTION_FILE_PATTERN = /^(?<order>\d+)-(?<slot>[a-z0-9][a-z0-9-]*)$/i;
 
 marked.setOptions({
   gfm: true,
@@ -18,6 +20,10 @@ marked.setOptions({
 
 function trim(value) {
   return value.replace(/^\/+|\/+$/g, '');
+}
+
+function toUnixPath(value) {
+  return value.split(path.sep).join('/');
 }
 
 function titleFromPath(relativePath) {
@@ -76,6 +82,69 @@ function parseFrontmatter(rawMarkdown) {
   };
 }
 
+function parseSectionReference(relativeWithoutExtension) {
+  const segments = relativeWithoutExtension.split('/').filter(Boolean);
+  if (segments.length < 2) {
+    return null;
+  }
+
+  const filenameStem = segments.at(-1) ?? '';
+  const filenameMatch = SECTION_FILE_PATTERN.exec(filenameStem);
+  if (!filenameMatch) {
+    return null;
+  }
+
+  const containerSegment = segments.at(-2) ?? '';
+  if (!containerSegment.endsWith(SECTION_CONTAINER_SUFFIX)) {
+    return null;
+  }
+
+  const routeFileStem = containerSegment.slice(0, -SECTION_CONTAINER_SUFFIX.length);
+  if (!routeFileStem) {
+    return null;
+  }
+
+  const routeSegments = [...segments.slice(0, -2), routeFileStem];
+  const routeWithoutExtension = routeSegments.join('/');
+  if (!routeWithoutExtension) {
+    return null;
+  }
+
+  return {
+    routeWithoutExtension,
+    slot: filenameMatch.groups.slot.toLowerCase(),
+    order: Number(filenameMatch.groups.order),
+  };
+}
+
+function toRouteDescriptor(routeWithoutExtension) {
+  const pathSegments = routeWithoutExtension.split('/').filter(Boolean);
+  const appId = pathSegments[0] ?? 'home';
+  const subrouteSegments = [...pathSegments.slice(1)];
+  if (subrouteSegments.at(-1) === 'index') {
+    subrouteSegments.pop();
+  }
+
+  const subroute = trim(subrouteSegments.join('/'));
+
+  return {
+    key: pathSegments.join('.'),
+    appId,
+    subroute,
+  };
+}
+
+function toRouteMetadata(metadata) {
+  const routeMetadata = {};
+  for (const [key, value] of Object.entries(metadata)) {
+    if (key === 'title' || key === 'excerpt' || key === 'shell') {
+      continue;
+    }
+    routeMetadata[key] = value;
+  }
+  return routeMetadata;
+}
+
 async function collectMarkdownFiles(dirPath) {
   const directoryEntries = await readdir(dirPath, { withFileTypes: true });
   const discovered = [];
@@ -96,42 +165,107 @@ async function collectMarkdownFiles(dirPath) {
   return discovered.sort();
 }
 
-function toArtifact(relativePath, rawMarkdown) {
-  const unixRelativePath = relativePath.split(path.sep).join('/');
-  const withoutExtension = unixRelativePath.replace(/\.md$/i, '');
-  const pathSegments = withoutExtension.split('/').filter(Boolean);
-  const appId = pathSegments[0] ?? 'home';
-
-  const subrouteSegments = [...pathSegments.slice(1)];
-  if (subrouteSegments.at(-1) === 'index') {
-    subrouteSegments.pop();
-  }
-
-  const subroute = trim(subrouteSegments.join('/'));
-  const key = pathSegments.join('.');
-
-  const { metadata, body } = parseFrontmatter(rawMarkdown);
-  const title = metadata.title ?? titleFromPath(unixRelativePath);
-  const excerpt = metadata.excerpt ?? '';
-
-  return {
-    key,
-    appId,
-    subroute,
-    title,
-    excerpt,
-    html: marked.parse(body),
-  };
-}
-
 async function buildArtifacts() {
   const markdownFiles = await collectMarkdownFiles(contentRoot);
-  const artifacts = [];
+  const routeSources = new Map();
+  const sectionSourcesByRoute = new Map();
 
   for (const filePath of markdownFiles) {
-    const relativePath = path.relative(contentRoot, filePath);
+    const relativePath = toUnixPath(path.relative(contentRoot, filePath));
+    const relativeWithoutExtension = relativePath.replace(/\.md$/i, '');
     const rawMarkdown = await readFile(filePath, 'utf8');
-    artifacts.push(toArtifact(relativePath, rawMarkdown));
+
+    const sectionReference = parseSectionReference(relativeWithoutExtension);
+    if (sectionReference) {
+      const existingSections = sectionSourcesByRoute.get(sectionReference.routeWithoutExtension) ?? [];
+      existingSections.push({
+        relativePath,
+        slot: sectionReference.slot,
+        order: sectionReference.order,
+        rawMarkdown,
+      });
+      sectionSourcesByRoute.set(sectionReference.routeWithoutExtension, existingSections);
+      continue;
+    }
+
+    routeSources.set(relativeWithoutExtension, {
+      relativePath,
+      rawMarkdown,
+    });
+  }
+
+  const allRoutePaths = new Set([...routeSources.keys(), ...sectionSourcesByRoute.keys()]);
+  const artifacts = [];
+
+  for (const routeWithoutExtension of [...allRoutePaths].sort()) {
+    const routeSource = routeSources.get(routeWithoutExtension) ?? null;
+    const sectionSources = sectionSourcesByRoute.get(routeWithoutExtension) ?? [];
+    const { key, appId, subroute } = toRouteDescriptor(routeWithoutExtension);
+
+    const { metadata, body } = routeSource
+      ? parseFrontmatter(routeSource.rawMarkdown)
+      : { metadata: {}, body: '' };
+    const shell =
+      typeof metadata.shell === 'string' && metadata.shell.trim() ? metadata.shell.trim() : 'default';
+    const title = metadata.title ?? titleFromPath(`${routeWithoutExtension}.md`);
+    const excerpt = metadata.excerpt ?? '';
+    const routeMeta = toRouteMetadata(metadata);
+
+    const sections = [];
+    if (body.trim()) {
+      sections.push({
+        key: '000-main',
+        slot: 'main',
+        html: marked.parse(body),
+      });
+    }
+
+    const sortedSectionSources = [...sectionSources].sort((left, right) => {
+      if (left.order !== right.order) {
+        return left.order - right.order;
+      }
+
+      if (left.slot !== right.slot) {
+        return left.slot.localeCompare(right.slot);
+      }
+
+      return left.relativePath.localeCompare(right.relativePath);
+    });
+
+    for (const sectionSource of sortedSectionSources) {
+      const { metadata: sectionMetadata, body: sectionBody } = parseFrontmatter(sectionSource.rawMarkdown);
+      if (!sectionBody.trim()) {
+        continue;
+      }
+
+      const slotCandidate =
+        typeof sectionMetadata.slot === 'string' && sectionMetadata.slot.trim()
+          ? sectionMetadata.slot
+          : sectionSource.slot;
+      const slot = trim(String(slotCandidate).toLowerCase()) || 'main';
+      const orderPrefix = String(sectionSource.order).padStart(3, '0');
+
+      sections.push({
+        key: `${orderPrefix}-${slot}-${sections.length + 1}`,
+        slot,
+        html: marked.parse(sectionBody),
+      });
+    }
+
+    sections.sort((left, right) => left.key.localeCompare(right.key));
+    const html = sections.map((section) => section.html).join('\n');
+
+    artifacts.push({
+      key,
+      appId,
+      subroute,
+      title,
+      excerpt,
+      shell,
+      meta: routeMeta,
+      html,
+      sections,
+    });
   }
 
   artifacts.sort((left, right) => left.key.localeCompare(right.key));

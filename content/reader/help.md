@@ -1,15 +1,11 @@
 ---
 title: Help
-excerpt: Quick help for navigating this site.
+excerpt: Help has moved to Reader / General / Help.
 ---
 
 ## Help
 
-This website works like a small desktop.
+This page has moved.
 
-- The URL decides which app and page is active.
-- Apps stay open until you close their window.
-- Sidebar entries represent open windows.
-- Right-click anywhere and choose **Help** to return to this page.
-
-Lorem ipsum style tip: keep exploring by opening pages in new windows and switching focus from the sidebar.
+- Open the new route at [/reader/general/help](/reader/general/help).
+- Existing links to `/reader/help` are kept for compatibility.

@@ -123,7 +123,7 @@
   }
 
   function openContact() {
-    openPath('/reader/help');
+    openPath('/reader/general/help');
   }
 
   function openPathInNewWindow(path) {
@@ -233,7 +233,7 @@
   }
 
   function openHelpPage() {
-    openPath('/reader/help');
+    openPath('/reader/general/help');
     closeContextMenu();
   }
 
@@ -540,7 +540,7 @@
           type="button"
           class="sidebar-tool"
           aria-label="Open Help"
-          on:click={() => openPath('/reader/help')}
+          on:click={() => openPath('/reader/general/help')}
         >
           <span class="inline-icon" aria-hidden="true">{@html iconHelp}</span>
         </button>

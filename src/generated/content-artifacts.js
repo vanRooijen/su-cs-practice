@@ -7,7 +7,16 @@ export const CONTENT_ARTIFACTS = {
     "subroute": "app-not-found",
     "title": "Application Not Found",
     "excerpt": "The application in the URL does not exist.",
-    "html": "<h2>Application Not Found</h2>\n<p>The app identifier in this path is not registered in this deployment.</p>\n<p>Check the URL for typos, then try again.</p>\n"
+    "shell": "default",
+    "meta": {},
+    "html": "<h2>Application Not Found</h2>\n<p>The app identifier in this path is not registered in this deployment.</p>\n<p>Check the URL for typos, then try again.</p>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>Application Not Found</h2>\n<p>The app identifier in this path is not registered in this deployment.</p>\n<p>Check the URL for typos, then try again.</p>\n"
+      }
+    ]
   },
   "error.index": {
     "key": "error.index",
@@ -15,7 +24,16 @@ export const CONTENT_ARTIFACTS = {
     "subroute": "",
     "title": "Error Messages",
     "excerpt": "System messages for invalid navigation.",
-    "html": "<h2>Error Messages</h2>\n<p>This application shows navigation errors.</p>\n<p>If you arrived here unexpectedly, close this window and continue browsing.</p>\n"
+    "shell": "default",
+    "meta": {},
+    "html": "<h2>Error Messages</h2>\n<p>This application shows navigation errors.</p>\n<p>If you arrived here unexpectedly, close this window and continue browsing.</p>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>Error Messages</h2>\n<p>This application shows navigation errors.</p>\n<p>If you arrived here unexpectedly, close this window and continue browsing.</p>\n"
+      }
+    ]
   },
   "error.path-not-found": {
     "key": "error.path-not-found",
@@ -23,15 +41,38 @@ export const CONTENT_ARTIFACTS = {
     "subroute": "path-not-found",
     "title": "Path Not Found",
     "excerpt": "The requested content path does not exist for this app.",
-    "html": "<h2>Path Not Found</h2>\n<p>The application exists, but the requested subroute does not resolve to content.</p>\n<p>Use app navigation links to continue.</p>\n"
+    "shell": "default",
+    "meta": {},
+    "html": "<h2>Path Not Found</h2>\n<p>The application exists, but the requested subroute does not resolve to content.</p>\n<p>Use app navigation links to continue.</p>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>Path Not Found</h2>\n<p>The application exists, but the requested subroute does not resolve to content.</p>\n<p>Use app navigation links to continue.</p>\n"
+      }
+    ]
   },
   "home.index": {
     "key": "home.index",
     "appId": "home",
     "subroute": "",
     "title": "SU Computer Science Department",
-    "excerpt": "Main landing experience for the division.",
-    "html": "<h2>Welcome to Computer Science</h2>\n<p>The Department of Computer Science was founded in 1972 and now forms part of the Computer Science Division in the Department of Mathematical Sciences.</p>\n<p>Our teaching and research span software engineering, formal methods, robotics, natural language processing, and machine learning.</p>\n<h2>Start Here</h2>\n<ul>\n<li>Open the <strong>People</strong> app for staff, student, and alumni directories.</li>\n<li>Open <strong>Reader &gt; Articles</strong> for featured stories and announcements.</li>\n<li>Use <strong>Reader &gt; Help</strong> for navigation and window-management tips.</li>\n</ul>\n<h2>Quick Department Snapshot</h2>\n<ul>\n<li>Academic staff: 11 full members</li>\n<li>Main domains: theory, systems, software, AI, and robotics</li>\n<li>Department location: Stellenbosch University, South Africa</li>\n</ul>\n<h2>Navigation Notes</h2>\n<p>This site works like a desktop workspace:</p>\n<ul>\n<li>apps stay open until you close them,</li>\n<li>the URL controls focus and content identity,</li>\n<li>and the sidebar shows open windows across active sessions.</li>\n</ul>\n"
+    "excerpt": "Landing page for programmes, research, people, and latest departmental news.",
+    "shell": "home-landing",
+    "meta": {},
+    "html": "<h3>Welcome</h3>\n<p>The Department of Computer Science was founded in 1972. We have now merged with Mathematics and Applied Mathematics to form the Computer Science Division in the Department of Mathematical Sciences.</p>\n<p>We currently have 11 full members of academic staff whose research activities span Automata Theory, Broadband and Mobile Networks, Software Engineering, Program Testing and Verification, Robotics, Natural Language Processing, and Machine Learning.</p>\n\n<h3>For Visitors, Students, and Researchers</h3>\n<p>If you are exploring study options, start with programmes and people. If you are following current departmental activity, use the article cards above to open stories in Reader.</p>\n<p>This page is designed as a hub: quick orientation first, then direct links to the information most visitors need.</p>\n",
+    "sections": [
+      {
+        "key": "010-intro-1",
+        "slot": "intro",
+        "html": "<h3>Welcome</h3>\n<p>The Department of Computer Science was founded in 1972. We have now merged with Mathematics and Applied Mathematics to form the Computer Science Division in the Department of Mathematical Sciences.</p>\n<p>We currently have 11 full members of academic staff whose research activities span Automata Theory, Broadband and Mobile Networks, Software Engineering, Program Testing and Verification, Robotics, Natural Language Processing, and Machine Learning.</p>\n"
+      },
+      {
+        "key": "020-body-2",
+        "slot": "body",
+        "html": "<h3>For Visitors, Students, and Researchers</h3>\n<p>If you are exploring study options, start with programmes and people. If you are following current departmental activity, use the article cards above to open stories in Reader.</p>\n<p>This page is designed as a hub: quick orientation first, then direct links to the information most visitors need.</p>\n"
+      }
+    ]
   },
   "people.alumni": {
     "key": "people.alumni",
@@ -39,7 +80,16 @@ export const CONTENT_ARTIFACTS = {
     "subroute": "alumni",
     "title": "Alumni",
     "excerpt": "Alumni staff, students, and doctoral graduates.",
-    "html": "<h2>Alumni Staff and Students</h2>\n<h3>Alumni Faculty</h3>\n<ul>\n<li>Bagula, BA</li>\n<li>Cloete, I (Prof)</li>\n<li>Ackerman, C</li>\n<li>de Villiers PJA (Prof)</li>\n<li>de Villiers H (Dr)</li>\n<li>Dodds, RMcD</li>\n</ul>\n<h3>Doctoral Graduates</h3>\n<ul>\n<li>Erwin, W: <a href=\"https://cs.sun.ac.za/people/alumni/\">Landscape aware algorithm selection for feature selection</a>, 2025</li>\n<li>Baker Effendi, S: <a href=\"https://cs.sun.ac.za/people/alumni/\">An Approach to Modern Static Analysis with Property Graphs</a>, 2025</li>\n<li>Werner, W: <a href=\"https://scholar.sun.ac.za/handle/10019.1/128812\">Landscape aware algorithm selection for feature selection</a>, 2023</li>\n<li>Moeketsi, RI: <a href=\"http://hdl.handle.net/10019.1/127229\">Fault Localization and Repair for Grammarware</a>, 2023</li>\n<li>Omomule, TG: <a href=\"http://hdl.handle.net/10019.1/125916\">Mixtures of heterogeneous experts</a>, 2022</li>\n</ul>\n"
+    "shell": "default",
+    "meta": {},
+    "html": "<h2>Alumni Staff and Students</h2>\n<h3>Alumni Faculty</h3>\n<ul>\n<li>Bagula, BA</li>\n<li>Cloete, I (Prof)</li>\n<li>Ackerman, C</li>\n<li>de Villiers PJA (Prof)</li>\n<li>de Villiers H (Dr)</li>\n<li>Dodds, RMcD</li>\n</ul>\n<h3>Doctoral Graduates</h3>\n<ul>\n<li>Erwin, W: <a href=\"https://cs.sun.ac.za/people/alumni/\">Landscape aware algorithm selection for feature selection</a>, 2025</li>\n<li>Baker Effendi, S: <a href=\"https://cs.sun.ac.za/people/alumni/\">An Approach to Modern Static Analysis with Property Graphs</a>, 2025</li>\n<li>Werner, W: <a href=\"https://scholar.sun.ac.za/handle/10019.1/128812\">Landscape aware algorithm selection for feature selection</a>, 2023</li>\n<li>Moeketsi, RI: <a href=\"http://hdl.handle.net/10019.1/127229\">Fault Localization and Repair for Grammarware</a>, 2023</li>\n<li>Omomule, TG: <a href=\"http://hdl.handle.net/10019.1/125916\">Mixtures of heterogeneous experts</a>, 2022</li>\n</ul>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>Alumni Staff and Students</h2>\n<h3>Alumni Faculty</h3>\n<ul>\n<li>Bagula, BA</li>\n<li>Cloete, I (Prof)</li>\n<li>Ackerman, C</li>\n<li>de Villiers PJA (Prof)</li>\n<li>de Villiers H (Dr)</li>\n<li>Dodds, RMcD</li>\n</ul>\n<h3>Doctoral Graduates</h3>\n<ul>\n<li>Erwin, W: <a href=\"https://cs.sun.ac.za/people/alumni/\">Landscape aware algorithm selection for feature selection</a>, 2025</li>\n<li>Baker Effendi, S: <a href=\"https://cs.sun.ac.za/people/alumni/\">An Approach to Modern Static Analysis with Property Graphs</a>, 2025</li>\n<li>Werner, W: <a href=\"https://scholar.sun.ac.za/handle/10019.1/128812\">Landscape aware algorithm selection for feature selection</a>, 2023</li>\n<li>Moeketsi, RI: <a href=\"http://hdl.handle.net/10019.1/127229\">Fault Localization and Repair for Grammarware</a>, 2023</li>\n<li>Omomule, TG: <a href=\"http://hdl.handle.net/10019.1/125916\">Mixtures of heterogeneous experts</a>, 2022</li>\n</ul>\n"
+      }
+    ]
   },
   "people.index": {
     "key": "people.index",
@@ -47,7 +97,16 @@ export const CONTENT_ARTIFACTS = {
     "subroute": "",
     "title": "People Directory",
     "excerpt": "Landing page for staff, students, and alumni.",
-    "html": "<h2>People</h2>\n<p>Use the left navigation to open staff, students, and alumni content.</p>\n"
+    "shell": "default",
+    "meta": {},
+    "html": "<h2>People</h2>\n<p>Use the left navigation to open staff, students, and alumni content.</p>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>People</h2>\n<p>Use the left navigation to open staff, students, and alumni content.</p>\n"
+      }
+    ]
   },
   "people.staff": {
     "key": "people.staff",
@@ -55,7 +114,16 @@ export const CONTENT_ARTIFACTS = {
     "subroute": "staff",
     "title": "Staff",
     "excerpt": "Academic staff and research focus areas.",
-    "html": "<h2>Academic Staff</h2>\n<table>\n<thead>\n<tr>\n<th>Name</th>\n<th>Contact</th>\n<th>Research Interests</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><strong>George Azzopardi</strong> (Associate Professor Extraordinary)</td>\n<td>Office: Remote, <a href=\"https://www.rug.nl/staff/g.azzopardi/?lang=en\">Website</a>, Tel: +27 21 808 4232</td>\n<td>Brain-inspired computing, Computer Vision, Pattern Recognition, Machine Learning</td>\n</tr>\n<tr>\n<td><strong>Willem Bester</strong> (Junior Lecturer)</td>\n<td>Office: A508, <a href=\"mailto:whkbester@cs.sun.ac.za\">whkbester@cs.sun.ac.za</a>, <a href=\"http://www.cs.sun.ac.za/~whkbester/\">Website</a>, Tel: +27 21 808 4232</td>\n<td>Software Engineering, Formal Methods, Formal Language and Automata Theory</td>\n</tr>\n<tr>\n<td><strong>Judith Bishop</strong> (Professor Extraordinary)</td>\n<td><a href=\"mailto:jbishop@sun.ac.za\">jbishop@sun.ac.za</a>, <a href=\"https://www.linkedin.com/in/judith-bishop\">Website</a></td>\n<td>Programming languages, software engineering, mobile computing, open source software</td>\n</tr>\n<tr>\n<td><strong>Loek Cleophas</strong> (Associate Professor Extraordinary)</td>\n<td>Office: Remote, <a href=\"https://www.tue.nl/en/research/researchers/loek-cleophas\">Website</a>, Tel: +27 21 808 4232</td>\n<td>Model-driven engineering, Digital Twins, Algorithm and model variability</td>\n</tr>\n</tbody></table>\n"
+    "shell": "default",
+    "meta": {},
+    "html": "<h2>Academic Staff</h2>\n<table>\n<thead>\n<tr>\n<th>Name</th>\n<th>Contact</th>\n<th>Research Interests</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><strong>George Azzopardi</strong> (Associate Professor Extraordinary)</td>\n<td>Office: Remote, <a href=\"https://www.rug.nl/staff/g.azzopardi/?lang=en\">Website</a>, Tel: +27 21 808 4232</td>\n<td>Brain-inspired computing, Computer Vision, Pattern Recognition, Machine Learning</td>\n</tr>\n<tr>\n<td><strong>Willem Bester</strong> (Junior Lecturer)</td>\n<td>Office: A508, <a href=\"mailto:whkbester@cs.sun.ac.za\">whkbester@cs.sun.ac.za</a>, <a href=\"http://www.cs.sun.ac.za/~whkbester/\">Website</a>, Tel: +27 21 808 4232</td>\n<td>Software Engineering, Formal Methods, Formal Language and Automata Theory</td>\n</tr>\n<tr>\n<td><strong>Judith Bishop</strong> (Professor Extraordinary)</td>\n<td><a href=\"mailto:jbishop@sun.ac.za\">jbishop@sun.ac.za</a>, <a href=\"https://www.linkedin.com/in/judith-bishop\">Website</a></td>\n<td>Programming languages, software engineering, mobile computing, open source software</td>\n</tr>\n<tr>\n<td><strong>Loek Cleophas</strong> (Associate Professor Extraordinary)</td>\n<td>Office: Remote, <a href=\"https://www.tue.nl/en/research/researchers/loek-cleophas\">Website</a>, Tel: +27 21 808 4232</td>\n<td>Model-driven engineering, Digital Twins, Algorithm and model variability</td>\n</tr>\n</tbody></table>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>Academic Staff</h2>\n<table>\n<thead>\n<tr>\n<th>Name</th>\n<th>Contact</th>\n<th>Research Interests</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><strong>George Azzopardi</strong> (Associate Professor Extraordinary)</td>\n<td>Office: Remote, <a href=\"https://www.rug.nl/staff/g.azzopardi/?lang=en\">Website</a>, Tel: +27 21 808 4232</td>\n<td>Brain-inspired computing, Computer Vision, Pattern Recognition, Machine Learning</td>\n</tr>\n<tr>\n<td><strong>Willem Bester</strong> (Junior Lecturer)</td>\n<td>Office: A508, <a href=\"mailto:whkbester@cs.sun.ac.za\">whkbester@cs.sun.ac.za</a>, <a href=\"http://www.cs.sun.ac.za/~whkbester/\">Website</a>, Tel: +27 21 808 4232</td>\n<td>Software Engineering, Formal Methods, Formal Language and Automata Theory</td>\n</tr>\n<tr>\n<td><strong>Judith Bishop</strong> (Professor Extraordinary)</td>\n<td><a href=\"mailto:jbishop@sun.ac.za\">jbishop@sun.ac.za</a>, <a href=\"https://www.linkedin.com/in/judith-bishop\">Website</a></td>\n<td>Programming languages, software engineering, mobile computing, open source software</td>\n</tr>\n<tr>\n<td><strong>Loek Cleophas</strong> (Associate Professor Extraordinary)</td>\n<td>Office: Remote, <a href=\"https://www.tue.nl/en/research/researchers/loek-cleophas\">Website</a>, Tel: +27 21 808 4232</td>\n<td>Model-driven engineering, Digital Twins, Algorithm and model variability</td>\n</tr>\n</tbody></table>\n"
+      }
+    ]
   },
   "people.students": {
     "key": "people.students",
@@ -63,7 +131,36 @@ export const CONTENT_ARTIFACTS = {
     "subroute": "students",
     "title": "Students",
     "excerpt": "Postgraduate and doctoral student information.",
-    "html": "<h2>Postgraduate Students</h2>\n<h3>Doctoral Students</h3>\n<table>\n<thead>\n<tr>\n<th>Name</th>\n<th>Supervisor</th>\n<th>Research Topic</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><strong>Willem Bester</strong></td>\n<td>Brink van der Merwe</td>\n<td>The pathology, amelioration and cure of catastrophic backtracking in extended regular expressions</td>\n</tr>\n<tr>\n<td><strong>Dirko Coetsee</strong></td>\n<td>McElory Hoffmann, Steve Kroon</td>\n<td>Automated spreadsheet integration</td>\n</tr>\n<tr>\n<td><strong>Jordan Masakuna</strong></td>\n<td>Dr Simukai Utete, Steve Kroon</td>\n<td>Robot games with randomisation</td>\n</tr>\n</tbody></table>\n"
+    "shell": "default",
+    "meta": {},
+    "html": "<h2>Postgraduate Students</h2>\n<h3>Doctoral Students</h3>\n<table>\n<thead>\n<tr>\n<th>Name</th>\n<th>Supervisor</th>\n<th>Research Topic</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><strong>Willem Bester</strong></td>\n<td>Brink van der Merwe</td>\n<td>The pathology, amelioration and cure of catastrophic backtracking in extended regular expressions</td>\n</tr>\n<tr>\n<td><strong>Dirko Coetsee</strong></td>\n<td>McElory Hoffmann, Steve Kroon</td>\n<td>Automated spreadsheet integration</td>\n</tr>\n<tr>\n<td><strong>Jordan Masakuna</strong></td>\n<td>Dr Simukai Utete, Steve Kroon</td>\n<td>Robot games with randomisation</td>\n</tr>\n</tbody></table>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>Postgraduate Students</h2>\n<h3>Doctoral Students</h3>\n<table>\n<thead>\n<tr>\n<th>Name</th>\n<th>Supervisor</th>\n<th>Research Topic</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><strong>Willem Bester</strong></td>\n<td>Brink van der Merwe</td>\n<td>The pathology, amelioration and cure of catastrophic backtracking in extended regular expressions</td>\n</tr>\n<tr>\n<td><strong>Dirko Coetsee</strong></td>\n<td>McElory Hoffmann, Steve Kroon</td>\n<td>Automated spreadsheet integration</td>\n</tr>\n<tr>\n<td><strong>Jordan Masakuna</strong></td>\n<td>Dr Simukai Utete, Steve Kroon</td>\n<td>Robot games with randomisation</td>\n</tr>\n</tbody></table>\n"
+      }
+    ]
+  },
+  "reader.articles.ai-research-colloquium-2026": {
+    "key": "reader.articles.ai-research-colloquium-2026",
+    "appId": "reader",
+    "subroute": "articles/ai-research-colloquium-2026",
+    "title": "AI Research Colloquium 2026",
+    "excerpt": "A preview of this semester's interdisciplinary AI colloquium series.",
+    "shell": "default",
+    "meta": {
+      "sort_order": "2",
+      "card_badge": "Research"
+    },
+    "html": "<h2>AI Research Colloquium 2026</h2>\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur facilisis diam sed magna suscipit, nec dignissim leo feugiat. Phasellus blandit laoreet sem, vel dapibus augue ultrices a.</p>\n<p>Mauris vitae velit malesuada, sodales purus sed, fermentum turpis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Quisque tempus, mi non auctor tempus, neque nisi laoreet arcu, id tincidunt ipsum est at lectus.</p>\n<h3>What to Expect</h3>\n<ul>\n<li>Lorem ipsum sessions across machine learning topics</li>\n<li>Cross-faculty participation and discussion</li>\n<li>Short presentations followed by open Q&amp;A</li>\n</ul>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>AI Research Colloquium 2026</h2>\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur facilisis diam sed magna suscipit, nec dignissim leo feugiat. Phasellus blandit laoreet sem, vel dapibus augue ultrices a.</p>\n<p>Mauris vitae velit malesuada, sodales purus sed, fermentum turpis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Quisque tempus, mi non auctor tempus, neque nisi laoreet arcu, id tincidunt ipsum est at lectus.</p>\n<h3>What to Expect</h3>\n<ul>\n<li>Lorem ipsum sessions across machine learning topics</li>\n<li>Cross-faculty participation and discussion</li>\n<li>Short presentations followed by open Q&amp;A</li>\n</ul>\n"
+      }
+    ]
   },
   "reader.articles.hackathon-2026": {
     "key": "reader.articles.hackathon-2026",
@@ -71,7 +168,16 @@ export const CONTENT_ARTIFACTS = {
     "subroute": "articles/hackathon-2026",
     "title": "2026 SUDS Div and Conquer Web Development Hackathon",
     "excerpt": "Announcement and logistics for the 2026 event.",
-    "html": "<h2>2026 SUDS Div and Conquer Web Development Hackathon</h2>\n<p>Hey developer, we are announcing a hackathon.</p>\n<p>More information at <a href=\"https://hackathon.devsoc.co.za\">https://hackathon.devsoc.co.za</a>.</p>\n<h3>Hackathon Opening Event</h3>\n<p>Friday, 27 February 2026, 5:30pm at Math/Industrial 1005.</p>\n<p>Join us for an evening where we open DevSoc&#39;s first hackathon of 2026. Ask questions or find a team. If you cannot make it, you can still submit. We have over R8000 in cash prizes.</p>\n<p>Sign up for official communications via the MS form on the website or by scanning your student card at the opening event.</p>\n<h3>Submissions</h3>\n<p>Teams must email the official submission form to <code>devsoc@sun.ac.za</code> by 3 March at 11:59pm.</p>\n<p>Full guide: <a href=\"https://hackathon.devsoc.co.za/submissions\">https://hackathon.devsoc.co.za/submissions</a></p>\n<h3>Rulebook</h3>\n<p><a href=\"https://hackathon.devsoc.co.za/rulebook\">https://hackathon.devsoc.co.za/rulebook</a></p>\n<p>Please note submissions are only allowed on Cloudflare Pages, GitHub Pages, Vercel, WordPress, or Drupal.</p>\n"
+    "shell": "default",
+    "meta": {},
+    "html": "<h2>2026 SUDS Div and Conquer Web Development Hackathon</h2>\n<p>Hey developer, we are announcing a hackathon.</p>\n<p>More information at <a href=\"https://hackathon.devsoc.co.za\">https://hackathon.devsoc.co.za</a>.</p>\n<h3>Hackathon Opening Event</h3>\n<p>Friday, 27 February 2026, 5:30pm at Math/Industrial 1005.</p>\n<p>Join us for an evening where we open DevSoc&#39;s first hackathon of 2026. Ask questions or find a team. If you cannot make it, you can still submit. We have over R8000 in cash prizes.</p>\n<p>Sign up for official communications via the MS form on the website or by scanning your student card at the opening event.</p>\n<h3>Submissions</h3>\n<p>Teams must email the official submission form to <code>devsoc@sun.ac.za</code> by 3 March at 11:59pm.</p>\n<p>Full guide: <a href=\"https://hackathon.devsoc.co.za/submissions\">https://hackathon.devsoc.co.za/submissions</a></p>\n<h3>Rulebook</h3>\n<p><a href=\"https://hackathon.devsoc.co.za/rulebook\">https://hackathon.devsoc.co.za/rulebook</a></p>\n<p>Please note submissions are only allowed on Cloudflare Pages, GitHub Pages, Vercel, WordPress, or Drupal.</p>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>2026 SUDS Div and Conquer Web Development Hackathon</h2>\n<p>Hey developer, we are announcing a hackathon.</p>\n<p>More information at <a href=\"https://hackathon.devsoc.co.za\">https://hackathon.devsoc.co.za</a>.</p>\n<h3>Hackathon Opening Event</h3>\n<p>Friday, 27 February 2026, 5:30pm at Math/Industrial 1005.</p>\n<p>Join us for an evening where we open DevSoc&#39;s first hackathon of 2026. Ask questions or find a team. If you cannot make it, you can still submit. We have over R8000 in cash prizes.</p>\n<p>Sign up for official communications via the MS form on the website or by scanning your student card at the opening event.</p>\n<h3>Submissions</h3>\n<p>Teams must email the official submission form to <code>devsoc@sun.ac.za</code> by 3 March at 11:59pm.</p>\n<p>Full guide: <a href=\"https://hackathon.devsoc.co.za/submissions\">https://hackathon.devsoc.co.za/submissions</a></p>\n<h3>Rulebook</h3>\n<p><a href=\"https://hackathon.devsoc.co.za/rulebook\">https://hackathon.devsoc.co.za/rulebook</a></p>\n<p>Please note submissions are only allowed on Cloudflare Pages, GitHub Pages, Vercel, WordPress, or Drupal.</p>\n"
+      }
+    ]
   },
   "reader.articles.index": {
     "key": "reader.articles.index",
@@ -79,15 +185,164 @@ export const CONTENT_ARTIFACTS = {
     "subroute": "articles",
     "title": "Articles",
     "excerpt": "Collection of published department stories and updates.",
-    "html": "<h2>Articles</h2>\n<ul>\n<li><a href=\"/reader/articles/hackathon-2026\">2026 SUDS Div and Conquer Web Development Hackathon</a></li>\n</ul>\n"
+    "shell": "default",
+    "meta": {},
+    "html": "<h2>Articles</h2>\n<ul>\n<li><a href=\"/reader/articles/why-this-site\">Why This Site</a></li>\n<li><a href=\"/reader/articles/ai-research-colloquium-2026\">AI Research Colloquium 2026</a></li>\n<li><a href=\"/reader/articles/postgraduate-open-day-2026\">Postgraduate Open Day 2026</a></li>\n<li><a href=\"/reader/articles/industry-innovation-summit-2026\">Industry Innovation Summit 2026</a></li>\n<li><a href=\"/reader/articles/hackathon-2026\">2026 SUDS Div and Conquer Web Development Hackathon</a></li>\n</ul>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>Articles</h2>\n<ul>\n<li><a href=\"/reader/articles/why-this-site\">Why This Site</a></li>\n<li><a href=\"/reader/articles/ai-research-colloquium-2026\">AI Research Colloquium 2026</a></li>\n<li><a href=\"/reader/articles/postgraduate-open-day-2026\">Postgraduate Open Day 2026</a></li>\n<li><a href=\"/reader/articles/industry-innovation-summit-2026\">Industry Innovation Summit 2026</a></li>\n<li><a href=\"/reader/articles/hackathon-2026\">2026 SUDS Div and Conquer Web Development Hackathon</a></li>\n</ul>\n"
+      }
+    ]
+  },
+  "reader.articles.industry-innovation-summit-2026": {
+    "key": "reader.articles.industry-innovation-summit-2026",
+    "appId": "reader",
+    "subroute": "articles/industry-innovation-summit-2026",
+    "title": "Industry Innovation Summit 2026",
+    "excerpt": "Collaboration forum between students, faculty, and industry partners.",
+    "shell": "default",
+    "meta": {
+      "sort_order": "4",
+      "card_badge": "Partnerships"
+    },
+    "html": "<h2>Industry Innovation Summit 2026</h2>\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vulputate condimentum nunc, sit amet imperdiet lacus scelerisque sed. In malesuada feugiat sem, vel gravida orci euismod ac.</p>\n<p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam commodo vitae nisi eget posuere. Integer accumsan cursus purus, vel ultrices urna sagittis id.</p>\n<h3>Summit Focus</h3>\n<ul>\n<li>Applied research collaboration opportunities</li>\n<li>Student project showcases</li>\n<li>Discussion on future skills and emerging technology trends</li>\n</ul>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>Industry Innovation Summit 2026</h2>\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vulputate condimentum nunc, sit amet imperdiet lacus scelerisque sed. In malesuada feugiat sem, vel gravida orci euismod ac.</p>\n<p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam commodo vitae nisi eget posuere. Integer accumsan cursus purus, vel ultrices urna sagittis id.</p>\n<h3>Summit Focus</h3>\n<ul>\n<li>Applied research collaboration opportunities</li>\n<li>Student project showcases</li>\n<li>Discussion on future skills and emerging technology trends</li>\n</ul>\n"
+      }
+    ]
+  },
+  "reader.articles.postgraduate-open-day-2026": {
+    "key": "reader.articles.postgraduate-open-day-2026",
+    "appId": "reader",
+    "subroute": "articles/postgraduate-open-day-2026",
+    "title": "Postgraduate Open Day 2026",
+    "excerpt": "Department showcase for honours, master's, and doctoral pathways.",
+    "shell": "default",
+    "meta": {
+      "sort_order": "3",
+      "card_badge": "Students"
+    },
+    "html": "<h2>Postgraduate Open Day 2026</h2>\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ac lorem vitae lectus feugiat gravida. Vivamus hendrerit lorem at nunc feugiat, in porta purus bibendum.</p>\n<p>Nulla facilisi. Etiam finibus enim non lectus sodales, sed tincidunt nisi tempus. Nam at pulvinar ipsum, et accumsan purus. Sed non turpis feugiat, scelerisque metus nec, faucibus velit.</p>\n<h3>Event Highlights</h3>\n<ul>\n<li>Programme overviews and research area introductions</li>\n<li>Supervisor meet-and-greet opportunities</li>\n<li>Practical guidance on applications and funding</li>\n</ul>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>Postgraduate Open Day 2026</h2>\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ac lorem vitae lectus feugiat gravida. Vivamus hendrerit lorem at nunc feugiat, in porta purus bibendum.</p>\n<p>Nulla facilisi. Etiam finibus enim non lectus sodales, sed tincidunt nisi tempus. Nam at pulvinar ipsum, et accumsan purus. Sed non turpis feugiat, scelerisque metus nec, faucibus velit.</p>\n<h3>Event Highlights</h3>\n<ul>\n<li>Programme overviews and research area introductions</li>\n<li>Supervisor meet-and-greet opportunities</li>\n<li>Practical guidance on applications and funding</li>\n</ul>\n"
+      }
+    ]
+  },
+  "reader.articles.why-this-site": {
+    "key": "reader.articles.why-this-site",
+    "appId": "reader",
+    "subroute": "articles/why-this-site",
+    "title": "Why This Site",
+    "excerpt": "Why we chose an OS-style web architecture for department content.",
+    "shell": "default",
+    "meta": {
+      "sort_order": "1",
+      "card_title": "Why This Site",
+      "card_excerpt": "Why the department site uses an OS-style model with fast, flexible content workflows.",
+      "card_badge": "Editorial",
+      "card_variant": "feature"
+    },
+    "html": "<h2>Why This Site</h2>\n<p>This site was designed around a simple idea: a university web presence should feel fast, stable, and practical for daily use.</p>\n<p>Traditional CMS workflows can be powerful, but they often make deep customization and rapid interaction design expensive in time. This platform keeps content in markdown while preserving full control over application behavior and interface design.</p>\n<h3>What This Model Gives Us</h3>\n<ul>\n<li>Content behaves like a lightweight markdown CMS.</li>\n<li>Application shells stay programmable with Svelte, so custom workflows are possible without fighting the CMS.</li>\n<li>Navigation is URL-driven and window-based, so users can keep context while moving between people, articles, and tools.</li>\n</ul>\n<h3>Why It Matters</h3>\n<p>The goal is not to replace browser power features. It is to add site-level utility without removing tabbed browsing, history, and normal web behavior. One tab can be enough for focused work, but multiple tabs remain fully supported for power users.</p>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>Why This Site</h2>\n<p>This site was designed around a simple idea: a university web presence should feel fast, stable, and practical for daily use.</p>\n<p>Traditional CMS workflows can be powerful, but they often make deep customization and rapid interaction design expensive in time. This platform keeps content in markdown while preserving full control over application behavior and interface design.</p>\n<h3>What This Model Gives Us</h3>\n<ul>\n<li>Content behaves like a lightweight markdown CMS.</li>\n<li>Application shells stay programmable with Svelte, so custom workflows are possible without fighting the CMS.</li>\n<li>Navigation is URL-driven and window-based, so users can keep context while moving between people, articles, and tools.</li>\n</ul>\n<h3>Why It Matters</h3>\n<p>The goal is not to replace browser power features. It is to add site-level utility without removing tabbed browsing, history, and normal web behavior. One tab can be enough for focused work, but multiple tabs remain fully supported for power users.</p>\n"
+      }
+    ]
+  },
+  "reader.general.about": {
+    "key": "reader.general.about",
+    "appId": "reader",
+    "subroute": "general/about",
+    "title": "About the Department",
+    "excerpt": "High-level overview of the Computer Science Department.",
+    "shell": "default",
+    "meta": {},
+    "html": "<h2>About the Department</h2>\n<p>The department combines teaching, research, and industry collaboration across core and emerging computing fields.</p>\n<p>Use Home as the primary gateway to people, articles, and navigation across applications.</p>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>About the Department</h2>\n<p>The department combines teaching, research, and industry collaboration across core and emerging computing fields.</p>\n<p>Use Home as the primary gateway to people, articles, and navigation across applications.</p>\n"
+      }
+    ]
+  },
+  "reader.general.help": {
+    "key": "reader.general.help",
+    "appId": "reader",
+    "subroute": "general/help",
+    "title": "Help",
+    "excerpt": "Quick help for navigating this site.",
+    "shell": "default",
+    "meta": {},
+    "html": "<h2>Help</h2>\n<p>This website works like a desktop workspace.</p>\n<ul>\n<li>The URL decides which app and content route is active.</li>\n<li>Apps stay open until you close their window.</li>\n<li>Sidebar entries represent open windows.</li>\n<li>Right-click anywhere and choose <strong>Help</strong> to return to this page.</li>\n</ul>\n<p>If you are new here, start on Home and open articles from the landing page cards.</p>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>Help</h2>\n<p>This website works like a desktop workspace.</p>\n<ul>\n<li>The URL decides which app and content route is active.</li>\n<li>Apps stay open until you close their window.</li>\n<li>Sidebar entries represent open windows.</li>\n<li>Right-click anywhere and choose <strong>Help</strong> to return to this page.</li>\n</ul>\n<p>If you are new here, start on Home and open articles from the landing page cards.</p>\n"
+      }
+    ]
+  },
+  "reader.general.programs": {
+    "key": "reader.general.programs",
+    "appId": "reader",
+    "subroute": "general/programs",
+    "title": "Programmes",
+    "excerpt": "Programme information overview for prospective students.",
+    "shell": "default",
+    "meta": {},
+    "html": "<h2>Programmes</h2>\n<p>Programme information pages will be expanded in this section.</p>\n<p>For now, use People and Articles to explore the department and current activity.</p>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>Programmes</h2>\n<p>Programme information pages will be expanded in this section.</p>\n<p>For now, use People and Articles to explore the department and current activity.</p>\n"
+      }
+    ]
+  },
+  "reader.general.research": {
+    "key": "reader.general.research",
+    "appId": "reader",
+    "subroute": "general/research",
+    "title": "Research",
+    "excerpt": "Research areas, groups, and current themes.",
+    "shell": "default",
+    "meta": {},
+    "html": "<h2>Research</h2>\n<p>This section will host detailed research information and lab highlights.</p>\n<p>In the meantime, browse articles for recent research-related updates.</p>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>Research</h2>\n<p>This section will host detailed research information and lab highlights.</p>\n<p>In the meantime, browse articles for recent research-related updates.</p>\n"
+      }
+    ]
   },
   "reader.help": {
     "key": "reader.help",
     "appId": "reader",
     "subroute": "help",
     "title": "Help",
-    "excerpt": "Quick help for navigating this site.",
-    "html": "<h2>Help</h2>\n<p>This website works like a small desktop.</p>\n<ul>\n<li>The URL decides which app and page is active.</li>\n<li>Apps stay open until you close their window.</li>\n<li>Sidebar entries represent open windows.</li>\n<li>Right-click anywhere and choose <strong>Help</strong> to return to this page.</li>\n</ul>\n<p>Lorem ipsum style tip: keep exploring by opening pages in new windows and switching focus from the sidebar.</p>\n"
+    "excerpt": "Help has moved to Reader / General / Help.",
+    "shell": "default",
+    "meta": {},
+    "html": "<h2>Help</h2>\n<p>This page has moved.</p>\n<ul>\n<li>Open the new route at <a href=\"/reader/general/help\">/reader/general/help</a>.</li>\n<li>Existing links to <code>/reader/help</code> are kept for compatibility.</li>\n</ul>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>Help</h2>\n<p>This page has moved.</p>\n<ul>\n<li>Open the new route at <a href=\"/reader/general/help\">/reader/general/help</a>.</li>\n<li>Existing links to <code>/reader/help</code> are kept for compatibility.</li>\n</ul>\n"
+      }
+    ]
   },
   "reader.index": {
     "key": "reader.index",
@@ -95,6 +350,15 @@ export const CONTENT_ARTIFACTS = {
     "subroute": "",
     "title": "Reader",
     "excerpt": "Dedicated reading application for delegated content.",
-    "html": "<h2>Reader Application</h2>\n<p>Open any article from Home or use the left navigation to browse article collections.</p>\n"
+    "shell": "default",
+    "meta": {},
+    "html": "<h2>Reader Application</h2>\n<p>Open any article from Home or use the left navigation to browse article collections.</p>\n",
+    "sections": [
+      {
+        "key": "000-main",
+        "slot": "main",
+        "html": "<h2>Reader Application</h2>\n<p>Open any article from Home or use the left navigation to browse article collections.</p>\n"
+      }
+    ]
   }
 };
