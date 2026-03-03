@@ -9,6 +9,8 @@ excerpt: Academic and administrative staff listings from the official department
 
 Source snapshot: [cs.sun.ac.za/people/staff](https://cs.sun.ac.za/people/staff/) (fetched on March 3, 2026).
 
+<!-- TODO(source-attribution-remove): Local content currently mirrors the legacy source snapshot. Remove the source citation after final migration review. -->
+
 ### Academic Staff
 
 | Photo | Name | Role | Contact | Research Interests |

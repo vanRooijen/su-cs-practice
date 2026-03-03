@@ -16,3 +16,5 @@ From the current website content:
 The site positions the division as both academically strong and industry-relevant, with undergraduate and postgraduate pathways.
 
 Source: https://cs.sun.ac.za/
+
+<!-- TODO(source-attribution-revisit): Legacy source still contains additional relevant information. Keep citation and merge missing details before removing it. -->

@@ -21,3 +21,5 @@ For additional location and direction detail, use the official contact page map 
 ![Website QR code](/cs-assets/qr.png)
 
 Source: https://cs.sun.ac.za/contact/
+
+<!-- TODO(source-attribution-revisit): Legacy source still contains additional relevant information. Keep citation and merge missing details before removing it. -->

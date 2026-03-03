@@ -7,6 +7,8 @@ excerpt: Source-synced content for Undergraduate programme and modules.
 
 Source snapshot: [cs.sun.ac.za/teaching/UG/](https://cs.sun.ac.za/teaching/UG/) (fetched on March 3, 2026).
 
+<!-- TODO(source-attribution-remove): Local content currently mirrors the legacy source snapshot. Remove the source citation after final migration review. -->
+
 ## BSc Computer Science (CS) Programme
 
 - **[Focus General Computer Science](https://www.sun.ac.za/english/Documents/Yearbooks/Current/2023-Science.pdf#page=76)** (Code: 18139) - The General Computer Science focal area combines a Computer Science major with a choice of Science modules. Please consult Section 4.4.1 of the Science calendar for a list of the compulsory and elective modules for this focal area.

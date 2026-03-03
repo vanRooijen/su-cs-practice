@@ -9,6 +9,8 @@ excerpt: Alumni faculty and graduate records from the official department alumni
 
 Source snapshot: [cs.sun.ac.za/people/alumni](https://cs.sun.ac.za/people/alumni/) (fetched on March 3, 2026).
 
+<!-- TODO(source-attribution-revisit): Legacy source still contains additional relevant information. Keep citation and merge missing details before removing it. -->
+
 ### Alumni Faculty
 
 - Bagula, BA

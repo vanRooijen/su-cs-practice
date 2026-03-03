@@ -7,6 +7,8 @@ excerpt: As explained in [our information videos, available on the University’
 
 Source snapshot: [cs.sun.ac.za/teaching/prospectiveUG/](https://cs.sun.ac.za/teaching/prospectiveUG/) (fetched on March 3, 2026).
 
+<!-- TODO(source-attribution-remove): Local content currently mirrors the legacy source snapshot. Remove the source citation after final migration review. -->
+
 ## Overview
 
 - [What is Computer Science](#what-is-computer-science)

@@ -19,11 +19,9 @@
 
   const runtimeId = windowManager.getRuntimeId?.() ?? null;
   const MOBILE_VIEWPORT_MEDIA_QUERY = '(max-width: 860px)';
-  const MOBILE_DOCK_FALLBACK_HEIGHT = 52;
   let localKeepAliveMinimizedWindowIds = new Set();
 
   let workspaceElement;
-  let mobileDockElement;
   let isMobileViewport = false;
   let mobileDrawer = null;
   let contextMenuElement;
@@ -152,33 +150,6 @@
     window.open(path, '_blank', 'noopener,noreferrer');
   }
 
-  function getMobileDockHeight() {
-    if (!isMobileViewport) {
-      return 0;
-    }
-
-    const measuredHeight = mobileDockElement?.getBoundingClientRect?.().height;
-    if (Number.isFinite(measuredHeight) && measuredHeight > 0) {
-      return measuredHeight;
-    }
-
-    return MOBILE_DOCK_FALLBACK_HEIGHT;
-  }
-
-  function applyWorkspaceRect() {
-    if (!workspaceElement) {
-      return;
-    }
-
-    const rect = workspaceElement.getBoundingClientRect();
-    const usableHeight = Math.max(1, rect.height - getMobileDockHeight());
-
-    windowManager.setWorkspaceRect({
-      width: Math.max(1, rect.width),
-      height: usableHeight,
-    });
-  }
-
   function setMobileViewport(nextIsMobile) {
     const normalized = Boolean(nextIsMobile);
     if (normalized === isMobileViewport) {
@@ -189,10 +160,6 @@
     if (!normalized) {
       closeMobileDrawer();
     }
-
-    void tick().then(() => {
-      applyWorkspaceRect();
-    });
   }
 
   function closeMobileDrawer() {
@@ -379,7 +346,6 @@
   function onGlobalResize() {
     clampContextMenuPosition();
     void updateSidebarActionsMenuPosition();
-    applyWorkspaceRect();
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
       return;
     }
@@ -605,13 +571,19 @@
       return () => {};
     }
 
-    applyWorkspaceRect();
+    const applyRect = (rect) => {
+      windowManager.setWorkspaceRect({
+        width: Math.max(1, rect.width),
+        height: Math.max(1, rect.height),
+      });
+    };
+
+    const initialRect = workspaceElement.getBoundingClientRect();
+    applyRect(initialRect);
 
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        if (entry.target === workspaceElement) {
-          applyWorkspaceRect();
-        }
+        applyRect(entry.contentRect);
       }
     });
 
@@ -865,7 +837,7 @@
   </div>
 
   {#if isMobileViewport}
-    <nav class="mobile-dock" aria-label="Mobile controls" bind:this={mobileDockElement}>
+    <nav class="mobile-dock" aria-label="Mobile controls">
       <button type="button" on:click={() => toggleMobileDrawer('apps')}>
         <span class="inline-icon" aria-hidden="true">{@html iconHome}</span>
         <span>Apps</span>
@@ -981,19 +953,14 @@
     --su-focus-soft: rgba(97, 34, 59, 0.12);
     --su-tab-highlight: rgba(202, 162, 88, 0.14);
     --su-panel-radius: 0.42rem;
-    --su-mobile-dock-height: 3.05rem;
-    --su-mobile-safe-inset-bottom: env(safe-area-inset-bottom, 0px);
-    --su-mobile-dock-total-height: calc(var(--su-mobile-dock-height) + var(--su-mobile-safe-inset-bottom));
 
     height: 100vh;
-    height: 100dvh;
     box-sizing: border-box;
     display: grid;
     grid-template-rows: auto 1fr;
     gap: 0;
     padding: 0;
-    min-height: 100vh;
-    min-height: 100dvh;
+    min-height: 0;
     background-color: var(--su-paper);
     color: var(--su-ink);
     font-family: var(--su-font-ui, 'SU Raleway Local', 'SU Raleway', 'Raleway', 'Trebuchet MS', sans-serif);
@@ -1542,8 +1509,6 @@
     background: color-mix(in srgb, var(--su-topbar) 94%, white 6%);
     border-top: 1px solid var(--su-line);
     box-shadow: 0 -8px 20px rgba(44, 42, 41, 0.08);
-    min-height: var(--su-mobile-dock-total-height);
-    padding-bottom: var(--su-mobile-safe-inset-bottom);
   }
 
   .mobile-dock button {
@@ -1555,7 +1520,7 @@
     font-size: 0.84rem;
     font-weight: 600;
     line-height: 1.2;
-    min-height: var(--su-mobile-dock-height);
+    min-height: 3.05rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1574,7 +1539,7 @@
 
   .mobile-drawer-backdrop {
     position: fixed;
-    inset: 0 0 var(--su-mobile-dock-total-height) 0;
+    inset: 0 0 3.05rem 0;
     z-index: 19;
     background: rgba(44, 42, 41, 0.22);
     display: flex;
@@ -1781,7 +1746,7 @@
     }
 
     .workspace {
-      padding-bottom: var(--su-mobile-dock-total-height);
+      padding-bottom: 3.05rem;
     }
 
     .desktop-layer {

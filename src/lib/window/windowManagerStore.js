@@ -1,8 +1,6 @@
 import { get, writable } from 'svelte/store';
 import { APP_DEFINITIONS, DEFAULT_APP_ID } from '../navigation/siteManifest.js';
 import {
-  MIN_WINDOW_HEIGHT,
-  MIN_WINDOW_WIDTH,
   clampBoundsToWorkspace,
   clampPositionToWorkspace,
   cloneBounds,
@@ -54,11 +52,11 @@ export function createWindowManagerStore() {
   }
 
   function sanitizeWorkspaceRect(candidateRect, fallbackRect) {
-    const fallbackWidth = Math.max(Math.floor(fallbackRect?.width ?? 0), MIN_WINDOW_WIDTH);
-    const fallbackHeight = Math.max(Math.floor(fallbackRect?.height ?? 0), MIN_WINDOW_HEIGHT);
+    const fallbackWidth = Math.max(Math.floor(fallbackRect?.width ?? 0), 1);
+    const fallbackHeight = Math.max(Math.floor(fallbackRect?.height ?? 0), 1);
 
-    const width = Math.max(Math.floor(candidateRect?.width ?? fallbackWidth), MIN_WINDOW_WIDTH);
-    const height = Math.max(Math.floor(candidateRect?.height ?? fallbackHeight), MIN_WINDOW_HEIGHT);
+    const width = Math.max(Math.floor(candidateRect?.width ?? fallbackWidth), 1);
+    const height = Math.max(Math.floor(candidateRect?.height ?? fallbackHeight), 1);
 
     return { width, height };
   }
@@ -396,8 +394,8 @@ export function createWindowManagerStore() {
 
   function setWorkspaceRect(rect) {
     store.update((state) => {
-      const normalizedWidth = Math.max(Math.floor(rect?.width ?? 0), MIN_WINDOW_WIDTH);
-      const normalizedHeight = Math.max(Math.floor(rect?.height ?? 0), MIN_WINDOW_HEIGHT);
+      const normalizedWidth = Math.max(Math.floor(rect?.width ?? 0), 1);
+      const normalizedHeight = Math.max(Math.floor(rect?.height ?? 0), 1);
 
       if (state.workspaceRect.width === normalizedWidth && state.workspaceRect.height === normalizedHeight) {
         return state;

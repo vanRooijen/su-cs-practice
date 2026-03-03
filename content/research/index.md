@@ -13,3 +13,5 @@ excerpt: Research groups synchronized from the official Computer Science researc
 - [Telkom-Siemens Centre of Excellence in ATM and Broadband Networks and their Applications »](/research/broadband-networks) (3 members listed)
 
 Source snapshot: [cs.sun.ac.za/research/](https://cs.sun.ac.za/research/) (fetched on March 3, 2026).
+
+<!-- TODO(source-attribution-revisit): Legacy source still contains additional relevant information. Keep citation and merge missing details before removing it. -->

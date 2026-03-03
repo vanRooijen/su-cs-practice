@@ -7,6 +7,8 @@ excerpt: Source-synced content for Postgraduate Modules.
 
 Source snapshot: [cs.sun.ac.za/teaching/PG/](https://cs.sun.ac.za/teaching/PG/) (fetched on March 3, 2026).
 
+<!-- TODO(source-attribution-remove): Local content currently mirrors the legacy source snapshot. Remove the source citation after final migration review. -->
+
 ## Programmes
 
 - **[Honours in Computer Science](http://www.cs.sun.ac.za/courses/cs797)** (Code: 18139-797) - Stream Computer Science. This stream consists of 6 modules of 16 credits each, as well as a compulsory programming project of 32 credits. At most two modules may be taken from related departments with the permission of the Computer Science. Not all modules are necessarily offered each year.

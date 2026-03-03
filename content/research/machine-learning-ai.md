@@ -24,3 +24,5 @@ This group considers almost any aspect of the general decision-making problem, i
 | <img src="/cs-assets/people/evanbiljon.jpg" alt="Elan van Biljon" width="40" height="40" /> | Elan van Biljon |  |
 
 Source snapshot: [cs.sun.ac.za/research/](https://cs.sun.ac.za/research/) (fetched on March 3, 2026).
+
+<!-- TODO(source-attribution-revisit): Legacy source still contains additional relevant information. Keep citation and merge missing details before removing it. -->

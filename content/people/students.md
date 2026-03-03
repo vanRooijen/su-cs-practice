@@ -9,6 +9,8 @@ excerpt: Postgraduate student listings from the official department people page.
 
 Source snapshot: [cs.sun.ac.za/people/students](https://cs.sun.ac.za/people/students/) (fetched on March 3, 2026).
 
+<!-- TODO(source-attribution-remove): Local content currently mirrors the legacy source snapshot. Remove the source citation after final migration review. -->
+
 ### Doctoral Students
 
 | Photo | Name | Supervisor | Research Topic |

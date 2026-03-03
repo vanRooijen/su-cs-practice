@@ -32,3 +32,5 @@ Decanting Facility, Hammanshand Road
 - Undergraduate enquiries: `undergrad@cs.sun.ac.za`
 
 Source: https://cs.sun.ac.za/contact/
+
+<!-- TODO(source-attribution-revisit): Legacy source still contains additional relevant information. Keep citation and merge missing details before removing it. -->

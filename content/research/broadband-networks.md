@@ -18,3 +18,5 @@ The University of Stellenbosch Unit of the Telkom-Siemens Centre of Excellence i
 | <img src="/cs-assets/people/visserw.jpg" alt="Willem Visser" width="40" height="40" /> | Willem Visser | [Link](http://www.cs.sun.ac.za/~wvisser/) |
 
 Source snapshot: [cs.sun.ac.za/research/](https://cs.sun.ac.za/research/) (fetched on March 3, 2026).
+
+<!-- TODO(source-attribution-revisit): Legacy source still contains additional relevant information. Keep citation and merge missing details before removing it. -->

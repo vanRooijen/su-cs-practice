@@ -7,6 +7,8 @@ excerpt: Admission to our programme is based on selection criteria, which includ
 
 Source snapshot: [cs.sun.ac.za/teaching/prospectivePG/](https://cs.sun.ac.za/teaching/prospectivePG/) (fetched on March 3, 2026).
 
+<!-- TODO(source-attribution-remove): Local content currently mirrors the legacy source snapshot. Remove the source citation after final migration review. -->
+
 ## Overview
 
 - [What are the entry requirements?](#what-are-the-entry-requirements)

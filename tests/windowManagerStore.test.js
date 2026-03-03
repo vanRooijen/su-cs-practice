@@ -40,6 +40,23 @@ test('restored window bounds are clamped after workspace shrink', () => {
   assert.ok(restored.bounds.height <= snapshot.workspaceRect.height);
 });
 
+test('workspace width is not forced to desktop minimums on narrow viewports', () => {
+  const store = createWindowManagerStore();
+
+  store.setWorkspaceRect({ width: 360, height: 740 });
+  store.applyRoute(makeRoute('/people/staff', 'people', 'staff'));
+  const windowId = store.getSnapshot().focusedWindowId;
+  assert.ok(windowId, 'expected focused window');
+
+  store.toggleMaximize(windowId);
+  const snapshot = store.getSnapshot();
+
+  assert.equal(snapshot.workspaceRect.width, 360);
+  assert.equal(snapshot.workspaceRect.height, 740);
+  assert.equal(snapshot.windows[windowId].bounds.width, 360);
+  assert.equal(snapshot.windows[windowId].bounds.height, 740);
+});
+
 test('desktop root route minimizes windows and clears focus', () => {
   const store = createWindowManagerStore();
 

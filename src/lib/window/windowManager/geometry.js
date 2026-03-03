@@ -51,8 +51,10 @@ export function makeCenteredBounds(workspaceRect, seed, preferredSize = null) {
     Number.isFinite(preferredSize?.height) && preferredSize.height > 0
       ? Math.round(preferredSize.height)
       : Math.floor(workspaceRect.height * 0.72);
-  const width = clamp(preferredWidth, MIN_WINDOW_WIDTH, workspaceRect.width);
-  const height = clamp(preferredHeight, MIN_WINDOW_HEIGHT, workspaceRect.height);
+  const minWidth = Math.min(MIN_WINDOW_WIDTH, workspaceRect.width);
+  const minHeight = Math.min(MIN_WINDOW_HEIGHT, workspaceRect.height);
+  const width = clamp(preferredWidth, minWidth, workspaceRect.width);
+  const height = clamp(preferredHeight, minHeight, workspaceRect.height);
 
   const offsetStep = ((seed - 1) % 7) * 24;
   const baseX = Math.floor((workspaceRect.width - width) / 2);

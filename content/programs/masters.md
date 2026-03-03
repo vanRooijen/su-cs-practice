@@ -7,6 +7,8 @@ excerpt: Our Masters degree is a two-year programme based on thesis work. The go
 
 Source snapshot: [cs.sun.ac.za/teaching/masters/](https://cs.sun.ac.za/teaching/masters/) (fetched on March 3, 2026).
 
+<!-- TODO(source-attribution-remove): Local content currently mirrors the legacy source snapshot. Remove the source citation after final migration review. -->
+
 ## Overview
 
 Our Masters degree is a two-year programme based on thesis work. The goal is to teach students how to evaluate and conduct world-class research, and become a master in their field! While the work is not required to be original cutting-edge research, it often is. The reading, writing, and critical thinking skills acquired during the Masters degree are also much sought-after in industry, and most of our Masters graduates who do not carry on with a Doctoral degree, go on to have successful careers in the local industry and also abroad.
