@@ -462,15 +462,6 @@
     onCloseOtherInstances();
   }
 
-  function openContextLink() {
-    if (!contextMenu.linkPath) {
-      return;
-    }
-
-    openPath(contextMenu.linkPath);
-    closeContextMenu();
-  }
-
   function openContextLinkInNewWindow() {
     if (!contextMenu.linkPath) {
       return;
@@ -1036,11 +1027,10 @@
       style={`left:${contextMenu.x}px;top:${contextMenu.y}px;`}
     >
       {#if contextMenu.linkPath}
-        <button type="button" role="menuitem" on:click={openContextLink}>Open Link</button>
-        <button type="button" role="menuitem" on:click={openContextLinkInNewTab}>Open Link in New Tab</button>
         <button type="button" role="menuitem" on:click={openContextLinkInNewWindow}>
-          Open Link in New Window
+          Open in New App Window
         </button>
+        <button type="button" role="menuitem" on:click={openContextLinkInNewTab}>Open in New Browser Tab</button>
         <hr />
       {/if}
 

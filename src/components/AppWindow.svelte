@@ -74,6 +74,14 @@
     return Math.max(minimum, Math.min(value, maximum));
   }
 
+  function resolveWorkspaceViewportOrigin() {
+    const parentRect = windowElement?.parentElement?.getBoundingClientRect?.();
+    return {
+      left: Number.isFinite(parentRect?.left) ? parentRect.left : 0,
+      top: Number.isFinite(parentRect?.top) ? parentRect.top : 0,
+    };
+  }
+
   function toDraggedPosition(interaction, clientX, clientY) {
     const rawX = interaction.startWindowX + (clientX - interaction.startPointerX);
     const rawY = interaction.startWindowY + (clientY - interaction.startPointerY);
@@ -97,16 +105,19 @@
   }
 
   function resolveRestorePositionForDrag(event) {
+    const workspaceOrigin = resolveWorkspaceViewportOrigin();
+    const pointerWorkspaceX = event.clientX - workspaceOrigin.left;
+    const pointerWorkspaceY = event.clientY - workspaceOrigin.top;
     const fallbackBounds = windowState.restoreBounds ?? windowState.bounds;
     const restoreWidth = Math.max(1, Math.round(fallbackBounds.width));
     const restoreHeight = Math.max(1, Math.round(fallbackBounds.height));
     const currentWidth = Math.max(1, Math.round(windowState.bounds.width));
     const currentHeight = Math.max(1, Math.round(windowState.bounds.height));
-    const pointerOffsetX = clamp(event.clientX - windowState.bounds.x, 0, currentWidth);
-    const pointerOffsetY = clamp(event.clientY - windowState.bounds.y, 0, currentHeight);
+    const pointerOffsetX = clamp(pointerWorkspaceX - windowState.bounds.x, 0, currentWidth);
+    const pointerOffsetY = clamp(pointerWorkspaceY - windowState.bounds.y, 0, currentHeight);
     const pointerXRatio = pointerOffsetX / currentWidth;
-    const anchoredX = event.clientX - pointerXRatio * restoreWidth;
-    const anchoredY = event.clientY - pointerOffsetY;
+    const anchoredX = pointerWorkspaceX - pointerXRatio * restoreWidth;
+    const anchoredY = pointerWorkspaceY - pointerOffsetY;
     const workspaceWidth = Math.max(1, Math.round(workspaceRect?.width ?? currentWidth));
     const workspaceHeight = Math.max(1, Math.round(workspaceRect?.height ?? currentHeight));
     const maxX = Math.max(0, workspaceWidth - restoreWidth);

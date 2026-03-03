@@ -159,7 +159,7 @@ describe('AppWindow component', () => {
   it('dragging a maximized header requests restore-for-drag with a clamped position', async () => {
     const onRestoreForDrag = vi.fn();
     const onMove = vi.fn();
-    const { getByRole } = render(AppWindow, {
+    const { container, getByRole } = render(AppWindow, {
       props: makeProps({
         isMaximized: true,
         bounds: {
@@ -181,18 +181,34 @@ describe('AppWindow component', () => {
       },
     });
 
+    const windowNode = container.querySelector('.app-window');
+    const workspaceNode = windowNode?.parentElement;
+    if (workspaceNode) {
+      vi.spyOn(workspaceNode, 'getBoundingClientRect').mockReturnValue({
+        x: 240,
+        y: 96,
+        left: 240,
+        top: 96,
+        right: 1440,
+        bottom: 896,
+        width: 1200,
+        height: 800,
+        toJSON: () => ({}),
+      });
+    }
+
     const header = getByRole('group', { name: 'Window header' });
     await fireEvent.pointerDown(header, {
       button: 0,
       pointerId: 1,
       clientX: 1050,
-      clientY: 16,
+      clientY: 112,
     });
     await fireEvent.pointerUp(window, {
       button: 0,
       pointerId: 1,
       clientX: 1075,
-      clientY: 20,
+      clientY: 116,
     });
 
     expect(onRestoreForDrag).toHaveBeenCalledTimes(1);
