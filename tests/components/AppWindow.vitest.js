@@ -1,5 +1,5 @@
-import { afterEach, describe, expect, it } from 'vitest';
-import { cleanup, render } from '@testing-library/svelte';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { cleanup, fireEvent, render } from '@testing-library/svelte';
 import AppWindow from '../../src/components/AppWindow.svelte';
 
 function makeWindowState(overrides = {}) {
@@ -115,5 +115,44 @@ describe('AppWindow component', () => {
     expect(windowNode?.getAttribute('data-maximized')).toBe('true');
     expect(getByRole('button', { name: 'Maximize window' }).hasAttribute('disabled')).toBe(true);
     expect(container.querySelector('.resize-handle')).toBe(null);
+  });
+
+  it('double-clicking the header emits a maximize toggle request', async () => {
+    const onMaximize = vi.fn();
+    const { getByRole } = render(AppWindow, {
+      props: makeProps(),
+      events: {
+        maximize: onMaximize,
+      },
+    });
+
+    await fireEvent.dblClick(getByRole('group', { name: 'Window header' }));
+
+    expect(onMaximize).toHaveBeenCalledTimes(1);
+    expect(onMaximize.mock.calls[0][0]?.detail?.windowId).toBe(1);
+  });
+
+  it('right-clicking the header emits minimize and suppresses default context menu', () => {
+    const onMinimize = vi.fn();
+    const { getByRole } = render(AppWindow, {
+      props: makeProps(),
+      events: {
+        minimize: onMinimize,
+      },
+    });
+
+    const header = getByRole('group', { name: 'Window header' });
+    const event = new MouseEvent('contextmenu', {
+      bubbles: true,
+      cancelable: true,
+      button: 2,
+    });
+
+    const dispatchResult = header.dispatchEvent(event);
+
+    expect(dispatchResult).toBe(false);
+    expect(event.defaultPrevented).toBe(true);
+    expect(onMinimize).toHaveBeenCalledTimes(1);
+    expect(onMinimize.mock.calls[0][0]?.detail?.windowId).toBe(1);
   });
 });

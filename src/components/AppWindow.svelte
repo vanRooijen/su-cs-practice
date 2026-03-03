@@ -22,6 +22,14 @@
   let latestPointerPosition = null;
   let dragPreviewOffset = null;
 
+  function setGlobalDragCursor(isActive) {
+    if (typeof document === 'undefined' || !document.body) {
+      return;
+    }
+
+    document.body.classList.toggle('wm-window-dragging', Boolean(isActive));
+  }
+
   function addWindowInteractionListeners() {
     if (hasWindowInteractionListeners) {
       return;
@@ -178,6 +186,30 @@
     dispatch('historyForward', { windowId: windowState.windowId });
   }
 
+  function handleHeaderDoubleClick(event) {
+    const target = event.target instanceof Element ? event.target : null;
+    if (target?.closest('button, a, input, textarea, select')) {
+      return;
+    }
+
+    if (forceMaximized) {
+      return;
+    }
+
+    dispatch('maximize', { windowId: windowState.windowId });
+  }
+
+  function handleHeaderContextMenu(event) {
+    const target = event.target instanceof Element ? event.target : null;
+    if (target?.closest('button, a, input, textarea, select')) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    dispatch('minimize', { windowId: windowState.windowId });
+  }
+
   function startDrag(event) {
     if (event.button !== 0 || isEffectivelyMaximized) {
       return;
@@ -197,6 +229,7 @@
       startWindowX: windowState.bounds.x,
       startWindowY: windowState.bounds.y,
     };
+    setGlobalDragCursor(true);
     dragPreviewOffset = { x: 0, y: 0 };
     interactionSourceElement = event.currentTarget instanceof Element ? event.currentTarget : windowElement;
 
@@ -261,6 +294,7 @@
     const sourceElement = interactionSourceElement;
     interactionState = null;
     interactionSourceElement = null;
+    setGlobalDragCursor(false);
     dragPreviewOffset = null;
     cancelInteractionFrame();
     removeWindowInteractionListeners();
@@ -273,6 +307,7 @@
   onDestroy(() => {
     interactionState = null;
     interactionSourceElement = null;
+    setGlobalDragCursor(false);
     dragPreviewOffset = null;
     cancelInteractionFrame();
     removeWindowInteractionListeners();
@@ -295,6 +330,7 @@
     interactionState?.kind === 'drag' && dragPreviewOffset
       ? `translate3d(${dragPreviewOffset.x}px, ${dragPreviewOffset.y}px, 0)`
       : 'translate3d(0, 0, 0)';
+  $: isDragging = interactionState?.kind === 'drag';
   $: windowWillChange = 'transform';
   $: historyIndex = windowState.history?.index ?? 0;
   $: historyLength = windowState.history?.entries?.length ?? 0;
@@ -309,10 +345,18 @@
   on:click={requestFocus}
   data-focused={isFocused}
   data-maximized={isEffectivelyMaximized}
+  data-dragging={isDragging}
   aria-hidden={windowState.isMinimized}
   style={`z-index:${zIndex};left:${effectiveBounds.x}px;top:${effectiveBounds.y}px;width:${effectiveBounds.width}px;height:${effectiveBounds.height}px;visibility:${visibility};pointer-events:${pointerEvents};transform:${activeTransform};will-change:${windowWillChange};`}
 >
-  <header class="window-header" role="group" aria-label="Window header" on:pointerdown={startDrag}>
+  <header
+    class="window-header"
+    role="group"
+    aria-label="Window header"
+    on:pointerdown={startDrag}
+    on:dblclick={handleHeaderDoubleClick}
+    on:contextmenu={handleHeaderContextMenu}
+  >
     <div class="window-header-left">
       {#if windowState.showWindowHistoryNavigation}
         <button type="button" disabled={!canGoBack} on:click={requestHistoryBack} aria-label="Back in app">
@@ -460,10 +504,19 @@
     gap: 0.62rem;
     border-bottom: 1px solid rgba(44, 42, 41, 0.1);
     padding: 0.3rem 0.56rem;
-    cursor: move;
+    cursor: default;
     user-select: none;
     touch-action: none;
     background: color-mix(in srgb, var(--su-surface-subtle, #f8f4ed) 84%, white 16%);
+  }
+
+  .app-window[data-dragging='true'] .window-header {
+    cursor: move;
+  }
+
+  :global(body.wm-window-dragging),
+  :global(body.wm-window-dragging *) {
+    cursor: move !important;
   }
 
   .window-header-left {

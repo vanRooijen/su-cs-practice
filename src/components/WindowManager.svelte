@@ -9,7 +9,7 @@
   import iconHome from '../assets/icons/lucide/house.svg?raw';
   import iconNewspaper from '../assets/icons/lucide/newspaper.svg?raw';
   import iconHelp from '../assets/icons/lucide/circle-question-mark.svg?raw';
-  import iconSlidersHorizontal from '../assets/icons/lucide/sliders-horizontal.svg?raw';
+  import iconTrash from '../assets/icons/lucide/trash-2.svg?raw';
   import iconClose from '../assets/icons/lucide/x.svg?raw';
   import AppWindow from './AppWindow.svelte';
 
@@ -19,13 +19,21 @@
 
   const runtimeId = windowManager.getRuntimeId?.() ?? null;
   const MOBILE_VIEWPORT_MEDIA_QUERY = '(max-width: 860px)';
+  const MOBILE_DOCK_FALLBACK_HEIGHT = 52;
   let localKeepAliveMinimizedWindowIds = new Set();
 
   let workspaceElement;
+  let mobileDockElement;
   let isMobileViewport = false;
   let mobileDrawer = null;
   let contextMenuElement;
   let sidebarActionsOpen = false;
+  let sidebarActionsTriggerElement;
+  let sidebarActionsMenuElement;
+  let sidebarActionsMenuPosition = {
+    x: 0,
+    y: 0,
+  };
   let contextMenu = {
     open: false,
     x: 0,
@@ -133,6 +141,44 @@
     openInNewWindow(path);
   }
 
+  function openPathInNewTab(path) {
+    closeSidebarActionsMenu();
+    closeMobileDrawer();
+
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    window.open(path, '_blank', 'noopener,noreferrer');
+  }
+
+  function getMobileDockHeight() {
+    if (!isMobileViewport) {
+      return 0;
+    }
+
+    const measuredHeight = mobileDockElement?.getBoundingClientRect?.().height;
+    if (Number.isFinite(measuredHeight) && measuredHeight > 0) {
+      return measuredHeight;
+    }
+
+    return MOBILE_DOCK_FALLBACK_HEIGHT;
+  }
+
+  function applyWorkspaceRect() {
+    if (!workspaceElement) {
+      return;
+    }
+
+    const rect = workspaceElement.getBoundingClientRect();
+    const usableHeight = Math.max(1, rect.height - getMobileDockHeight());
+
+    windowManager.setWorkspaceRect({
+      width: Math.max(1, rect.width),
+      height: usableHeight,
+    });
+  }
+
   function setMobileViewport(nextIsMobile) {
     const normalized = Boolean(nextIsMobile);
     if (normalized === isMobileViewport) {
@@ -143,6 +189,10 @@
     if (!normalized) {
       closeMobileDrawer();
     }
+
+    void tick().then(() => {
+      applyWorkspaceRect();
+    });
   }
 
   function closeMobileDrawer() {
@@ -161,9 +211,52 @@
     sidebarActionsOpen = false;
   }
 
-  function toggleSidebarActionsMenu(event) {
+  async function updateSidebarActionsMenuPosition() {
+    if (!sidebarActionsOpen || !sidebarActionsTriggerElement) {
+      return;
+    }
+
+    await tick();
+
+    if (!sidebarActionsOpen || !sidebarActionsTriggerElement || !sidebarActionsMenuElement) {
+      return;
+    }
+
+    const triggerRect = sidebarActionsTriggerElement.getBoundingClientRect();
+    const menuRect = sidebarActionsMenuElement.getBoundingClientRect();
+    const margin = 8;
+    const offset = 6;
+
+    let x = triggerRect.right - menuRect.width;
+    let y = triggerRect.bottom + offset;
+
+    if (x < margin) {
+      x = margin;
+    } else if (x + menuRect.width > window.innerWidth - margin) {
+      x = window.innerWidth - menuRect.width - margin;
+    }
+
+    if (y + menuRect.height > window.innerHeight - margin) {
+      const aboveY = triggerRect.top - menuRect.height - offset;
+      y = aboveY >= margin ? aboveY : window.innerHeight - menuRect.height - margin;
+    }
+
+    if (y < margin) {
+      y = margin;
+    }
+
+    sidebarActionsMenuPosition = {
+      x: Math.round(x),
+      y: Math.round(y),
+    };
+  }
+
+  async function toggleSidebarActionsMenu(event) {
     event?.stopPropagation();
     sidebarActionsOpen = !sidebarActionsOpen;
+    if (sidebarActionsOpen) {
+      await updateSidebarActionsMenuPosition();
+    }
   }
 
   function toggleMobileDrawer(drawer) {
@@ -285,6 +378,8 @@
 
   function onGlobalResize() {
     clampContextMenuPosition();
+    void updateSidebarActionsMenuPosition();
+    applyWorkspaceRect();
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
       return;
     }
@@ -339,6 +434,15 @@
     }
 
     openPathInNewWindow(contextMenu.linkPath);
+    closeContextMenu();
+  }
+
+  function openContextLinkInNewTab() {
+    if (!contextMenu.linkPath) {
+      return;
+    }
+
+    openPathInNewTab(contextMenu.linkPath);
     closeContextMenu();
   }
 
@@ -501,19 +605,13 @@
       return () => {};
     }
 
-    const applyRect = (rect) => {
-      windowManager.setWorkspaceRect({
-        width: rect.width,
-        height: rect.height,
-      });
-    };
-
-    const initialRect = workspaceElement.getBoundingClientRect();
-    applyRect(initialRect);
+    applyWorkspaceRect();
 
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        applyRect(entry.contentRect);
+        if (entry.target === workspaceElement) {
+          applyWorkspaceRect();
+        }
       }
     });
 
@@ -607,45 +705,54 @@
     {#if !isMobileViewport}
       <aside class="sidebar">
         <div class="sidebar-toolbar" aria-label="Sidebar shortcuts">
-          <button
-            type="button"
-            class="sidebar-tool"
-            aria-label="Open Home"
-            on:click={() => openPath('/home')}
-          >
-            <span class="inline-icon" aria-hidden="true">{@html iconHome}</span>
-          </button>
-          <button
-            type="button"
-            class="sidebar-tool"
-            aria-label="Open Articles"
-            on:click={() => openPath('/reader/overview')}
-          >
-            <span class="inline-icon" aria-hidden="true">{@html iconNewspaper}</span>
-          </button>
-          <button
-            type="button"
-            class="sidebar-tool"
-            aria-label="Open Help"
-            on:click={() => openPath('/reader/general/help')}
-          >
-            <span class="inline-icon" aria-hidden="true">{@html iconHelp}</span>
-          </button>
+          <div class="toolbar-shortcuts">
+            <button
+              type="button"
+              class="sidebar-tool"
+              aria-label="Open Home"
+              on:click={() => openPath('/home')}
+            >
+              <span class="inline-icon" aria-hidden="true">{@html iconHome}</span>
+            </button>
+            <button
+              type="button"
+              class="sidebar-tool"
+              aria-label="Open Articles"
+              on:click={() => openPath('/reader/overview')}
+            >
+              <span class="inline-icon" aria-hidden="true">{@html iconNewspaper}</span>
+            </button>
+            <button
+              type="button"
+              class="sidebar-tool"
+              aria-label="Open Help"
+              on:click={() => openPath('/reader/general/help')}
+            >
+              <span class="inline-icon" aria-hidden="true">{@html iconHelp}</span>
+            </button>
+          </div>
 
           <div class="toolbar-actions">
             <button
               type="button"
               class="sidebar-tool sidebar-tool-actions"
-              aria-label="Window actions"
+              aria-label="Clear windows"
               aria-haspopup="menu"
               aria-expanded={sidebarActionsOpen}
+              bind:this={sidebarActionsTriggerElement}
               on:click={toggleSidebarActionsMenu}
             >
-              <span class="inline-icon" aria-hidden="true">{@html iconSlidersHorizontal}</span>
+              <span class="inline-icon" aria-hidden="true">{@html iconTrash}</span>
             </button>
 
             {#if sidebarActionsOpen}
-              <div class="toolbar-actions-menu" role="menu" aria-label="Window actions menu">
+              <div
+                class="toolbar-actions-menu"
+                role="menu"
+                aria-label="Clear windows menu"
+                bind:this={sidebarActionsMenuElement}
+                style={`left:${sidebarActionsMenuPosition.x}px;top:${sidebarActionsMenuPosition.y}px;`}
+              >
                 <button type="button" role="menuitem" on:click={handleCloseOwned}>Close My Windows</button>
                 <button type="button" role="menuitem" on:click={handleCloseOtherInstances}>
                   Close Other Instances
@@ -758,7 +865,7 @@
   </div>
 
   {#if isMobileViewport}
-    <nav class="mobile-dock" aria-label="Mobile controls">
+    <nav class="mobile-dock" aria-label="Mobile controls" bind:this={mobileDockElement}>
       <button type="button" on:click={() => toggleMobileDrawer('apps')}>
         <span class="inline-icon" aria-hidden="true">{@html iconHome}</span>
         <span>Apps</span>
@@ -836,6 +943,7 @@
     >
       {#if contextMenu.linkPath}
         <button type="button" role="menuitem" on:click={openContextLink}>Open Link</button>
+        <button type="button" role="menuitem" on:click={openContextLinkInNewTab}>Open Link in New Tab</button>
         <button type="button" role="menuitem" on:click={openContextLinkInNewWindow}>
           Open Link in New Window
         </button>
@@ -873,14 +981,19 @@
     --su-focus-soft: rgba(97, 34, 59, 0.12);
     --su-tab-highlight: rgba(202, 162, 88, 0.14);
     --su-panel-radius: 0.42rem;
+    --su-mobile-dock-height: 3.05rem;
+    --su-mobile-safe-inset-bottom: env(safe-area-inset-bottom, 0px);
+    --su-mobile-dock-total-height: calc(var(--su-mobile-dock-height) + var(--su-mobile-safe-inset-bottom));
 
     height: 100vh;
+    height: 100dvh;
     box-sizing: border-box;
     display: grid;
     grid-template-rows: auto 1fr;
     gap: 0;
     padding: 0;
-    min-height: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
     background-color: var(--su-paper);
     color: var(--su-ink);
     font-family: var(--su-font-ui, 'SU Raleway Local', 'SU Raleway', 'Raleway', 'Trebuchet MS', sans-serif);
@@ -1073,12 +1186,19 @@
 
   .sidebar-toolbar {
     position: relative;
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 0.35rem;
+    justify-content: space-between;
+    width: 100%;
     margin: 0.08rem 0 0.62rem;
     padding: 0 0.02rem 0.52rem;
     border-bottom: 1px solid var(--su-line);
+  }
+
+  .toolbar-shortcuts {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
   }
 
   .sidebar-tool {
@@ -1117,7 +1237,9 @@
 
   .toolbar-actions {
     position: relative;
+    padding-left: 0.5rem;
     margin-left: auto;
+    border-left: 1px solid rgba(44, 42, 41, 0.16);
     z-index: 4;
   }
 
@@ -1128,9 +1250,7 @@
   }
 
   .toolbar-actions-menu {
-    position: absolute;
-    top: calc(100% + 0.28rem);
-    right: 0;
+    position: fixed;
     min-width: 13rem;
     padding: 0.28rem;
     border-radius: 0.44rem;
@@ -1140,6 +1260,7 @@
       inset 0 0 0 1px rgba(44, 42, 41, 0.11);
     display: grid;
     gap: 0.2rem;
+    z-index: 100;
   }
 
   .toolbar-actions-menu button {
@@ -1421,6 +1542,8 @@
     background: color-mix(in srgb, var(--su-topbar) 94%, white 6%);
     border-top: 1px solid var(--su-line);
     box-shadow: 0 -8px 20px rgba(44, 42, 41, 0.08);
+    min-height: var(--su-mobile-dock-total-height);
+    padding-bottom: var(--su-mobile-safe-inset-bottom);
   }
 
   .mobile-dock button {
@@ -1432,7 +1555,7 @@
     font-size: 0.84rem;
     font-weight: 600;
     line-height: 1.2;
-    min-height: 3.05rem;
+    min-height: var(--su-mobile-dock-height);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1451,7 +1574,7 @@
 
   .mobile-drawer-backdrop {
     position: fixed;
-    inset: 0;
+    inset: 0 0 var(--su-mobile-dock-total-height) 0;
     z-index: 19;
     background: rgba(44, 42, 41, 0.22);
     display: flex;
@@ -1658,7 +1781,7 @@
     }
 
     .workspace {
-      padding-bottom: 3.05rem;
+      padding-bottom: var(--su-mobile-dock-total-height);
     }
 
     .desktop-layer {
