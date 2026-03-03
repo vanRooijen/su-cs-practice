@@ -23,6 +23,4 @@ This group considers almost any aspect of the general decision-making problem, i
 | <img src="/cs-assets/people/csteyl.jpg" alt="Charl Steyl" width="40" height="40" /> | Charl Steyl |  |
 | <img src="/cs-assets/people/evanbiljon.jpg" alt="Elan van Biljon" width="40" height="40" /> | Elan van Biljon |  |
 
-Source snapshot: [cs.sun.ac.za/research/](https://cs.sun.ac.za/research/) (fetched on March 3, 2026).
 
-<!-- TODO(source-attribution-revisit): This source page is split across multiple local research pages. Keep attribution until section-level source mapping policy is finalized. -->

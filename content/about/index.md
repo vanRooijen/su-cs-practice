@@ -16,5 +16,3 @@ Use the sections in this app for:
 - department overview
 - contact information
 - visit and location details
-
-Sources: https://cs.sun.ac.za/ and https://cs.sun.ac.za/contact/

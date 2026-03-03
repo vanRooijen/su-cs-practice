@@ -1,11 +1,11 @@
 ---
 title: People Directory
-excerpt: Staff, students, and alumni snapshots sourced from cs.sun.ac.za people pages.
+excerpt: Staff, students, and alumni listings for the department.
 ---
 
 ## People
 
-Staff, student, and alumni listings from the official department people pages.
+Staff, student, and alumni listings for the department.
 
 - Academic staff: 24
 - Administrative staff: 3
@@ -14,8 +14,6 @@ Staff, student, and alumni listings from the official department people pages.
 
 Use the left navigation to open Staff, Students, and Alumni.
 
-Sources:
-
-- [Staff](https://cs.sun.ac.za/people/staff/)
-- [Students](https://cs.sun.ac.za/people/students/)
-- [Alumni](https://cs.sun.ac.za/people/alumni/)
+- [Staff](/people/staff)
+- [Students](/people/students)
+- [Alumni](/people/alumni)

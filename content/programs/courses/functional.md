@@ -1,8 +1,6 @@
 ---
 title: CS795: Functional Programming
 excerpt: Functional programming is a style of programming in which the primary method of computation is the application of functions to arguments. It offers a compact notation for writing…
-source_url: https://cs.sun.ac.za/courses/functional/
-source_mirrored_at: 2026-03-03
 ---
 
 <div class="course-content"><center><h2>CS795: Functional Programming</h2></center><hr><h3>News</h3><li>Slides and additonal content for lectures, and project details will be added to MSTeams.</li><h3> Evaluation </h3> Two projects, a presentation, and a final practical exam. 25% each. <h3>Lecture Times and Venues 2026 </h3> Mondays 9:10 - 11:00, Inorganic Chemistry 2017, 1st lecture 9 Feb. Thursdays 11:10-12:00, vdSterr 1011. <h3>Books and other relevant links and resources</h3><details><li><a href="http://www.cs.nott.ac.uk/~pszgmh/">Graham Hutton</a>. Most of my content will be taken from his functional programming courses and book, Programming in Haskell.</li><li><a href="https://www.youtube.com/watch?v=QyJZzq0v7Z4">Why Isn't Functional Programming the Norm – Richard Feldman.</a></li><li><a href="http://learnyouahaskell.com/">Learn You a Haskell for Great Good!</a></li></details><h3>Why should you take this course</h3><p> Functional programming is a style of programming in which the primary method of computation is the application of functions to arguments. It offers a compact notation for writing programs, powerful abstraction methods for structuring programs, and a simple mathematical basis that supports reasoning about programs. Functional languages represent the leading edge of programming language design, and the primary setting in which new programming concepts are introduced and studied. </p></div>

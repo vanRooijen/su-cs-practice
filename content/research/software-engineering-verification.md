@@ -28,6 +28,4 @@ The Software Engineering and Verification group at the University of Stellenbosc
 - [ESBMC »](http://www.esbmc.org/)
 - [CSeq »](http://www.southampton.ac.uk/~gp1y10/cseq/)
 
-Source snapshot: [cs.sun.ac.za/research/](https://cs.sun.ac.za/research/) (fetched on March 3, 2026).
 
-<!-- TODO(source-attribution-revisit): This source page is split across multiple local research pages. Keep attribution until section-level source mapping policy is finalized. -->

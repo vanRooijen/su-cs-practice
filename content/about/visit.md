@@ -19,6 +19,4 @@ Here is a QR code for our website.
 
 ![Computer Science QR code](/cs-assets/qr.png)
 
-Source: https://cs.sun.ac.za/contact/
 
-<!-- TODO(source-attribution-revisit): This page intentionally mirrors only the visit-related section of the contact source. Keep attribution until section-level source policy is finalized. -->
