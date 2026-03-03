@@ -488,7 +488,7 @@
       </div>
     </div>
 
-    <nav aria-label="Topbar app links">
+    <nav class="topbar-cluster" aria-label="Topbar app links">
       {#each TOPBAR_NAV_ITEMS as link}
         <button
           type="button"
@@ -503,13 +503,15 @@
     </nav>
 
     <div class="topbar-utilities">
-      <button type="button" class="topbar-contact" on:click={openContact}>
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M4 6h16v12H4z" fill="none" stroke="currentColor" stroke-width="1.7" />
-          <path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-width="1.7" />
-        </svg>
-        <span>Contact</span>
-      </button>
+      <div class="topbar-cluster topbar-cluster-single">
+        <button type="button" class="topbar-link topbar-contact" on:click={openContact}>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 6h16v12H4z" fill="none" stroke="currentColor" stroke-width="1.7" />
+            <path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-width="1.7" />
+          </svg>
+          <span>Contact</span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -766,17 +768,23 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  .topbar nav {
+  .topbar-cluster {
     display: flex;
     align-items: center;
     gap: 0;
-    justify-content: center;
     min-width: 0;
+    border: 1px solid rgba(44, 42, 41, 0.2);
+    border-radius: 0.4rem;
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow:
+      0 1px 2px rgba(44, 42, 41, 0.09),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    overflow: hidden;
+  }
+
+  .topbar nav.topbar-cluster {
+    justify-content: center;
     justify-self: center;
-    border: 1px solid transparent;
-    border-radius: 0.42rem;
-    overflow: visible;
-    background: transparent;
   }
 
   .topbar-link {
@@ -790,9 +798,13 @@
     font-weight: 600;
     letter-spacing: 0.004em;
     text-transform: capitalize;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.36rem;
     cursor: pointer;
     position: relative;
-    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.12);
+    box-shadow: none;
     transition: color 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
   }
 
@@ -804,6 +816,20 @@
   .topbar-link:last-child {
     border-top-right-radius: 0.32rem;
     border-bottom-right-radius: 0.32rem;
+  }
+
+  .topbar-cluster-single .topbar-link {
+    border-radius: 0.32rem;
+  }
+
+  .topbar-link + .topbar-link::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 24%;
+    bottom: 24%;
+    width: 1px;
+    background: rgba(44, 42, 41, 0.14);
   }
 
   .topbar-link::after {
@@ -823,7 +849,6 @@
   .topbar-link:hover {
     background: var(--su-tab-highlight);
     color: var(--su-maroon);
-    box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.22);
   }
 
   .topbar-link:hover::after,
@@ -832,10 +857,9 @@
   }
 
   .topbar-link:focus-visible {
-    outline: 2px solid rgba(202, 162, 88, 0.65);
-    outline-offset: 2px;
+    outline: none;
     background: var(--su-tab-highlight);
-    box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.3);
+    box-shadow: inset 0 0 0 1px rgba(97, 34, 59, 0.32);
     z-index: 1;
   }
 
@@ -847,39 +871,13 @@
   }
 
   .topbar-contact {
-    appearance: none;
-    border: 1px solid color-mix(in srgb, var(--su-line-strong) 72%, white 28%);
-    border-radius: 0.42rem;
-    background: rgba(255, 255, 255, 0.34);
-    color: var(--su-ink);
-    padding: 0.4rem 0.56rem;
-    font-size: 0.86rem;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.36rem;
-    cursor: pointer;
-    transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
+    text-transform: none;
   }
 
   .topbar-contact svg {
     width: 0.9rem;
     height: 0.9rem;
     flex: 0 0 auto;
-  }
-
-  .topbar-contact:hover {
-    border-color: var(--su-line);
-    background: var(--su-tab-highlight);
-    color: var(--su-maroon);
-  }
-
-  .topbar-contact:focus-visible {
-    outline: 2px solid rgba(202, 162, 88, 0.65);
-    outline-offset: 2px;
-    border-color: var(--su-maroon);
-    background: var(--su-tab-highlight);
-    box-shadow: none;
   }
 
   .main-row {
@@ -1318,9 +1316,10 @@
       font-size: 0.9rem;
     }
 
-    .topbar nav {
+    .topbar nav.topbar-cluster {
       width: 100%;
       overflow-x: auto;
+      overflow-y: hidden;
       padding-bottom: 0.08rem;
       scrollbar-width: thin;
     }
