@@ -9,3 +9,4 @@ This page has moved.
 
 - Open the new route at [/reader/general/help](/reader/general/help).
 - Existing links to `/reader/help` are kept for compatibility.
+- Launch the interactive walkthrough at [/demo](/demo).

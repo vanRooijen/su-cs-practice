@@ -1069,12 +1069,12 @@ export const CONTENT_ARTIFACTS = {
     "excerpt": "Quick help for navigating this site.",
     "shell": "default",
     "meta": {},
-    "html": "<h2>Help</h2>\n<p>This website works like a desktop workspace.</p>\n<ul>\n<li>The URL decides which app and content route is active.</li>\n<li>Apps stay open until you close their window.</li>\n<li>Sidebar entries represent open windows.</li>\n<li>Right-click anywhere and choose <strong>Help</strong> to return to this page.</li>\n</ul>\n<p>If you are new here, start on Home and open articles from the landing page cards.</p>\n",
+    "html": "<h2>Help</h2>\n<p>This website works like a browser-based desktop workspace.</p>\n<h3>Quick Start</h3>\n<ul>\n<li>Open <strong>Home</strong> for the landing page.</li>\n<li>Open <strong>Articles</strong> for news and updates.</li>\n<li>Open <strong>People / Programs / Research / About</strong> from the top bar.</li>\n</ul>\n<h3>Window Basics</h3>\n<ul>\n<li>The URL decides which app and content route is active.</li>\n<li>Apps stay open until you close their window.</li>\n<li>Sidebar entries represent open windows across tabs.</li>\n<li>Click a sidebar entry to focus it.</li>\n<li>Click the focused sidebar entry to minimize it.</li>\n</ul>\n<h3>Desktop vs Phone Controls</h3>\n<ul>\n<li>Desktop: right-click a link for <strong>Open in New App Window</strong> or <strong>Open in New Browser Tab</strong>.</li>\n<li>Phone: tap and hold a link for the same options.</li>\n<li>Phone: use the bottom bar <strong>Tabs</strong> button to switch windows.</li>\n</ul>\n<h3>Interactive Demo</h3>\n<p>Try the built-in demo flow:</p>\n<ul>\n<li><a href=\"/demo\">Start Demo</a></li>\n<li><a href=\"/relay/pull-over\">Open Step 2 Directly</a></li>\n</ul>\n<h3>Need Help Quickly?</h3>\n<ul>\n<li>Right-click (or tap and hold) anywhere and choose <strong>Help</strong> to return here.</li>\n</ul>\n<p>If you are new here, start on Home and open articles from the landing page cards.</p>\n",
     "sections": [
       {
         "key": "000-main",
         "slot": "main",
-        "html": "<h2>Help</h2>\n<p>This website works like a desktop workspace.</p>\n<ul>\n<li>The URL decides which app and content route is active.</li>\n<li>Apps stay open until you close their window.</li>\n<li>Sidebar entries represent open windows.</li>\n<li>Right-click anywhere and choose <strong>Help</strong> to return to this page.</li>\n</ul>\n<p>If you are new here, start on Home and open articles from the landing page cards.</p>\n"
+        "html": "<h2>Help</h2>\n<p>This website works like a browser-based desktop workspace.</p>\n<h3>Quick Start</h3>\n<ul>\n<li>Open <strong>Home</strong> for the landing page.</li>\n<li>Open <strong>Articles</strong> for news and updates.</li>\n<li>Open <strong>People / Programs / Research / About</strong> from the top bar.</li>\n</ul>\n<h3>Window Basics</h3>\n<ul>\n<li>The URL decides which app and content route is active.</li>\n<li>Apps stay open until you close their window.</li>\n<li>Sidebar entries represent open windows across tabs.</li>\n<li>Click a sidebar entry to focus it.</li>\n<li>Click the focused sidebar entry to minimize it.</li>\n</ul>\n<h3>Desktop vs Phone Controls</h3>\n<ul>\n<li>Desktop: right-click a link for <strong>Open in New App Window</strong> or <strong>Open in New Browser Tab</strong>.</li>\n<li>Phone: tap and hold a link for the same options.</li>\n<li>Phone: use the bottom bar <strong>Tabs</strong> button to switch windows.</li>\n</ul>\n<h3>Interactive Demo</h3>\n<p>Try the built-in demo flow:</p>\n<ul>\n<li><a href=\"/demo\">Start Demo</a></li>\n<li><a href=\"/relay/pull-over\">Open Step 2 Directly</a></li>\n</ul>\n<h3>Need Help Quickly?</h3>\n<ul>\n<li>Right-click (or tap and hold) anywhere and choose <strong>Help</strong> to return here.</li>\n</ul>\n<p>If you are new here, start on Home and open articles from the landing page cards.</p>\n"
       }
     ]
   },
@@ -1086,12 +1086,12 @@ export const CONTENT_ARTIFACTS = {
     "excerpt": "Help has moved to Reader / General / Help.",
     "shell": "default",
     "meta": {},
-    "html": "<h2>Help</h2>\n<p>This page has moved.</p>\n<ul>\n<li>Open the new route at <a href=\"/reader/general/help\">/reader/general/help</a>.</li>\n<li>Existing links to <code>/reader/help</code> are kept for compatibility.</li>\n</ul>\n",
+    "html": "<h2>Help</h2>\n<p>This page has moved.</p>\n<ul>\n<li>Open the new route at <a href=\"/reader/general/help\">/reader/general/help</a>.</li>\n<li>Existing links to <code>/reader/help</code> are kept for compatibility.</li>\n<li>Launch the interactive walkthrough at <a href=\"/demo\">/demo</a>.</li>\n</ul>\n",
     "sections": [
       {
         "key": "000-main",
         "slot": "main",
-        "html": "<h2>Help</h2>\n<p>This page has moved.</p>\n<ul>\n<li>Open the new route at <a href=\"/reader/general/help\">/reader/general/help</a>.</li>\n<li>Existing links to <code>/reader/help</code> are kept for compatibility.</li>\n</ul>\n"
+        "html": "<h2>Help</h2>\n<p>This page has moved.</p>\n<ul>\n<li>Open the new route at <a href=\"/reader/general/help\">/reader/general/help</a>.</li>\n<li>Existing links to <code>/reader/help</code> are kept for compatibility.</li>\n<li>Launch the interactive walkthrough at <a href=\"/demo\">/demo</a>.</li>\n</ul>\n"
       }
     ]
   },
