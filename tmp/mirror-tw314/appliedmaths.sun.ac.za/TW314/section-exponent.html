@@ -1,0 +1,341 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<!--**************************************-->
+<!--*    Generated from PreTeXt source   *-->
+<!--*    on 2022-02-09T15:15:18+02:00    *-->
+<!--*                                    *-->
+<!--*      https://pretextbook.org       *-->
+<!--*                                    *-->
+<!--**************************************-->
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AM314 Exponentiation</title>
+<meta name="Keywords" content="Authored in PreTeXt">
+<meta name="viewport" content="width=device-width,  initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [['\\(','\\)']]
+    },
+    asciimath2jax: {
+        ignoreClass: ".*",
+        processClass: "has_am"
+    },
+    jax: ["input/AsciiMath"],
+    extensions: ["asciimath2jax.js"],
+    TeX: {
+        extensions: ["extpfeil.js", "autobold.js", "https://pretextbook.org/js/lib/mathjaxknowl.js", ],
+        // scrolling to fragment identifiers is controlled by other Javascript
+        positionToHash: false,
+        equationNumbers: { autoNumber: "none", useLabelIds: true, },
+        TagSide: "right",
+        TagIndent: ".8em",
+    },
+    // HTML-CSS output Jax to be dropped for MathJax 3.0
+    "HTML-CSS": {
+        scale: 88,
+        mtextFontInherit: true,
+    },
+    CommonHTML: {
+        scale: 88,
+        mtextFontInherit: true,
+    },
+});
+</script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_CHTML-full"></script><script src="https://pretextbook.org/js/lib/jquery.min.js"></script><script src="https://pretextbook.org/js/lib/jquery.sticky.js"></script><script src="https://pretextbook.org/js/lib/jquery.espy.min.js"></script><script src="https://pretextbook.org/js/0.13/pretext.js"></script><script src="https://pretextbook.org/js/0.13/pretext_add_on.js"></script><script src="https://pretextbook.org/js/lib/knowl.js"></script><link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,600,600italic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700&amp;subset=latin,latin-ext" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/pretext.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/pretext_add_on.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/banner_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/toc_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/knowls_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/style_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/colors_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/setcolors.css" rel="stylesheet" type="text/css">
+<!-- 2019-10-12: Temporary - CSS file for experiments with styling --><link href="https://appliedmaths.sun.ac.za/TW314/developer.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/features.css" rel="stylesheet" type="text/css">
+<script>var logged_in = false;
+var role = 'student';
+var guest_access = true;
+var login_required = false;
+var js_version = 0.13;
+</script>
+</head>
+<body class="mathbook-book has-toc has-sidebar-left">
+<a class="assistive" href="section-exponent.html#content">Skip to main content</a><div class="hidden-content" style="display:none">\(\newcommand{\identity}{\mathrm{id}}
+\newcommand{\notdivide}{{\not{\mid}}}
+\newcommand{\notsubset}{\not\subset}
+\newcommand{\lcm}{\operatorname{lcm}}
+\newcommand{\gf}{\operatorname{GF}}
+\newcommand{\inn}{\operatorname{Inn}}
+\newcommand{\aut}{\operatorname{Aut}}
+\newcommand{\Hom}{\operatorname{Hom}}
+\newcommand{\cis}{\operatorname{cis}}
+\newcommand{\chr}{\operatorname{char}}
+\newcommand{\Null}{\operatorname{Null}}
+\newcommand{\lt}{&lt;}
+\newcommand{\gt}{&gt;}
+\newcommand{\amp}{&amp;}
+\)</div>
+<header id="masthead" class="smallbuttons"><div class="banner"><div class="container">
+<a id="logo-link" href="section-exponent.html"></a><div class="title-container">
+<h1 class="heading"><a href="discrete-book.html"><span class="title">Applied Mathematics 314:</span> <span class="subtitle">An introduction to Applied Discrete Mathematics</span></a></h1>
+<p class="byline">Riana Roux</p>
+</div>
+</div></div>
+<nav id="primary-navbar" class="navbar"><div class="container">
+<div class="navbar-top-buttons">
+<button class="sidebar-left-toggle-button button active" aria-label="Show or hide table of contents sidebar">Contents</button><div class="tree-nav toolbar toolbar-divisor-3"><span class="threebuttons"><a id="previousbutton" class="previous-button toolbar-item button" href="crypto_key.html" title="Previous">Prev</a><a id="upbutton" class="up-button button toolbar-item" href="crypto_key.html" title="Up">Up</a><a id="nextbutton" class="next-button button toolbar-item" href="section-crypto-DH.html" title="Next">Next</a></span></div>
+</div>
+<div class="navbar-bottom-buttons toolbar toolbar-divisor-4">
+<button class="sidebar-left-toggle-button button toolbar-item active">Contents</button><a class="previous-button toolbar-item button" href="crypto_key.html" title="Previous">Prev</a><a class="up-button button toolbar-item" href="crypto_key.html" title="Up">Up</a><a class="next-button button toolbar-item" href="section-crypto-DH.html" title="Next">Next</a>
+</div>
+</div></nav></header><div class="page">
+<div id="sidebar-left" class="sidebar" role="navigation"><div class="sidebar-content">
+<nav id="toc"><ul>
+<li class="link">
+<a href="frontmatter.html" data-scroll="frontmatter"><span class="title">Front Matter</span></a><ul><li><a href="preface.html" data-scroll="preface">Preface</a></li></ul>
+</li>
+<li class="link part"><a href="part-graph.html" data-scroll="part-graph"><span class="codenumber">I</span> <span class="title">Graph Theory</span></a></li>
+<li class="link">
+<a href="graphs.html" data-scroll="graphs"><span class="codenumber">1</span> <span class="title">An introduction to graphs</span></a><ul>
+<li><a href="section-notation.html" data-scroll="section-notation">Basic notation</a></li>
+<li><a href="section-first-theorem.html" data-scroll="section-first-theorem">The first theorem of graph theory</a></li>
+<li><a href="section-subgraph.html" data-scroll="section-subgraph">Subgraphs</a></li>
+<li><a href="section-connectedness.html" data-scroll="section-connectedness">Paths and connectivity</a></li>
+<li><a href="section-isomorphism.html" data-scroll="section-isomorphism">Equality and isomorphism</a></li>
+<li><a href="section-graphical.html" data-scroll="section-graphical">Graphical sequences</a></li>
+<li><a href="section-special-graphs.html" data-scroll="section-special-graphs">Special graphs and some constructs</a></li>
+<li><a href="section-trees.html" data-scroll="section-trees">Trees</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="planar.html" data-scroll="planar"><span class="codenumber">2</span> <span class="title">Planar graphs</span></a><ul>
+<li><a href="section-embeddings.html" data-scroll="section-embeddings">Embeddings and plane graphs</a></li>
+<li><a href="section-euler.html" data-scroll="section-euler">Euler's theorem</a></li>
+<li><a href="section-maximal-planar.html" data-scroll="section-maximal-planar">Maximal planar graphs</a></li>
+<li><a href="section-polyhedra.html" data-scroll="section-polyhedra">Polyhedra</a></li>
+<li><a href="section-maximal.html" data-scroll="section-maximal">A characterization of planar graphs</a></li>
+<li><a href="section-algorithm.html" data-scroll="section-algorithm">A planarity algorithm</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="colour.html" data-scroll="colour"><span class="codenumber">3</span> <span class="title">Graph colourings</span></a><ul>
+<li><a href="section-chromatic.html" data-scroll="section-chromatic">Chromatic numbers</a></li>
+<li><a href="section-bounds.html" data-scroll="section-bounds">Bounds on the chromatic number</a></li>
+<li><a href="section-4colour.html" data-scroll="section-4colour">The four-colour problem</a></li>
+</ul>
+</li>
+<li class="link part"><a href="part-crypto.html" data-scroll="part-crypto"><span class="codenumber">II</span> <span class="title">Cryptography</span></a></li>
+<li class="link">
+<a href="crypto.html" data-scroll="crypto"><span class="codenumber">4</span> <span class="title">An introduction to cryptography</span></a><ul>
+<li><a href="section-crypto-notation.html" data-scroll="section-crypto-notation">What is cryptography?</a></li>
+<li><a href="section-crypto-symmetric.html" data-scroll="section-crypto-symmetric">Symmetric-key primitives</a></li>
+<li><a href="section-crypto-public.html" data-scroll="section-crypto-public">Public-key primitives</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="crypto_algebra.html" data-scroll="crypto_algebra"><span class="codenumber">5</span> <span class="title">Important algebraic concepts</span></a><ul>
+<li><a href="section-crypto-mod.html" data-scroll="section-crypto-mod">Modular arithmetic</a></li>
+<li><a href="section-crypto-group.html" data-scroll="section-crypto-group">Groups</a></li>
+<li><a href="section-crypto-rings.html" data-scroll="section-crypto-rings">Rings</a></li>
+<li><a href="section-crypto-field.html" data-scroll="section-crypto-field">Fields</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="crypto_key.html" data-scroll="crypto_key"><span class="codenumber">6</span> <span class="title">Key establishment</span></a><ul>
+<li><a href="section-exponent.html" data-scroll="section-exponent" class="active">Exponentiation</a></li>
+<li><a href="section-crypto-DH.html" data-scroll="section-crypto-DH">Diffie-Hellman</a></li>
+<li><a href="section-crypto-inverse.html" data-scroll="section-crypto-inverse">Inverses in finite groups</a></li>
+<li><a href="section-crypto-log-alg.html" data-scroll="section-crypto-log-alg">An algorithm for computing discrete logartihms</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="crypto_rsa.html" data-scroll="crypto_rsa"><span class="codenumber">7</span> <span class="title">RSA encryption</span></a><ul>
+<li><a href="section-crypto-number.html" data-scroll="section-crypto-number">Number theory</a></li>
+<li><a href="section-crypto-rsa.html" data-scroll="section-crypto-rsa">The RSA system</a></li>
+</ul>
+</li>
+<li class="link part"><a href="part-coding.html" data-scroll="part-coding"><span class="codenumber">III</span> <span class="title">Coding theory</span></a></li>
+<li class="link">
+<a href="coding_error.html" data-scroll="coding_error"><span class="codenumber">8</span> <span class="title">Error-correcting codes</span></a><ul>
+<li><a href="section-coding-intro.html" data-scroll="section-coding-intro">Introduction</a></li>
+<li><a href="section-coding-channel.html" data-scroll="section-coding-channel">A digital communication system</a></li>
+<li><a href="section-coding-block.html" data-scroll="section-coding-block">Block codes</a></li>
+<li><a href="section-coding-hamming.html" data-scroll="section-coding-hamming">Hamming distances</a></li>
+<li><a href="section-coding-neighbour.html" data-scroll="section-coding-neighbour">Nearest neighbour decoding</a></li>
+<li><a href="section-coding-minimum.html" data-scroll="section-coding-minimum">Minimum distance</a></li>
+<li><a href="section-coding-equiv.html" data-scroll="section-coding-equiv">Equivalent codes</a></li>
+<li><a href="section-coding-parameters.html" data-scroll="section-coding-parameters">Optimising the parameters \(n\text{,}\) \(M\) and \(d\)</a></li>
+<li><a href="section-coding-hammingbound.html" data-scroll="section-coding-hammingbound">The Hamming bound</a></li>
+<li><a href="section-coding-perfect.html" data-scroll="section-coding-perfect">Perfect codes</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="coding_linear.html" data-scroll="coding_linear"><span class="codenumber">9</span> <span class="title">Linear codes</span></a><ul>
+<li><a href="section-coding-vector.html" data-scroll="section-coding-vector">Vectorspaces</a></li>
+<li><a href="section-coding-linear.html" data-scroll="section-coding-linear">Introduction to linear codes</a></li>
+<li><a href="section-coding-encode-linear.html" data-scroll="section-coding-encode-linear">Encoding with a linear code</a></li>
+<li><a href="section-coding-cosets.html" data-scroll="section-coding-cosets">Cosets</a></li>
+<li><a href="section-coding-decode.html" data-scroll="section-coding-decode">Decoding with a linear code</a></li>
+<li><a href="section-coding-dual.html" data-scroll="section-coding-dual">Dual codes</a></li>
+<li><a href="section-coding-syndrome.html" data-scroll="section-coding-syndrome">Syndrome decoding</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="coding_hamming.html" data-scroll="coding_hamming"><span class="codenumber">10</span> <span class="title">Hamming codes</span></a><ul>
+<li><a href="section-coding-ham-intro.html" data-scroll="section-coding-ham-intro">Introduction</a></li>
+<li><a href="section-coding-ham-decode.html" data-scroll="section-coding-ham-decode">Decoding with a binary Hamming code</a></li>
+<li><a href="section-coding-ham-extend.html" data-scroll="section-coding-ham-extend">The extended binary Hamming code</a></li>
+<li><a href="section-coding-fund.html" data-scroll="section-coding-fund">A fundamental theorem</a></li>
+<li><a href="section-coding-qham.html" data-scroll="section-coding-qham">\(q\)-ary Hamming codes</a></li>
+<li><a href="section-coding-qham-decode.html" data-scroll="section-coding-qham-decode">Decoding with a \(q\)-ary Hamming code</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="coding_cyclic.html" data-scroll="coding_cyclic"><span class="codenumber">11</span> <span class="title">Cyclic codes</span></a><ul>
+<li><a href="section-coding-cyclic-intro.html" data-scroll="section-coding-cyclic-intro">Introduction</a></li>
+<li><a href="section-coding-ring.html" data-scroll="section-coding-ring">The ring of polynomials modulo \(f(x)\)</a></li>
+<li><a href="section-coding-cyclic-check.html" data-scroll="section-coding-cyclic-check">The check polynomial and the parity-check matrix of a cyclic code</a></li>
+</ul>
+</li>
+</ul></nav><div class="extras"><nav><a class="mathbook-link" href="https://pretextbook.org">Authored in PreTeXt</a><a href="https://www.mathjax.org"><img title="Powered by MathJax" src="https://www.mathjax.org/badge/badge.gif" alt="Powered by MathJax"></a></nav></div>
+</div></div>
+<main class="main"><div id="content" class="pretext-content"><section class="section" id="section-exponent"><h2 class="heading hide-type">
+<span class="type">Section</span> <span class="codenumber">6.1</span> <span class="title">Exponentiation</span>
+</h2>
+<a href="section-exponent.html" class="permalink">¶</a><p id="p-353">To determine \(b^e\pmod n\) we consider two square-multiply algorithms.</p>
+<article class="algorithm theorem-like" id="algorithm-3"><h6 class="heading">
+<span class="type">Algorithm</span><span class="space"> </span><span class="codenumber">6.1.1</span><span class="period">.</span><span class="space"> </span><span class="title">Right-to-left algorithm.</span>
+</h6>
+<p id="p-354">Look at the bits of \(e\) from the LSB to the MSB to calculate \(b^e\text{.}\)</p>
+<p id="p-355"><em class="alert">Input:</em> Base \(b\) and exponent \(e\text{.}\)</p>
+<p id="p-356">\(r=1\)</p>
+<p id="p-357">WHILE \(e\neq 0\text{:}\)</p>
+<p id="p-358">IF \(e\) is odd THEN \(r=r\times b\)</p>
+<p id="p-359">\(b=b\times b\)</p>
+<p id="p-360">\(e=\lfloor e/2\rfloor\)</p>
+<p id="p-361">RETURN \(r\)</p></article><article class="example example-like" id="example-crypto-rtl"><h6 class="heading">
+<span class="type">Example</span><span class="space"> </span><span class="codenumber">6.1.2</span><span class="period">.</span><span class="space"> </span><span class="title">Right-to-left algorithm.</span>
+</h6>Consider \(\mathbf{F}_{257}^*\) with generator \(g=3\text{.}\) Calculate \(3^{163}\text{.}\)<div class="solutions">
+<a data-knowl="" class="id-ref original" data-refid="hk-solution-27" id="solution-27"><span class="type">Solution</span></a><div class="hidden-content tex2jax_ignore" id="hk-solution-27"><div class="solution solution-like">
+<div class="sidebyside"><div class="sbsrow" style="margin-left:0%;margin-right:0%;"><div class="sbspanel fixed-width" style="width:100%;justify-content:flex-start;"><table>
+<tr>
+<td class="c m b1 r0 l0 t0 lines">\(e \)</td>
+<td class="c m b1 r0 l0 t0 lines">\(b\)</td>
+<td class="c m b1 r0 l0 t0 lines" data-braille="last-cell">\(r\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(163\)</td>
+<td class="c m b0 r0 l0 t0 lines">\(3\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(1\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(81\)</td>
+<td class="c m b0 r0 l0 t0 lines">\(3^2=9\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(3\times 1=3\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(40\)</td>
+<td class="c m b0 r0 l0 t0 lines">\(9^2=81\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(9\times 3=27\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(20\)</td>
+<td class="c m b0 r0 l0 t0 lines">\(81^2=136\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(27\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(10\)</td>
+<td class="c m b0 r0 l0 t0 lines">\(136^2=249\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(27\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(5\)</td>
+<td class="c m b0 r0 l0 t0 lines">\(249^2=64\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(27\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(2\)</td>
+<td class="c m b0 r0 l0 t0 lines">\(64^2=241\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(64\times 27=186\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(1\)</td>
+<td class="c m b0 r0 l0 t0 lines">\(241^2=256\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(186\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(0\)</td>
+<td class="c m b0 r0 l0 t0 lines">\(256^2=1\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(256\times 186=71\)</td>
+</tr>
+</table></div></div></div>
+<p id="p-362">Hence \(3^{163}=71\text{.}\)</p>
+</div></div>
+</div></article><article class="algorithm theorem-like" id="algorithm-4"><h6 class="heading">
+<span class="type">Algorithm</span><span class="space"> </span><span class="codenumber">6.1.3</span><span class="period">.</span><span class="space"> </span><span class="title">Left-to-right algorithm.</span>
+</h6>
+<p id="p-363">Look at the bits of \(e\) from the MSB to the LSB to calculate \(b^e\text{.}\)</p>
+<p id="p-364"><em class="alert">Input:</em> Base \(b\) and exponent \(e\geq 0\text{,}\) \(e=[e_{\ell-1},\dots,e_1,e_0]_2\text{.}\)</p>
+<p id="p-365">\(r=1\)</p>
+<p id="p-366">FOR \(i\) from \(\ell-1\) to 0:</p>
+<p id="p-367">\(r=r\times r\)</p>
+<p id="p-368">IF \(e[i]=1\) THEN \(r=r\times b\)</p>
+<p id="p-369">RETURN \(r\)</p></article><article class="example example-like" id="example-crypto-ltr"><h6 class="heading">
+<span class="type">Example</span><span class="space"> </span><span class="codenumber">6.1.4</span><span class="period">.</span><span class="space"> </span><span class="title">Left-to-right algorithm.</span>
+</h6>Consider \(\mathbf{F}_{257}^*\) with generator \(g=3\text{.}\) Calculate \(3^{163}\text{.}\)<div class="solutions">
+<a data-knowl="" class="id-ref original" data-refid="hk-solution-28" id="solution-28"><span class="type">Solution</span></a><div class="hidden-content tex2jax_ignore" id="hk-solution-28"><div class="solution solution-like">Note that \(163=[10100011]_2\text{,}\) \(b=3\) and \(r=1\text{.}\) <div class="sidebyside"><div class="sbsrow" style="margin-left:0%;margin-right:0%;"><div class="sbspanel fixed-width" style="width:100%;justify-content:flex-start;"><table>
+<tr>
+<td class="c m b1 r0 l0 t0 lines">\(i\)</td>
+<td class="c m b1 r0 l0 t0 lines">\(e[i]\)</td>
+<td class="c m b1 r0 l0 t0 lines" data-braille="last-cell">\(r\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(7\)</td>
+<td class="c m b0 r0 l0 t0 lines">\(1\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(1^2\times 3=3\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(6\)</td>
+<td class="c m b0 r0 l0 t0 lines">\(0\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(3^2=9\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(5\)</td>
+<td class="c m b0 r0 l0 t0 lines">\(1\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(9^2\times 3=243\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(4\)</td>
+<td class="c m b0 r0 l0 t0 lines">\(0\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(243^2=196\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(3\)</td>
+<td class="c m b0 r0 l0 t0 lines">\(0\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(196^2=123\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(2\)</td>
+<td class="c m b0 r0 l0 t0 lines">\(0\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(123^2=223\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(1\)</td>
+<td class="c m b0 r0 l0 t0 lines">\(1\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(223^2\times 3=127\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(0\)</td>
+<td class="c m b0 r0 l0 t0 lines">\(1\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(127^2\times 3=71\)</td>
+</tr>
+</table></div></div></div>
+<p id="p-370">Hence \(3^{163}=71\text{.}\)</p>
+</div></div>
+</div></article></section></div></main>
+</div>
+<div class="login-link"><span id="loginlogout" class="login">login</span></div>
+<script src="https://pretextbook.org/js/0.13/login.js"></script>
+</body>
+</html>

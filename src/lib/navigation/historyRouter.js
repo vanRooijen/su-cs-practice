@@ -196,6 +196,16 @@ function isModifiedClick(event) {
   return event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
 }
 
+function isInternalAppPath(pathname = '/') {
+  const segments = toSegments(pathname);
+  if (!segments.length) {
+    return true;
+  }
+
+  const candidateAppId = (segments[0] ?? '').toLowerCase();
+  return Boolean(candidateAppId && APP_DEFINITIONS[candidateAppId]);
+}
+
 function shouldInterceptAnchor(event, anchor) {
   if (!anchor || event.defaultPrevented || event.button !== 0 || isModifiedClick(event)) {
     return false;
@@ -215,7 +225,13 @@ function shouldInterceptAnchor(event, anchor) {
   }
 
   const url = new URL(anchor.href, window.location.href);
-  return url.origin === window.location.origin;
+  if (url.origin !== window.location.origin) {
+    return false;
+  }
+
+  // Only route app paths through the SPA router. Static assets (e.g. /cs-assets/*.pdf)
+  // should use native browser navigation.
+  return isInternalAppPath(url.pathname);
 }
 
 export function navigateTo(pathname, options = {}) {

@@ -1,0 +1,302 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<!--**************************************-->
+<!--*    Generated from PreTeXt source   *-->
+<!--*    on 2022-02-09T15:15:16+02:00    *-->
+<!--*                                    *-->
+<!--*      https://pretextbook.org       *-->
+<!--*                                    *-->
+<!--**************************************-->
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AM314 Bounds on the chromatic number</title>
+<meta name="Keywords" content="Authored in PreTeXt">
+<meta name="viewport" content="width=device-width,  initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [['\\(','\\)']]
+    },
+    asciimath2jax: {
+        ignoreClass: ".*",
+        processClass: "has_am"
+    },
+    jax: ["input/AsciiMath"],
+    extensions: ["asciimath2jax.js"],
+    TeX: {
+        extensions: ["extpfeil.js", "autobold.js", "https://pretextbook.org/js/lib/mathjaxknowl.js", ],
+        // scrolling to fragment identifiers is controlled by other Javascript
+        positionToHash: false,
+        equationNumbers: { autoNumber: "none", useLabelIds: true, },
+        TagSide: "right",
+        TagIndent: ".8em",
+    },
+    // HTML-CSS output Jax to be dropped for MathJax 3.0
+    "HTML-CSS": {
+        scale: 88,
+        mtextFontInherit: true,
+    },
+    CommonHTML: {
+        scale: 88,
+        mtextFontInherit: true,
+    },
+});
+</script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_CHTML-full"></script><script src="https://pretextbook.org/js/lib/jquery.min.js"></script><script src="https://pretextbook.org/js/lib/jquery.sticky.js"></script><script src="https://pretextbook.org/js/lib/jquery.espy.min.js"></script><script src="https://pretextbook.org/js/0.13/pretext.js"></script><script src="https://pretextbook.org/js/0.13/pretext_add_on.js"></script><script src="https://pretextbook.org/js/lib/knowl.js"></script><link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,600,600italic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700&amp;subset=latin,latin-ext" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/pretext.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/pretext_add_on.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/banner_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/toc_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/knowls_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/style_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/colors_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/setcolors.css" rel="stylesheet" type="text/css">
+<!-- 2019-10-12: Temporary - CSS file for experiments with styling --><link href="https://appliedmaths.sun.ac.za/TW314/developer.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/features.css" rel="stylesheet" type="text/css">
+<script>var logged_in = false;
+var role = 'student';
+var guest_access = true;
+var login_required = false;
+var js_version = 0.13;
+</script>
+</head>
+<body class="mathbook-book has-toc has-sidebar-left">
+<a class="assistive" href="section-bounds.html#content">Skip to main content</a><div class="hidden-content" style="display:none">\(\newcommand{\identity}{\mathrm{id}}
+\newcommand{\notdivide}{{\not{\mid}}}
+\newcommand{\notsubset}{\not\subset}
+\newcommand{\lcm}{\operatorname{lcm}}
+\newcommand{\gf}{\operatorname{GF}}
+\newcommand{\inn}{\operatorname{Inn}}
+\newcommand{\aut}{\operatorname{Aut}}
+\newcommand{\Hom}{\operatorname{Hom}}
+\newcommand{\cis}{\operatorname{cis}}
+\newcommand{\chr}{\operatorname{char}}
+\newcommand{\Null}{\operatorname{Null}}
+\newcommand{\lt}{&lt;}
+\newcommand{\gt}{&gt;}
+\newcommand{\amp}{&amp;}
+\)</div>
+<header id="masthead" class="smallbuttons"><div class="banner"><div class="container">
+<a id="logo-link" href="section-bounds.html"></a><div class="title-container">
+<h1 class="heading"><a href="discrete-book.html"><span class="title">Applied Mathematics 314:</span> <span class="subtitle">An introduction to Applied Discrete Mathematics</span></a></h1>
+<p class="byline">Riana Roux</p>
+</div>
+</div></div>
+<nav id="primary-navbar" class="navbar"><div class="container">
+<div class="navbar-top-buttons">
+<button class="sidebar-left-toggle-button button active" aria-label="Show or hide table of contents sidebar">Contents</button><div class="tree-nav toolbar toolbar-divisor-3"><span class="threebuttons"><a id="previousbutton" class="previous-button toolbar-item button" href="section-chromatic.html" title="Previous">Prev</a><a id="upbutton" class="up-button button toolbar-item" href="colour.html" title="Up">Up</a><a id="nextbutton" class="next-button button toolbar-item" href="section-4colour.html" title="Next">Next</a></span></div>
+</div>
+<div class="navbar-bottom-buttons toolbar toolbar-divisor-4">
+<button class="sidebar-left-toggle-button button toolbar-item active">Contents</button><a class="previous-button toolbar-item button" href="section-chromatic.html" title="Previous">Prev</a><a class="up-button button toolbar-item" href="colour.html" title="Up">Up</a><a class="next-button button toolbar-item" href="section-4colour.html" title="Next">Next</a>
+</div>
+</div></nav></header><div class="page">
+<div id="sidebar-left" class="sidebar" role="navigation"><div class="sidebar-content">
+<nav id="toc"><ul>
+<li class="link">
+<a href="frontmatter.html" data-scroll="frontmatter"><span class="title">Front Matter</span></a><ul><li><a href="preface.html" data-scroll="preface">Preface</a></li></ul>
+</li>
+<li class="link part"><a href="part-graph.html" data-scroll="part-graph"><span class="codenumber">I</span> <span class="title">Graph Theory</span></a></li>
+<li class="link">
+<a href="graphs.html" data-scroll="graphs"><span class="codenumber">1</span> <span class="title">An introduction to graphs</span></a><ul>
+<li><a href="section-notation.html" data-scroll="section-notation">Basic notation</a></li>
+<li><a href="section-first-theorem.html" data-scroll="section-first-theorem">The first theorem of graph theory</a></li>
+<li><a href="section-subgraph.html" data-scroll="section-subgraph">Subgraphs</a></li>
+<li><a href="section-connectedness.html" data-scroll="section-connectedness">Paths and connectivity</a></li>
+<li><a href="section-isomorphism.html" data-scroll="section-isomorphism">Equality and isomorphism</a></li>
+<li><a href="section-graphical.html" data-scroll="section-graphical">Graphical sequences</a></li>
+<li><a href="section-special-graphs.html" data-scroll="section-special-graphs">Special graphs and some constructs</a></li>
+<li><a href="section-trees.html" data-scroll="section-trees">Trees</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="planar.html" data-scroll="planar"><span class="codenumber">2</span> <span class="title">Planar graphs</span></a><ul>
+<li><a href="section-embeddings.html" data-scroll="section-embeddings">Embeddings and plane graphs</a></li>
+<li><a href="section-euler.html" data-scroll="section-euler">Euler's theorem</a></li>
+<li><a href="section-maximal-planar.html" data-scroll="section-maximal-planar">Maximal planar graphs</a></li>
+<li><a href="section-polyhedra.html" data-scroll="section-polyhedra">Polyhedra</a></li>
+<li><a href="section-maximal.html" data-scroll="section-maximal">A characterization of planar graphs</a></li>
+<li><a href="section-algorithm.html" data-scroll="section-algorithm">A planarity algorithm</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="colour.html" data-scroll="colour"><span class="codenumber">3</span> <span class="title">Graph colourings</span></a><ul>
+<li><a href="section-chromatic.html" data-scroll="section-chromatic">Chromatic numbers</a></li>
+<li><a href="section-bounds.html" data-scroll="section-bounds" class="active">Bounds on the chromatic number</a></li>
+<li><a href="section-4colour.html" data-scroll="section-4colour">The four-colour problem</a></li>
+</ul>
+</li>
+<li class="link part"><a href="part-crypto.html" data-scroll="part-crypto"><span class="codenumber">II</span> <span class="title">Cryptography</span></a></li>
+<li class="link">
+<a href="crypto.html" data-scroll="crypto"><span class="codenumber">4</span> <span class="title">An introduction to cryptography</span></a><ul>
+<li><a href="section-crypto-notation.html" data-scroll="section-crypto-notation">What is cryptography?</a></li>
+<li><a href="section-crypto-symmetric.html" data-scroll="section-crypto-symmetric">Symmetric-key primitives</a></li>
+<li><a href="section-crypto-public.html" data-scroll="section-crypto-public">Public-key primitives</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="crypto_algebra.html" data-scroll="crypto_algebra"><span class="codenumber">5</span> <span class="title">Important algebraic concepts</span></a><ul>
+<li><a href="section-crypto-mod.html" data-scroll="section-crypto-mod">Modular arithmetic</a></li>
+<li><a href="section-crypto-group.html" data-scroll="section-crypto-group">Groups</a></li>
+<li><a href="section-crypto-rings.html" data-scroll="section-crypto-rings">Rings</a></li>
+<li><a href="section-crypto-field.html" data-scroll="section-crypto-field">Fields</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="crypto_key.html" data-scroll="crypto_key"><span class="codenumber">6</span> <span class="title">Key establishment</span></a><ul>
+<li><a href="section-exponent.html" data-scroll="section-exponent">Exponentiation</a></li>
+<li><a href="section-crypto-DH.html" data-scroll="section-crypto-DH">Diffie-Hellman</a></li>
+<li><a href="section-crypto-inverse.html" data-scroll="section-crypto-inverse">Inverses in finite groups</a></li>
+<li><a href="section-crypto-log-alg.html" data-scroll="section-crypto-log-alg">An algorithm for computing discrete logartihms</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="crypto_rsa.html" data-scroll="crypto_rsa"><span class="codenumber">7</span> <span class="title">RSA encryption</span></a><ul>
+<li><a href="section-crypto-number.html" data-scroll="section-crypto-number">Number theory</a></li>
+<li><a href="section-crypto-rsa.html" data-scroll="section-crypto-rsa">The RSA system</a></li>
+</ul>
+</li>
+<li class="link part"><a href="part-coding.html" data-scroll="part-coding"><span class="codenumber">III</span> <span class="title">Coding theory</span></a></li>
+<li class="link">
+<a href="coding_error.html" data-scroll="coding_error"><span class="codenumber">8</span> <span class="title">Error-correcting codes</span></a><ul>
+<li><a href="section-coding-intro.html" data-scroll="section-coding-intro">Introduction</a></li>
+<li><a href="section-coding-channel.html" data-scroll="section-coding-channel">A digital communication system</a></li>
+<li><a href="section-coding-block.html" data-scroll="section-coding-block">Block codes</a></li>
+<li><a href="section-coding-hamming.html" data-scroll="section-coding-hamming">Hamming distances</a></li>
+<li><a href="section-coding-neighbour.html" data-scroll="section-coding-neighbour">Nearest neighbour decoding</a></li>
+<li><a href="section-coding-minimum.html" data-scroll="section-coding-minimum">Minimum distance</a></li>
+<li><a href="section-coding-equiv.html" data-scroll="section-coding-equiv">Equivalent codes</a></li>
+<li><a href="section-coding-parameters.html" data-scroll="section-coding-parameters">Optimising the parameters \(n\text{,}\) \(M\) and \(d\)</a></li>
+<li><a href="section-coding-hammingbound.html" data-scroll="section-coding-hammingbound">The Hamming bound</a></li>
+<li><a href="section-coding-perfect.html" data-scroll="section-coding-perfect">Perfect codes</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="coding_linear.html" data-scroll="coding_linear"><span class="codenumber">9</span> <span class="title">Linear codes</span></a><ul>
+<li><a href="section-coding-vector.html" data-scroll="section-coding-vector">Vectorspaces</a></li>
+<li><a href="section-coding-linear.html" data-scroll="section-coding-linear">Introduction to linear codes</a></li>
+<li><a href="section-coding-encode-linear.html" data-scroll="section-coding-encode-linear">Encoding with a linear code</a></li>
+<li><a href="section-coding-cosets.html" data-scroll="section-coding-cosets">Cosets</a></li>
+<li><a href="section-coding-decode.html" data-scroll="section-coding-decode">Decoding with a linear code</a></li>
+<li><a href="section-coding-dual.html" data-scroll="section-coding-dual">Dual codes</a></li>
+<li><a href="section-coding-syndrome.html" data-scroll="section-coding-syndrome">Syndrome decoding</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="coding_hamming.html" data-scroll="coding_hamming"><span class="codenumber">10</span> <span class="title">Hamming codes</span></a><ul>
+<li><a href="section-coding-ham-intro.html" data-scroll="section-coding-ham-intro">Introduction</a></li>
+<li><a href="section-coding-ham-decode.html" data-scroll="section-coding-ham-decode">Decoding with a binary Hamming code</a></li>
+<li><a href="section-coding-ham-extend.html" data-scroll="section-coding-ham-extend">The extended binary Hamming code</a></li>
+<li><a href="section-coding-fund.html" data-scroll="section-coding-fund">A fundamental theorem</a></li>
+<li><a href="section-coding-qham.html" data-scroll="section-coding-qham">\(q\)-ary Hamming codes</a></li>
+<li><a href="section-coding-qham-decode.html" data-scroll="section-coding-qham-decode">Decoding with a \(q\)-ary Hamming code</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="coding_cyclic.html" data-scroll="coding_cyclic"><span class="codenumber">11</span> <span class="title">Cyclic codes</span></a><ul>
+<li><a href="section-coding-cyclic-intro.html" data-scroll="section-coding-cyclic-intro">Introduction</a></li>
+<li><a href="section-coding-ring.html" data-scroll="section-coding-ring">The ring of polynomials modulo \(f(x)\)</a></li>
+<li><a href="section-coding-cyclic-check.html" data-scroll="section-coding-cyclic-check">The check polynomial and the parity-check matrix of a cyclic code</a></li>
+</ul>
+</li>
+</ul></nav><div class="extras"><nav><a class="mathbook-link" href="https://pretextbook.org">Authored in PreTeXt</a><a href="https://www.mathjax.org"><img title="Powered by MathJax" src="https://www.mathjax.org/badge/badge.gif" alt="Powered by MathJax"></a></nav></div>
+</div></div>
+<main class="main"><div id="content" class="pretext-content"><section class="section" id="section-bounds"><h2 class="heading hide-type">
+<span class="type">Section</span> <span class="codenumber">3.2</span> <span class="title">Bounds on the chromatic number</span>
+</h2>
+<a href="section-bounds.html" class="permalink">¶</a><p id="p-207">A <dfn class="terminology">clique</dfn> in a graph \(G\) is a maximal complete subgraph of \(G\text{.}\) The <dfn class="terminology">clique number</dfn> \(\omega (G)\) of \(G\) is the order of a largest clique of \(G\text{.}\)</p>
+<figure class="figure figure-like" id="figure-graph-clique"><div class="image-box" style="width: 50%; margin-left: 25%; margin-right: 25%;"><img src="images/figure_4colouring.JPG" style="width: 100%; height: auto;" alt=""></div>
+<figcaption><span class="type">Figure</span><span class="space"> </span><span class="codenumber">3.2.1<span class="period">.</span></span><span class="space"> </span>A graph with a clique number of 4.</figcaption></figure><article class="example example-like" id="example-graph-clique"><h6 class="heading">
+<span class="type">Example</span><span class="space"> </span><span class="codenumber">3.2.2</span><span class="period">.</span>
+</h6>Determine all the cliques of \(G\) in <a class="xref" data-knowl="./knowl/figure-graph-clique.html" title="Figure 3.2.1">Figure 3.2.1</a> and then deduce the \(\omega(G)\text{.}\)<div class="solutions">
+<a data-knowl="" class="id-ref original" data-refid="hk-solution-12" id="solution-12"><span class="type">Solution</span></a><div class="hidden-content tex2jax_ignore" id="hk-solution-12"><div class="solution solution-like">
+<p id="p-208">The cliques of \(G\) are:</p>
+<div class="displaymath" id="p-209">
+\begin{align*}
+\left\langle \{ u,r,v \} \right\rangle, \left\langle \{ u,x,v \} \right\rangle &amp; \text{ of order } 3 \\
+\left\langle \{ u,s,w \} \right\rangle, \left\langle \{ u,x,w \} \right\rangle &amp; \text{ of order } 3 \\
+\left\langle \{ w,t,v \} \right\rangle, \left\langle \{ w,x,v \} \right\rangle &amp; \text{ of order } 3 \\
+\left\langle \{ u,v,w,x \} \right\rangle &amp; \text{ of order } 4 
+\end{align*}
+</div>
+<p id="p-210">Hence the clique number is \(\omega(G) = 4\text{.}\)</p>
+</div></div>
+</div></article><p id="p-211">In any colouring of a graph \(G\text{,}\) all vertices in a clique must get different colours; hence the following result</p>
+<article class="theorem theorem-like" id="theorem-13"><h6 class="heading">
+<span class="type">Theorem</span><span class="space"> </span><span class="codenumber">3.2.3</span><span class="period">.</span>
+</h6>For any graph \(G\text{,}\)<div class="displaymath">
+\begin{equation*}
+\omega(G) \leq \chi(G).
+\end{equation*}
+</div></article><p id="p-212">However, this lower bound for \(\chi(G)\) is not a very good one. For example, odd cycles have \(\omega = 2\) and \(\chi = 3\text{.}\) In fact, we can construct, for any \(k = 3,4, \ldots\text{,}\) \(k\)-chromatic graphs that are triangle-free, so that \(\chi - \omega\) can be made arbitrarily large.</p>
+<p id="p-213">In 1955 Jan Mycielski constructed a class of graphs for which the clique number is two, but where the chromatic number can be arbitrarily large. The <dfn class="terminology">Mycielskian</dfn> \(\mu(G)\) of the graph \(G\text{,}\) on vertices \(v_1,\dots,v_n\text{,}\) has \(2n+1\) vertices and contains \(G\) as an induced subgraph. The vertex set of \(\mu(G)\) consist of the vertices \(v_i\text{,}\) a corresponding vertex \(u_i\) for every \(i=1,\dots,n\) and the vertex \(w\text{.}\) The edge set of \(\mu(G)\) contains the following edges: \(u_iv\) for each \(v\in N_G(v_i)\) and \(i=1,\dots,n\text{,}\) and \(u_iw\) for each \(i=1,\dots,n\text{.}\) Note that the graph induced by all the \(u_i\)'s and \(w\) is isomorphic to the star \(K_{1,n}\text{.}\)</p>
+<p id="p-214">The Mycielskian \(\mu(G)\) contains a triangle if and only if the graph \(G\) contains a triangle. Hence, if we start with a triangle-free graph, we can use the construction to create larger triangle-free graphs. More specifically, if we start with the complete graph of order two and apply the Mycielskian construction iteratively, then we create a sequence of triangle-free graphs where the chromatic number increases by one with every iteration. This sequence of graphs is called <dfn class="terminology">Mycielski graphs</dfn> where \(M_i=\mu(M_{i-1})\) and \(M_2=K_2\text{.}\)</p>
+<article class="example example-like" id="example-graph-mycielski"><h6 class="heading">
+<span class="type">Example</span><span class="space"> </span><span class="codenumber">3.2.4</span><span class="period">.</span>
+</h6>Construct the Mycielski graphs \(M_3\) and \(M_4\text{.}\)<div class="solutions">
+<a data-knowl="" class="id-ref original" data-refid="hk-solution-13" id="solution-13"><span class="type">Solution</span></a><div class="hidden-content tex2jax_ignore" id="hk-solution-13"><div class="solution solution-like">
+<p id="p-215">The third Mycielski graph is isomorphic to a 5-cycle.</p>
+<figure class="figure figure-like" id="figure-graph-mycielski1"><div class="image-box" style="width: 20%; margin-left: 40%; margin-right: 40%;"><img src="images/figure_mycielski1.jpg" style="width: 100%; height: auto;" alt=""></div>
+<figcaption><span class="type">Figure</span><span class="space"> </span><span class="codenumber">3.2.5<span class="period">.</span></span><span class="space"> </span>The Mycielski graph \(M_3\simeq C_5\text{.}\)</figcaption></figure><p id="p-216">The fourth Mycielski graph is called the <dfn class="terminology">Grötzsch graph</dfn>.</p>
+<figure class="figure figure-like" id="figure-graph-mycielski2"><div class="image-box" style="width: 40%; margin-left: 30%; margin-right: 30%;"><img src="images/figure_mycielski2.jpg" style="width: 100%; height: auto;" alt=""></div>
+<figcaption><span class="type">Figure</span><span class="space"> </span><span class="codenumber">3.2.6<span class="period">.</span></span><span class="space"> </span>The Grötzsch graph.</figcaption></figure>
+</div></div>
+</div></article><p id="p-217">An <dfn class="terminology">independent set</dfn> in a graph \(G\) is a set of vertices that are not adjacent to one another. A <dfn class="terminology">maximal independent set</dfn> \(S\) is an independent set that does not remain independent if any vertex not in \(S\) is added to \(S\text{.}\) The <dfn class="terminology">independence number</dfn> \(\alpha(G)\) is the largest possible maximal independet set in \(G\text{.}\)</p>
+<figure class="figure figure-like" id="figure-graph-independence"><div class="image-box" style="width: 20%; margin-left: 40%; margin-right: 40%;"><img src="images/figure_independence.png" style="width: 100%; height: auto;" alt=""></div>
+<figcaption><span class="type">Figure</span><span class="space"> </span><span class="codenumber">3.2.7<span class="period">.</span></span><span class="space"> </span>A graph with an independence number of 3.</figcaption></figure><article class="example example-like" id="example-graph-independence"><h6 class="heading">
+<span class="type">Example</span><span class="space"> </span><span class="codenumber">3.2.8</span><span class="period">.</span>
+</h6>Determine the independence number of the graph \(G_2\) in <a class="xref" data-knowl="./knowl/figure-graph-independence.html" title="Figure 3.2.7">Figure 3.2.7</a>.<div class="solutions">
+<a data-knowl="" class="id-ref original" data-refid="hk-solution-14" id="solution-14"><span class="type">Solution</span></a><div class="hidden-content tex2jax_ignore" id="hk-solution-14"><div class="solution solution-like"><p id="p-218">Since \(\omega(\overline{G_2})=3\text{,}\) it follows that \(\alpha(G_2)=3\text{.}\)</p></div></div>
+</div></article><article class="theorem theorem-like" id="theorem-14"><h6 class="heading">
+<span class="type">Theorem</span><span class="space"> </span><span class="codenumber">3.2.9</span><span class="period">.</span>
+</h6>Let \(G\) be a graph with \(n\) vertices and independence number \(\alpha(G)\text{.}\) Then<div class="displaymath">
+\begin{equation*}
+\chi(G)\geq \lceil n/\alpha(G) \rceil.
+\end{equation*}
+</div></article><article class="hiddenproof" id="proof-12"><a data-knowl="" class="id-ref original" data-refid="hk-proof-12"><h6 class="heading"><span class="type">Proof<span class="period">.</span></span></h6></a></article><div class="hidden-content tex2jax_ignore" id="hk-proof-12"><article class="hiddenproof"><p id="p-219">Suppose that \(\chi(G)=k\) and let \(V_1,\dots,V_k\) be the colour classes of \(G\text{,}\) where each \(V_i\) is independent. Hence</p>
+<div class="displaymath">
+\begin{equation*}
+n=|V(G)|=|V_1,\cup\dots\cup V_k|=\sum_{i=1}^k|V_i|\leq k\alpha(G).
+\end{equation*}
+</div>
+<p id="p-220">Therefore, \(\chi(G)=k\geq \lceil n/\alpha(G) \rceil\text{.}\)</p></article></div>
+<p id="p-221">By following a greedy approach, it will always be possible to colour the vertices of a graph with \(\Delta\) colours.</p>
+<article class="algorithm theorem-like" id="algorithm-2"><h6 class="heading">
+<span class="type">Algorithm</span><span class="space"> </span><span class="codenumber">3.2.10</span><span class="period">.</span><span class="space"> </span><span class="title">A greedy colouring algorithm.</span>
+</h6>
+<dl id="p-222" class="description-list">
+<dt id="li-48">STEP 1</dt>
+<dd><p id="p-223">Colour a vertex with colour 1.</p></dd>
+<dt id="li-49">STEP 2</dt>
+<dd><p id="p-224">Pick an uncoloured vertex. Colour it with the lowest number colour that has not been used on any of its neighbours. If all the preciously used colours appear on its neighbours, then introduce a new colour.</p></dd>
+<dt id="li-50">STEP 3</dt>
+<dd><p id="p-225">Repeat STEP 2 until all the vertices are coloured</p></dd>
+</dl></article><article class="example example-like" id="example-graph-greedy"><h6 class="heading">
+<span class="type">Example</span><span class="space"> </span><span class="codenumber">3.2.11</span><span class="period">.</span>
+</h6>Use the greedy algorithm to colour the Grötzsch graph in <a class="xref" data-knowl="./knowl/figure-graph-mycielski2.html" title="Figure 3.2.6">Figure 3.2.6</a>.<div class="solutions">
+<a data-knowl="" class="id-ref original" data-refid="hk-solution-15" id="solution-15"><span class="type">Solution</span></a><div class="hidden-content tex2jax_ignore" id="hk-solution-15"><div class="solution solution-like">
+<p id="p-226">Colour vertex \(w\) with colour 1 (say blue). Now pick vertex \(v_1\text{.}\) Since \(v_1\) is not adjacent to \(w\text{,}\) colour \(v_1\) with colour 1 as well. Since \(v_2\) is adjacent to \(v_2\text{,}\) colour it with colour 2 (say red). Continuing in this way, we colour \(v_3\) with colour 1, \(v_4\) with colour 2. Now we have to introduce a new colour, colour 3 (say yelow), to colour \(v_5\text{.}\) Following the algorithm, if we pick \(u_1\) next, we must colour it with colour 4 (say green) and then the rest will be coloured as follows: \(u_2, u_4\) with colour 2 and \(u_3, u_5\) with colour 3.</p>
+<figure class="figure figure-like" id="figure-graph-greedy"><div class="image-box" style="width: 40%; margin-left: 30%; margin-right: 30%;"><img src="images/figure_greedy.jpg" style="width: 100%; height: auto;" alt=""></div>
+<figcaption><span class="type">Figure</span><span class="space"> </span><span class="codenumber">3.2.12<span class="period">.</span></span><span class="space"> </span>A greedy colouring of the Grötzsch graph.</figcaption></figure>
+</div></div>
+</div></article><article class="theorem theorem-like" id="theorem-15"><h6 class="heading">
+<span class="type">Theorem</span><span class="space"> </span><span class="codenumber">3.2.13</span><span class="period">.</span>
+</h6>For any connected graph \(G\text{,}\)<div class="displaymath">
+\begin{equation*}
+\chi(G)\leq \Delta+1.
+\end{equation*}
+</div></article><article class="hiddenproof" id="proof-13"><a data-knowl="" class="id-ref original" data-refid="hk-proof-13"><h6 class="heading"><span class="type">Proof<span class="period">.</span></span></h6></a></article><div class="hidden-content tex2jax_ignore" id="hk-proof-13"><article class="hiddenproof"><p id="p-227">Let \(\Delta\) be the maximum degree of \(G\text{.}\)</p>
+<p id="p-228">Then any vertex \(v\) is adjacent to at most \(\Delta\) vertices of which possibly all are coloured differently.</p>
+<p id="p-229">Hence there are at most \(\Delta\) colours that should be avoided. Since \(v\) must be coloured different to all its neighbours, we need at most \(\Delta+1\) colours to have a proper colouring of \(G\text{.}\)</p></article></div>
+<p id="p-230">We can improve slightly on the previous result by restricting the types of graphs that we are considering.</p>
+<article class="theorem theorem-like" id="theorem-16"><h6 class="heading">
+<span class="type">Theorem</span><span class="space"> </span><span class="codenumber">3.2.14</span><span class="period">.</span><span class="space"> </span><span class="title">Brook's Theorem.</span>
+</h6>Let \(G\) be a connected graph. If \(G\) is neither a complete graph nor an odd cycle, then<div class="displaymath">
+\begin{equation*}
+\chi(G)\leq \Delta.
+\end{equation*}
+</div></article></section></div></main>
+</div>
+<div class="login-link"><span id="loginlogout" class="login">login</span></div>
+<script src="https://pretextbook.org/js/0.13/login.js"></script>
+</body>
+</html>

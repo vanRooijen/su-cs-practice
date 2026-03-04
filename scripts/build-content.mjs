@@ -2,6 +2,7 @@ import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { marked } from 'marked';
+import markedKatex from 'marked-katex-extension';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,6 +18,13 @@ marked.setOptions({
   mangle: false,
   headerIds: false,
 });
+
+marked.use(
+  markedKatex({
+    throwOnError: false,
+    nonStandard: true,
+  }),
+);
 
 function trim(value) {
   return value.replace(/^\/+|\/+$/g, '');

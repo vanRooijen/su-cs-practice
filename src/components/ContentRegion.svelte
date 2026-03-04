@@ -4,6 +4,7 @@
   import DefaultContentShell from './content-shells/DefaultContentShell.svelte';
   import DemoStepShell from './content-shells/DemoStepShell.svelte';
   import HomeLandingShell from './content-shells/HomeLandingShell.svelte';
+  import PdfViewerShell from './content-shells/PdfViewerShell.svelte';
   import ReaderArticlesShell from './content-shells/ReaderArticlesShell.svelte';
 
   export let artifact;
@@ -13,6 +14,7 @@
     default: DefaultContentShell,
     'demo-step': DemoStepShell,
     'home-landing': HomeLandingShell,
+    'pdf-viewer': PdfViewerShell,
     'reader-articles': ReaderArticlesShell,
   };
 

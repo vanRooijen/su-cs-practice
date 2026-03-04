@@ -1,0 +1,256 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<!--**************************************-->
+<!--*    Generated from PreTeXt source   *-->
+<!--*    on 2022-02-09T15:15:17+02:00    *-->
+<!--*                                    *-->
+<!--*      https://pretextbook.org       *-->
+<!--*                                    *-->
+<!--**************************************-->
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AM314 The four-colour problem</title>
+<meta name="Keywords" content="Authored in PreTeXt">
+<meta name="viewport" content="width=device-width,  initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [['\\(','\\)']]
+    },
+    asciimath2jax: {
+        ignoreClass: ".*",
+        processClass: "has_am"
+    },
+    jax: ["input/AsciiMath"],
+    extensions: ["asciimath2jax.js"],
+    TeX: {
+        extensions: ["extpfeil.js", "autobold.js", "https://pretextbook.org/js/lib/mathjaxknowl.js", ],
+        // scrolling to fragment identifiers is controlled by other Javascript
+        positionToHash: false,
+        equationNumbers: { autoNumber: "none", useLabelIds: true, },
+        TagSide: "right",
+        TagIndent: ".8em",
+    },
+    // HTML-CSS output Jax to be dropped for MathJax 3.0
+    "HTML-CSS": {
+        scale: 88,
+        mtextFontInherit: true,
+    },
+    CommonHTML: {
+        scale: 88,
+        mtextFontInherit: true,
+    },
+});
+</script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_CHTML-full"></script><script src="https://pretextbook.org/js/lib/jquery.min.js"></script><script src="https://pretextbook.org/js/lib/jquery.sticky.js"></script><script src="https://pretextbook.org/js/lib/jquery.espy.min.js"></script><script src="https://pretextbook.org/js/0.13/pretext.js"></script><script src="https://pretextbook.org/js/0.13/pretext_add_on.js"></script><script src="https://pretextbook.org/js/lib/knowl.js"></script><link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,600,600italic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700&amp;subset=latin,latin-ext" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/pretext.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/pretext_add_on.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/banner_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/toc_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/knowls_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/style_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/colors_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/setcolors.css" rel="stylesheet" type="text/css">
+<!-- 2019-10-12: Temporary - CSS file for experiments with styling --><link href="https://appliedmaths.sun.ac.za/TW314/developer.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/features.css" rel="stylesheet" type="text/css">
+<script>var logged_in = false;
+var role = 'student';
+var guest_access = true;
+var login_required = false;
+var js_version = 0.13;
+</script>
+</head>
+<body class="mathbook-book has-toc has-sidebar-left">
+<a class="assistive" href="section-4colour.html#content">Skip to main content</a><div class="hidden-content" style="display:none">\(\newcommand{\identity}{\mathrm{id}}
+\newcommand{\notdivide}{{\not{\mid}}}
+\newcommand{\notsubset}{\not\subset}
+\newcommand{\lcm}{\operatorname{lcm}}
+\newcommand{\gf}{\operatorname{GF}}
+\newcommand{\inn}{\operatorname{Inn}}
+\newcommand{\aut}{\operatorname{Aut}}
+\newcommand{\Hom}{\operatorname{Hom}}
+\newcommand{\cis}{\operatorname{cis}}
+\newcommand{\chr}{\operatorname{char}}
+\newcommand{\Null}{\operatorname{Null}}
+\newcommand{\lt}{&lt;}
+\newcommand{\gt}{&gt;}
+\newcommand{\amp}{&amp;}
+\)</div>
+<header id="masthead" class="smallbuttons"><div class="banner"><div class="container">
+<a id="logo-link" href="section-4colour.html"></a><div class="title-container">
+<h1 class="heading"><a href="discrete-book.html"><span class="title">Applied Mathematics 314:</span> <span class="subtitle">An introduction to Applied Discrete Mathematics</span></a></h1>
+<p class="byline">Riana Roux</p>
+</div>
+</div></div>
+<nav id="primary-navbar" class="navbar"><div class="container">
+<div class="navbar-top-buttons">
+<button class="sidebar-left-toggle-button button active" aria-label="Show or hide table of contents sidebar">Contents</button><div class="tree-nav toolbar toolbar-divisor-3"><span class="threebuttons"><a id="previousbutton" class="previous-button toolbar-item button" href="section-bounds.html" title="Previous">Prev</a><a id="upbutton" class="up-button button toolbar-item" href="colour.html" title="Up">Up</a><a id="nextbutton" class="next-button button toolbar-item" href="part-crypto.html" title="Next">Next</a></span></div>
+</div>
+<div class="navbar-bottom-buttons toolbar toolbar-divisor-4">
+<button class="sidebar-left-toggle-button button toolbar-item active">Contents</button><a class="previous-button toolbar-item button" href="section-bounds.html" title="Previous">Prev</a><a class="up-button button toolbar-item" href="colour.html" title="Up">Up</a><a class="next-button button toolbar-item" href="part-crypto.html" title="Next">Next</a>
+</div>
+</div></nav></header><div class="page">
+<div id="sidebar-left" class="sidebar" role="navigation"><div class="sidebar-content">
+<nav id="toc"><ul>
+<li class="link">
+<a href="frontmatter.html" data-scroll="frontmatter"><span class="title">Front Matter</span></a><ul><li><a href="preface.html" data-scroll="preface">Preface</a></li></ul>
+</li>
+<li class="link part"><a href="part-graph.html" data-scroll="part-graph"><span class="codenumber">I</span> <span class="title">Graph Theory</span></a></li>
+<li class="link">
+<a href="graphs.html" data-scroll="graphs"><span class="codenumber">1</span> <span class="title">An introduction to graphs</span></a><ul>
+<li><a href="section-notation.html" data-scroll="section-notation">Basic notation</a></li>
+<li><a href="section-first-theorem.html" data-scroll="section-first-theorem">The first theorem of graph theory</a></li>
+<li><a href="section-subgraph.html" data-scroll="section-subgraph">Subgraphs</a></li>
+<li><a href="section-connectedness.html" data-scroll="section-connectedness">Paths and connectivity</a></li>
+<li><a href="section-isomorphism.html" data-scroll="section-isomorphism">Equality and isomorphism</a></li>
+<li><a href="section-graphical.html" data-scroll="section-graphical">Graphical sequences</a></li>
+<li><a href="section-special-graphs.html" data-scroll="section-special-graphs">Special graphs and some constructs</a></li>
+<li><a href="section-trees.html" data-scroll="section-trees">Trees</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="planar.html" data-scroll="planar"><span class="codenumber">2</span> <span class="title">Planar graphs</span></a><ul>
+<li><a href="section-embeddings.html" data-scroll="section-embeddings">Embeddings and plane graphs</a></li>
+<li><a href="section-euler.html" data-scroll="section-euler">Euler's theorem</a></li>
+<li><a href="section-maximal-planar.html" data-scroll="section-maximal-planar">Maximal planar graphs</a></li>
+<li><a href="section-polyhedra.html" data-scroll="section-polyhedra">Polyhedra</a></li>
+<li><a href="section-maximal.html" data-scroll="section-maximal">A characterization of planar graphs</a></li>
+<li><a href="section-algorithm.html" data-scroll="section-algorithm">A planarity algorithm</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="colour.html" data-scroll="colour"><span class="codenumber">3</span> <span class="title">Graph colourings</span></a><ul>
+<li><a href="section-chromatic.html" data-scroll="section-chromatic">Chromatic numbers</a></li>
+<li><a href="section-bounds.html" data-scroll="section-bounds">Bounds on the chromatic number</a></li>
+<li><a href="section-4colour.html" data-scroll="section-4colour" class="active">The four-colour problem</a></li>
+</ul>
+</li>
+<li class="link part"><a href="part-crypto.html" data-scroll="part-crypto"><span class="codenumber">II</span> <span class="title">Cryptography</span></a></li>
+<li class="link">
+<a href="crypto.html" data-scroll="crypto"><span class="codenumber">4</span> <span class="title">An introduction to cryptography</span></a><ul>
+<li><a href="section-crypto-notation.html" data-scroll="section-crypto-notation">What is cryptography?</a></li>
+<li><a href="section-crypto-symmetric.html" data-scroll="section-crypto-symmetric">Symmetric-key primitives</a></li>
+<li><a href="section-crypto-public.html" data-scroll="section-crypto-public">Public-key primitives</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="crypto_algebra.html" data-scroll="crypto_algebra"><span class="codenumber">5</span> <span class="title">Important algebraic concepts</span></a><ul>
+<li><a href="section-crypto-mod.html" data-scroll="section-crypto-mod">Modular arithmetic</a></li>
+<li><a href="section-crypto-group.html" data-scroll="section-crypto-group">Groups</a></li>
+<li><a href="section-crypto-rings.html" data-scroll="section-crypto-rings">Rings</a></li>
+<li><a href="section-crypto-field.html" data-scroll="section-crypto-field">Fields</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="crypto_key.html" data-scroll="crypto_key"><span class="codenumber">6</span> <span class="title">Key establishment</span></a><ul>
+<li><a href="section-exponent.html" data-scroll="section-exponent">Exponentiation</a></li>
+<li><a href="section-crypto-DH.html" data-scroll="section-crypto-DH">Diffie-Hellman</a></li>
+<li><a href="section-crypto-inverse.html" data-scroll="section-crypto-inverse">Inverses in finite groups</a></li>
+<li><a href="section-crypto-log-alg.html" data-scroll="section-crypto-log-alg">An algorithm for computing discrete logartihms</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="crypto_rsa.html" data-scroll="crypto_rsa"><span class="codenumber">7</span> <span class="title">RSA encryption</span></a><ul>
+<li><a href="section-crypto-number.html" data-scroll="section-crypto-number">Number theory</a></li>
+<li><a href="section-crypto-rsa.html" data-scroll="section-crypto-rsa">The RSA system</a></li>
+</ul>
+</li>
+<li class="link part"><a href="part-coding.html" data-scroll="part-coding"><span class="codenumber">III</span> <span class="title">Coding theory</span></a></li>
+<li class="link">
+<a href="coding_error.html" data-scroll="coding_error"><span class="codenumber">8</span> <span class="title">Error-correcting codes</span></a><ul>
+<li><a href="section-coding-intro.html" data-scroll="section-coding-intro">Introduction</a></li>
+<li><a href="section-coding-channel.html" data-scroll="section-coding-channel">A digital communication system</a></li>
+<li><a href="section-coding-block.html" data-scroll="section-coding-block">Block codes</a></li>
+<li><a href="section-coding-hamming.html" data-scroll="section-coding-hamming">Hamming distances</a></li>
+<li><a href="section-coding-neighbour.html" data-scroll="section-coding-neighbour">Nearest neighbour decoding</a></li>
+<li><a href="section-coding-minimum.html" data-scroll="section-coding-minimum">Minimum distance</a></li>
+<li><a href="section-coding-equiv.html" data-scroll="section-coding-equiv">Equivalent codes</a></li>
+<li><a href="section-coding-parameters.html" data-scroll="section-coding-parameters">Optimising the parameters \(n\text{,}\) \(M\) and \(d\)</a></li>
+<li><a href="section-coding-hammingbound.html" data-scroll="section-coding-hammingbound">The Hamming bound</a></li>
+<li><a href="section-coding-perfect.html" data-scroll="section-coding-perfect">Perfect codes</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="coding_linear.html" data-scroll="coding_linear"><span class="codenumber">9</span> <span class="title">Linear codes</span></a><ul>
+<li><a href="section-coding-vector.html" data-scroll="section-coding-vector">Vectorspaces</a></li>
+<li><a href="section-coding-linear.html" data-scroll="section-coding-linear">Introduction to linear codes</a></li>
+<li><a href="section-coding-encode-linear.html" data-scroll="section-coding-encode-linear">Encoding with a linear code</a></li>
+<li><a href="section-coding-cosets.html" data-scroll="section-coding-cosets">Cosets</a></li>
+<li><a href="section-coding-decode.html" data-scroll="section-coding-decode">Decoding with a linear code</a></li>
+<li><a href="section-coding-dual.html" data-scroll="section-coding-dual">Dual codes</a></li>
+<li><a href="section-coding-syndrome.html" data-scroll="section-coding-syndrome">Syndrome decoding</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="coding_hamming.html" data-scroll="coding_hamming"><span class="codenumber">10</span> <span class="title">Hamming codes</span></a><ul>
+<li><a href="section-coding-ham-intro.html" data-scroll="section-coding-ham-intro">Introduction</a></li>
+<li><a href="section-coding-ham-decode.html" data-scroll="section-coding-ham-decode">Decoding with a binary Hamming code</a></li>
+<li><a href="section-coding-ham-extend.html" data-scroll="section-coding-ham-extend">The extended binary Hamming code</a></li>
+<li><a href="section-coding-fund.html" data-scroll="section-coding-fund">A fundamental theorem</a></li>
+<li><a href="section-coding-qham.html" data-scroll="section-coding-qham">\(q\)-ary Hamming codes</a></li>
+<li><a href="section-coding-qham-decode.html" data-scroll="section-coding-qham-decode">Decoding with a \(q\)-ary Hamming code</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="coding_cyclic.html" data-scroll="coding_cyclic"><span class="codenumber">11</span> <span class="title">Cyclic codes</span></a><ul>
+<li><a href="section-coding-cyclic-intro.html" data-scroll="section-coding-cyclic-intro">Introduction</a></li>
+<li><a href="section-coding-ring.html" data-scroll="section-coding-ring">The ring of polynomials modulo \(f(x)\)</a></li>
+<li><a href="section-coding-cyclic-check.html" data-scroll="section-coding-cyclic-check">The check polynomial and the parity-check matrix of a cyclic code</a></li>
+</ul>
+</li>
+</ul></nav><div class="extras"><nav><a class="mathbook-link" href="https://pretextbook.org">Authored in PreTeXt</a><a href="https://www.mathjax.org"><img title="Powered by MathJax" src="https://www.mathjax.org/badge/badge.gif" alt="Powered by MathJax"></a></nav></div>
+</div></div>
+<main class="main"><div id="content" class="pretext-content"><section class="section" id="section-4colour"><h2 class="heading hide-type">
+<span class="type">Section</span> <span class="codenumber">3.3</span> <span class="title">The four-colour problem</span>
+</h2>
+<a href="section-4colour.html" class="permalink">¶</a><p id="p-231">Can every planar graph be 4-coloured?</p>
+<p id="p-232">1852: DeMorgen writes to Hamilton - says some student named Frederick Guthrie posed him the question. Frederich got the problem from his brother Francis Guthrie (later a professor in Maths at the South African University College, Cape Town). This letter was dated 23 October 1952.</p>
+<p id="p-233">Hamilton reply (26 October 1952): “I am not likely to attempt your 'quaternion of colours' very soon”.</p>
+<p id="p-234">1879: Alfred Bray Kempe “proves” that all planar graphs are 4-colourable - “Proof” appears in American Journal of Mathematics. It is accepted as correct - Kempe is made a “Fellow of the Royal Society”.</p>
+<p id="p-235">1890: Percy John Heawood find a fault in Kempe's proof. Modify Kempe's proof to prove that every planar graph is 5-colourable.</p>
+<p id="p-236">1976: Appel &amp; Haken finally proves 4-colour theorem - long, many cases, 1200 hours of computer time!</p>
+<p id="p-237">Before we look at the 4-colour theorem, let's first consider planar graph colourings in general.</p>
+<article class="lemma theorem-like" id="lemma-planar-degree"><h6 class="heading">
+<span class="type">Lemma</span><span class="space"> </span><span class="codenumber">3.3.1</span><span class="period">.</span>
+</h6>For any planar graph \(G\text{,}\) \(\delta\leq 5\text{.}\)</article><article class="hiddenproof" id="proof-14"><a data-knowl="" class="id-ref original" data-refid="hk-proof-14"><h6 class="heading"><span class="type">Proof<span class="period">.</span></span></h6></a></article><div class="hidden-content tex2jax_ignore" id="hk-proof-14"><article class="hiddenproof"><p id="p-238">Let \(G\) be a planar graph of order \(p\) and size \(q\text{.}\) If \(deg(v) \geq 6\) for all \(v \in V(G)\text{,}\) then \(2q= \sum{deg(v)} \geq 6p\text{;}\) hence \(q \geq 3p\text{.}\) This contradicts the fact that  \(q \leq 3p -6\text{.}\)</p></article></div>
+<article class="theorem theorem-like" id="theorem-17"><h6 class="heading">
+<span class="type">Theorem</span><span class="space"> </span><span class="codenumber">3.3.2</span><span class="period">.</span>
+</h6>Every planar graph is 6-colourable.</article><article class="hiddenproof" id="proof-15"><a data-knowl="" class="id-ref original" data-refid="hk-proof-15"><h6 class="heading"><span class="type">Proof<span class="period">.</span></span></h6></a></article><div class="hidden-content tex2jax_ignore" id="hk-proof-15"><article class="hiddenproof"><p id="p-239"><em class="emphasis">By induction on the order \(p\text{:}\)</em></p>
+<p id="p-240">The result is clearly true if \(1 \leq p \leq 6\text{.}\) For the induction hypothesis, assume that all planar graphs of order \(p\) (\(p &gt; 6\)) are 6-colourable. Now let \(G\) be a planar graph of order \(p + 1\text{,}\) and embed \(G\) in the plane.</p>
+<p id="p-241">From <a class="xref" data-knowl="./knowl/lemma-planar-degree.html" title="Lemma 3.3.1">Lemma 3.3.1</a> there exist a vertex \(v\) with \(\deg(v)\leq 5\text{.}\) Then \(G-v\) has order \(p\) and is 6-colourable from the induction hypothesis. Since \(v\) has at most 5 neighbours, there is a colour availablefor \(v\) and \(G\) is 6-colourable.</p></article></div>
+<article class="theorem theorem-like" id="theorem-18"><h6 class="heading">
+<span class="type">Theorem</span><span class="space"> </span><span class="codenumber">3.3.3</span><span class="period">.</span>
+</h6>Every planar graph is 5-colourable.</article><article class="hiddenproof" id="proof-16"><a data-knowl="" class="id-ref original" data-refid="hk-proof-16"><h6 class="heading"><span class="type">Proof<span class="period">.</span></span></h6></a></article><div class="hidden-content tex2jax_ignore" id="hk-proof-16"><article class="hiddenproof"><p id="p-242"><em class="emphasis">By induction on the order \(p\text{:}\)</em></p>
+<p id="p-243">The result is clearly true if \(1 \leq p \leq 5\text{.}\) For the induction hypothesis, assume that all planar graphs of order \(p\) (\(p \geq 5\)) are 5-colourable. Now let \(G\) be a planar graph of order \(p + 1\text{,}\) and embed \(G\) in the plane. From <a class="xref" data-knowl="./knowl/lemma-planar-degree.html" title="Lemma 3.3.1">Lemma 3.3.1</a> \(G\) contains a vertex \(v\) with \(deg(v) \leq 5\text{.}\) Since th graph \(G-v\) is a planar graph of order \(p\text{,}\) it follows from the induction hypothesis that \(G-v\) is 5-colourable.</p>
+<p id="p-244">Consider a 5-colouring of \(G-v\) in the colours 1, 2, 3, 4 and 5. If one of these colours is not used in colouring the neighbours of \(v\text{,}\) then this colour may be assigned to \(v\text{,}\) producing a 5-colouring of \(G\text{.}\) Thus, we may assume that \(deg(v) = 5\) and that all five colours are used to colour the neighbours of \(v\text{.}\)</p>
+<p id="p-245">Suppose that the neighbours of \(v\) are \(v_1, v_2, v_3, v_4\) and \(v_5\text{,}\) arranged cyclically about \(v\text{.}\) Suppose also that they have been coloured in the colours 1,2,3,4 and 5 respectively. We now show that we can recolour some vertices of \(G-v\text{,}\) including a neighbour of \(v\text{,}\) so that a colour becomes available for \(v\text{.}\)</p>
+<p id="p-246">Let \(H_{1,3}\) be the subgraph of \(G-v\) induced by all vertices coloured 1 or 3, and let \(H_{2,4}\) be the subgraph of \(G-v\) induced by all vertices coloured 2 or 4. There exists no \(v_1\)-\(v_3\) path in \(H_{1,3}\) or no \(v_2\)-\(v_4\) path in \(H_{2,4}\text{,}\) for otherwise there would exist a vertex \(w\) coloured 1 or 3 as well as 2 or 4, which is impossible.</p>
+<p id="p-247">Assume without loss of generality that there exists no \(v_1\)-\(v_3\) path in \(H_{1,3}\text{.}\) Consider all paths starting at \(v_1\) all of whose vertices are coloured 1 or 3. These paths produce a subgraph \(H\) of \(H_{1,3}\text{.}\) Now interchange the colours of the vertices of \(H\) to produce a different 5-colouring of \(G-v\text{.}\) This 5-colouring assigns the colour 3 to both \(v_1\) and \(v_3\text{.}\) We may now assign colour 1 to vertex \(v\text{,}\) which produces a 5-colouring of \(G\text{.}\)</p></article></div>
+<article class="theorem theorem-like" id="theorem-19"><h6 class="heading">
+<span class="type">Theorem</span><span class="space"> </span><span class="codenumber">3.3.4</span><span class="period">.</span><span class="space"> </span><span class="title">Grötzsch's Theorem.</span>
+</h6>Every planar triangle-free graph is 3-colourable.</article>
+
+<span><p id="faulty-text">We conclude this section with the famous result. Remember that this theorem was proved by Appel and Haken with a computer-assisted proof. Below you will find the incorrect proof of Kempe. As a challenge, see if you can see why this proof is not correct.</p></span>
+
+<article class="theorem theorem-like" id="theorem-20"><h6 class="heading">
+<span class="type">Theorem</span><span class="space"> </span><span class="codenumber">3.3.5</span><span class="period">.</span>
+
+</h6>Every planar graph is 4-colourable.</article><article class="hiddenproof" id="proof-17"><a data-knowl="" class="id-ref original" data-refid="hk-proof-17"><h6 class="heading"><span class="type">Proof<span class="period">.</span></span></h6></a></article><div class="hidden-content tex2jax_ignore" id="hk-proof-17"><article class="hiddenproof"><p id="p-248"><em class="alert">Faulty proof</em></p>
+<p id="p-249"><em class="emphasis">By induction on the order \(p\text{:}\)</em></p>
+<p id="p-250">The result is clearly true if \(1 \leq p \leq 4\text{.}\) For the induction hypothesis, assume that all planar graphs of order \(p\) (\(p \geq 4\)) are 4-colourable. Now let \(G\) be a planar graph of order \(p+1\text{,}\) and embed \(G\) in the plane. Since \(G\) is planar, it has a vertex \(v\) with \(deg(v) \leq 5\text{.}\) Since the graph \(G-v\) is a planar graph of order \(p\text{,}\) it follows from the induction hypothesis that \(G-v\) is 4-colourable. Consider a 4-colouring of \(G-v\) in the colours 1,2,3 and 4. If one of these colours is not used in colouring the neighbours of \(v\text{,}\) then this colour may be assigned to \(v\text{,}\) producing a 4-colouring of \(G\text{.}\) Thus, we may assume that \(deg(v) = 4\) or 5 and that all four colours are used to coloud the neighbours of \(v\text{.}\)</p>
+<p id="p-251"><em class="emphasis">Case 1:</em> If \(deg(v) = 4\text{.}\)</p>
+<p id="p-252">Suppose the neighbours of \(v\) are \(v_1, v_2, v_3\) and \(v_4\text{,}\) arranged cyclically about \(v\text{.}\) Suppose also that they have been coloured in the colours 1,2,3 and 4 respectively. It is not possible for there to be both a \(v_1-v_3\) path in \(H_{1,3}\) as well as a \(v_2-v_4\) path in \(H_{2,4}\text{.}\) Assume without loss of generality that there is no \(v_1-v_3\) path in \(H_{1,3}\text{.}\) Interchange the colours on all paths in \(H_{1,3}\) that starts at \(v_3\text{.}\) Then \(v_3\) has colour 1; hence colour 3 becomes available for \(v\text{.}\)</p>
+<p id="p-253"><em class="emphasis">Case 2:</em> If \(deg(v) = 5\text{.}\)</p>
+<p id="p-254">Suppose the neighbours of \(v\) are \(a,b,c,d\) and \(e\text{,}\) arranged cyclically about \(v\text{.}\) There are, without loss of generality, two subcases to consider,</p>
+<p id="p-255"><em class="emphasis">Subcase 2(a):</em> The vertices \(a,b,c,d,e\) received colours 4,1,2,3,4 respectively. It is not possible for there to be both a \(b-d\) path in \(H_{1,3}\) as well as a \(c-e\) path in \(H_{2,4}\text{.}\) If there is no \(b-d\) path in \(H_{1,3}\text{,}\) interchange the colours on all paths in \(H_{1,3}\) that starts at \(d\text{.}\) This makes colour 3 available for \(v\text{.}\) If there exists no \(c-e\) path in \(H_{2,4}\text{,}\) interchange the colours on all paths in \(H_{2,4}\) that starts at \(c\text{.}\) This makes colours 2 available for \(v\text{.}\)</p>
+<p id="p-256"><em class="emphasis">Subcase 2(b):</em> The vertices \(a,b,c,d,e\) received colours 1,4,2,3,4 respectively.  If there is no \(a-c\) path in \(H_{1,2}\text{,}\) then interchange the colours on all paths that start at \(c\) to make colour 2 available for \(v\text{.}\) Similarly, if there is no \(a-d\) path in \(H_{1,3}\text{,}\) then interchange the colours on all paths in \(H_{1,3}\) that start at \(d\) to make colour 3 available for \(v\text{.}\) Therefore there must be both an \(a-c\) path in \(H_{1,2}\) and an \(a-c\) path in \(H_{1,3}\text{.}\)</p>
+<p id="p-257">It follows that there can be no \(b-d\) path in \(H_{3,4}\) and no \(e-c\) path in \(H_{,4}\text{.}\) If we now interchange colours on all \(b-d\) paths in \(H_{3,4}\) starting at \(b\text{,}\) and we interchange colours on all \(e-c\) paths in \(H_{2,4}\) starting at \(e\text{,}\) \(b\) and \(e\) then have colours 3 and 2 respectively, so that colour 4 becomes available for \(v\text{.}\)</p></article></div>
+
+
+
+</section></div></main>
+</div>
+<div class="login-link"><span id="loginlogout" class="login">login</span></div>
+<script src="https://pretextbook.org/js/0.13/login.js"></script>
+</body>
+</html>

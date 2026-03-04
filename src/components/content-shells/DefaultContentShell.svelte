@@ -112,4 +112,15 @@
     color: color-mix(in srgb, var(--su-maroon, #61223b) 88%, black 12%);
     text-underline-offset: 2px;
   }
+
+  .content-document :global(.katex-display) {
+    margin: 0.8rem 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.1rem 0.08rem 0.24rem;
+  }
+
+  .content-document :global(.katex) {
+    font-size: 1.02em;
+  }
 </style>

@@ -1,0 +1,370 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<!--**************************************-->
+<!--*    Generated from PreTeXt source   *-->
+<!--*    on 2020-04-17T14:07:47+02:00    *-->
+<!--*                                    *-->
+<!--*      https://pretextbook.org       *-->
+<!--*                                    *-->
+<!--**************************************-->
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AM314 Dual codes</title>
+<meta name="Keywords" content="Authored in PreTeXt">
+<meta name="viewport" content="width=device-width,  initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [['\\(','\\)']]
+    },
+    asciimath2jax: {
+        ignoreClass: ".*",
+        processClass: "has_am"
+    },
+    jax: ["input/AsciiMath"],
+    extensions: ["asciimath2jax.js"],
+    TeX: {
+        extensions: ["extpfeil.js", "autobold.js", "https://pretextbook.org/js/lib/mathjaxknowl.js", ],
+        // scrolling to fragment identifiers is controlled by other Javascript
+        positionToHash: false,
+        equationNumbers: { autoNumber: "none", useLabelIds: true, },
+        TagSide: "right",
+        TagIndent: ".8em",
+    },
+    // HTML-CSS output Jax to be dropped for MathJax 3.0
+    "HTML-CSS": {
+        scale: 88,
+        mtextFontInherit: true,
+    },
+    CommonHTML: {
+        scale: 88,
+        mtextFontInherit: true,
+    },
+});
+</script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_CHTML-full"></script><script src="https://pretextbook.org/js/lib/jquery.min.js"></script><script src="https://pretextbook.org/js/lib/jquery.sticky.js"></script><script src="https://pretextbook.org/js/lib/jquery.espy.min.js"></script><script src="https://pretextbook.org/js/0.13/pretext.js"></script><script src="https://pretextbook.org/js/0.13/pretext_add_on.js"></script><script src="https://pretextbook.org/js/lib/knowl.js"></script><link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,600,600italic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700&amp;subset=latin,latin-ext" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/pretext.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/pretext_add_on.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/banner_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/toc_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/knowls_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/style_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/colors_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/setcolors.css" rel="stylesheet" type="text/css">
+<!-- 2019-10-12: Temporary - CSS file for experiments with styling --><link href="https://appliedmaths.sun.ac.za/TW314/developer.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/features.css" rel="stylesheet" type="text/css">
+<script>var logged_in = false;
+var role = 'student';
+var guest_access = true;
+var login_required = false;
+var js_version = 0.13;
+</script>
+</head>
+<body class="mathbook-book has-toc has-sidebar-left">
+<a class="assistive" href="section-coding-dual.html#content">Skip to main content</a><div class="hidden-content" style="display:none">\(\newcommand{\identity}{\mathrm{id}}
+\newcommand{\notdivide}{{\not{\mid}}}
+\newcommand{\notsubset}{\not\subset}
+\newcommand{\lcm}{\operatorname{lcm}}
+\newcommand{\gf}{\operatorname{GF}}
+\newcommand{\inn}{\operatorname{Inn}}
+\newcommand{\aut}{\operatorname{Aut}}
+\newcommand{\Hom}{\operatorname{Hom}}
+\newcommand{\cis}{\operatorname{cis}}
+\newcommand{\chr}{\operatorname{char}}
+\newcommand{\Null}{\operatorname{Null}}
+\newcommand{\lt}{&lt;}
+\newcommand{\gt}{&gt;}
+\newcommand{\amp}{&amp;}
+\)</div>
+<header id="masthead" class="smallbuttons"><div class="banner"><div class="container">
+<a id="logo-link" href="section-coding-dual.html"></a><div class="title-container">
+<h1 class="heading"><a href="discrete-book.html"><span class="title">Applied Mathematics 314:</span> <span class="subtitle">An introduction to Applied Discrete Mathematics</span></a></h1>
+<p class="byline">Riana Roux</p>
+</div>
+</div></div>
+<nav id="primary-navbar" class="navbar"><div class="container">
+<div class="navbar-top-buttons">
+<button class="sidebar-left-toggle-button button active" aria-label="Show or hide table of contents sidebar">Contents</button><div class="tree-nav toolbar toolbar-divisor-3"><span class="threebuttons"><a id="previousbutton" class="previous-button toolbar-item button" href="section-coding-decode.html" title="Previous">Prev</a><a id="upbutton" class="up-button button toolbar-item" href="coding_linear.html" title="Up">Up</a><a id="nextbutton" class="next-button button toolbar-item" href="section-coding-syndrome.html" title="Next">Next</a></span></div>
+</div>
+<div class="navbar-bottom-buttons toolbar toolbar-divisor-4">
+<button class="sidebar-left-toggle-button button toolbar-item active">Contents</button><a class="previous-button toolbar-item button" href="section-coding-decode.html" title="Previous">Prev</a><a class="up-button button toolbar-item" href="coding_linear.html" title="Up">Up</a><a class="next-button button toolbar-item" href="section-coding-syndrome.html" title="Next">Next</a>
+</div>
+</div></nav></header><div class="page">
+<div id="sidebar-left" class="sidebar" role="navigation"><div class="sidebar-content">
+<nav id="toc"><ul>
+<li class="link">
+<a href="frontmatter.html" data-scroll="frontmatter"><span class="title">Front Matter</span></a><ul><li><a href="preface.html" data-scroll="preface">Preface</a></li></ul>
+</li>
+<li class="link part"><a href="part-graph.html" data-scroll="part-graph"><span class="codenumber">I</span> <span class="title">Graph Theory</span></a></li>
+<li class="link">
+<a href="graphs.html" data-scroll="graphs"><span class="codenumber">1</span> <span class="title">An introduction to graphs</span></a><ul>
+<li><a href="section-notation.html" data-scroll="section-notation">Basic notation</a></li>
+<li><a href="section-first-theorem.html" data-scroll="section-first-theorem">The first theorem of graph theory</a></li>
+<li><a href="section-subgraph.html" data-scroll="section-subgraph">Subgraphs</a></li>
+<li><a href="section-connectedness.html" data-scroll="section-connectedness">Paths and connectivity</a></li>
+<li><a href="section-isomorphism.html" data-scroll="section-isomorphism">Equality and isomorphism</a></li>
+<li><a href="section-graphical.html" data-scroll="section-graphical">Graphical sequences</a></li>
+<li><a href="section-special-graphs.html" data-scroll="section-special-graphs">Special graphs and some constructs</a></li>
+<li><a href="section-trees.html" data-scroll="section-trees">Trees</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="planar.html" data-scroll="planar"><span class="codenumber">2</span> <span class="title">Planar graphs</span></a><ul>
+<li><a href="section-embeddings.html" data-scroll="section-embeddings">Embeddings and plane graphs</a></li>
+<li><a href="section-euler.html" data-scroll="section-euler">Euler's theorem</a></li>
+<li><a href="section-maximal-planar.html" data-scroll="section-maximal-planar">Maximal planar graphs</a></li>
+<li><a href="section-polyhedra.html" data-scroll="section-polyhedra">Polyhedra</a></li>
+<li><a href="section-maximal.html" data-scroll="section-maximal">A characterization of planar graphs</a></li>
+<li><a href="section-algorithm.html" data-scroll="section-algorithm">A planarity algorithm</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="colour.html" data-scroll="colour"><span class="codenumber">3</span> <span class="title">Graph colourings</span></a><ul>
+<li><a href="section-chromatic.html" data-scroll="section-chromatic">Chromatic numbers</a></li>
+<li><a href="section-bounds.html" data-scroll="section-bounds">Bounds on the chromatic number</a></li>
+<li><a href="section-4colour.html" data-scroll="section-4colour">The four-colour problem</a></li>
+</ul>
+</li>
+<li class="link part"><a href="part-crypto.html" data-scroll="part-crypto"><span class="codenumber">II</span> <span class="title">Cryptography</span></a></li>
+<li class="link">
+<a href="crypto.html" data-scroll="crypto"><span class="codenumber">4</span> <span class="title">An introduction to cryptography</span></a><ul>
+<li><a href="section-crypto-notation.html" data-scroll="section-crypto-notation">What is cryptography?</a></li>
+<li><a href="section-crypto-symmetric.html" data-scroll="section-crypto-symmetric">Symmetric-key primitives</a></li>
+<li><a href="section-crypto-public.html" data-scroll="section-crypto-public">Public-key primitives</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="crypto_algebra.html" data-scroll="crypto_algebra"><span class="codenumber">5</span> <span class="title">Important algebraic concepts</span></a><ul>
+<li><a href="section-crypto-mod.html" data-scroll="section-crypto-mod">Modular arithmetic</a></li>
+<li><a href="section-crypto-group.html" data-scroll="section-crypto-group">Groups</a></li>
+<li><a href="section-crypto-rings.html" data-scroll="section-crypto-rings">Rings</a></li>
+<li><a href="section-crypto-field.html" data-scroll="section-crypto-field">Fields</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="crypto_key.html" data-scroll="crypto_key"><span class="codenumber">6</span> <span class="title">Key establishment</span></a><ul>
+<li><a href="section-exponent.html" data-scroll="section-exponent">Exponentiation</a></li>
+<li><a href="section-crypto-DH.html" data-scroll="section-crypto-DH">Diffie-Hellman</a></li>
+<li><a href="section-crypto-inverse.html" data-scroll="section-crypto-inverse">Inverses in finite groups</a></li>
+<li><a href="section-crypto-log-alg.html" data-scroll="section-crypto-log-alg">An algorithm for computing discrete logartihms</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="crypto_rsa.html" data-scroll="crypto_rsa"><span class="codenumber">7</span> <span class="title">RSA encryption</span></a><ul>
+<li><a href="section-crypto-number.html" data-scroll="section-crypto-number">Number theory</a></li>
+<li><a href="section-crypto-rsa.html" data-scroll="section-crypto-rsa">The RSA system</a></li>
+</ul>
+</li>
+<li class="link part"><a href="part-coding.html" data-scroll="part-coding"><span class="codenumber">III</span> <span class="title">Coding theory</span></a></li>
+<li class="link">
+<a href="coding_error.html" data-scroll="coding_error"><span class="codenumber">8</span> <span class="title">Error-correcting codes</span></a><ul>
+<li><a href="section-coding-intro.html" data-scroll="section-coding-intro">Introduction</a></li>
+<li><a href="section-coding-channel.html" data-scroll="section-coding-channel">A digital communication system</a></li>
+<li><a href="section-coding-block.html" data-scroll="section-coding-block">Block codes</a></li>
+<li><a href="section-coding-hamming.html" data-scroll="section-coding-hamming">Hamming distances</a></li>
+<li><a href="section-coding-neighbour.html" data-scroll="section-coding-neighbour">Nearest neighbour decoding</a></li>
+<li><a href="section-coding-minimum.html" data-scroll="section-coding-minimum">Minimum distance</a></li>
+<li><a href="section-coding-equiv.html" data-scroll="section-coding-equiv">Equivalent codes</a></li>
+<li><a href="section-coding-parameters.html" data-scroll="section-coding-parameters">Optimising the parameters \(n\text{,}\) \(M\) and \(d\)</a></li>
+<li><a href="section-coding-hammingbound.html" data-scroll="section-coding-hammingbound">The Hamming bound</a></li>
+<li><a href="section-coding-perfect.html" data-scroll="section-coding-perfect">Perfect codes</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="coding_linear.html" data-scroll="coding_linear"><span class="codenumber">9</span> <span class="title">Linear codes</span></a><ul>
+<li><a href="section-coding-vector.html" data-scroll="section-coding-vector">Vectorspaces</a></li>
+<li><a href="section-coding-linear.html" data-scroll="section-coding-linear">Introduction to linear codes</a></li>
+<li><a href="section-coding-encode-linear.html" data-scroll="section-coding-encode-linear">Encoding with a linear code</a></li>
+<li><a href="section-coding-cosets.html" data-scroll="section-coding-cosets">Cosets</a></li>
+<li><a href="section-coding-decode.html" data-scroll="section-coding-decode">Decoding with a linear code</a></li>
+<li><a href="section-coding-dual.html" data-scroll="section-coding-dual" class="active">Dual codes</a></li>
+<li><a href="section-coding-syndrome.html" data-scroll="section-coding-syndrome">Syndrome decoding</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="coding_hamming.html" data-scroll="coding_hamming"><span class="codenumber">10</span> <span class="title">Hamming codes</span></a><ul>
+<li><a href="section-coding-ham-intro.html" data-scroll="section-coding-ham-intro">Introduction</a></li>
+<li><a href="section-coding-ham-decode.html" data-scroll="section-coding-ham-decode">Decoding with a binary Hamming code</a></li>
+<li><a href="section-coding-ham-extend.html" data-scroll="section-coding-ham-extend">The extended binary Hamming code</a></li>
+<li><a href="section-coding-fund.html" data-scroll="section-coding-fund">A fundamental theorem</a></li>
+<li><a href="section-coding-qham.html" data-scroll="section-coding-qham">\(q\)-ary Hamming codes</a></li>
+<li><a href="section-coding-qham-decode.html" data-scroll="section-coding-qham-decode">Decoding with a \(q\)-ary Hamming code</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="coding_cyclic.html" data-scroll="coding_cyclic"><span class="codenumber">11</span> <span class="title">Cyclic codes</span></a><ul>
+<li><a href="section-coding-ham-intro.html" data-scroll="section-coding-ham-intro">Introduction</a></li>
+<li><a href="section-coding-ring.html" data-scroll="section-coding-ring">The ring of polynomials modulo \(f(x)\)</a></li>
+<li><a href="section-coding-cyclic-check.html" data-scroll="section-coding-cyclic-check">The check polynomial and the parity-check matrix of a cyclic code</a></li>
+</ul>
+</li>
+</ul></nav><div class="extras"><nav><a class="mathbook-link" href="https://pretextbook.org">Authored in PreTeXt</a><a href="https://www.mathjax.org"><img title="Powered by MathJax" src="https://www.mathjax.org/badge/badge.gif" alt="Powered by MathJax"></a></nav></div>
+</div></div>
+<main class="main"><div id="content" class="pretext-content"><section class="section" id="section-coding-dual"><h2 class="heading hide-type">
+<span class="type">Section</span> <span class="codenumber">9.6</span> <span class="title">Dual codes</span>
+</h2>
+<a href="section-coding-dual.html" class="permalink">¶</a><p id="p-562">Consider the vectors \({\bf u}=u_1u_2\cdots u_n,\ {\bf v}=v_1v_2\cdots v_n\) of \(V(n,q)\text{.}\) The <dfn class="terminology">inner product</dfn> \({\bf u}\cdot{\bf v}\) of \({\bf u}\) and \({\bf v}\) is defined \({\bf u}\cdot{\bf v}=u_1v_1+u_2v_2+\cdots+u_nv_n\text{.}\) Note that \({\bf u}\cdot{\bf v}\) is a scalar, i.e. \({\bf u}\cdot{\bf v}\in \mathbf{F}_q\text{.}\) If \({\bf u}\cdot{\bf v}=0\text{,}\) then \({\bf u}\) and \({\bf v}\) are called <dfn class="terminology">orthogonal</dfn>.</p>
+<p id="p-563">Let \(C\) be a linear \([n,k]\)-code. The <dfn class="terminology">dual code</dfn> \(C^\perp\) of \(C\) is defined by</p>
+<div class="displaymath">
+\begin{equation*}
+C^\perp=\{{\bf v}\in V(n,q)|{\bf u}\cdot{\bf v}=0 {\rm \ for\ all\ } {\bf u}\in C\}
+\end{equation*}
+</div>
+<p data-braille="continuation">i.e. \(C^\perp\) consists of all vectors \(V(n,q)\) which are orthogonal to every codeword in \(C\text{.}\)</p>
+<p id="p-564">We now show that \(C^\perp\) is a linear code of dimension \(n-k\)  First, we need two lemmas:</p>
+<article class="lemma theorem-like" id="lemma-coding-dotprop"><h6 class="heading">
+<span class="type">Lemma</span><span class="space"> </span><span class="codenumber">9.6.1</span><span class="period">.</span>
+</h6>For any \({\bf u},{\bf v},{\bf w}\in V(n,q)\) and \(\lambda,\mu\in \mathbf{F}_q\)<ol class="decimal">
+<li id="li-180">\({\bf u}\cdot{\bf v}={\bf v}\cdot{\bf u}\text{,}\) and</li>
+<li id="li-181">\((\lambda{\bf u}+\mu{\bf v})\cdot{\bf w}=\lambda({\bf u}\cdot{\bf w})+\mu({\bf v}\cdot{\bf w})\text{.}\)</li>
+</ol></article><article class="hiddenproof" id="proof-34"><a data-knowl="" class="id-ref original" data-refid="hk-proof-34"><h6 class="heading"><span class="type">Proof<span class="period">.</span></span></h6></a></article><div class="hidden-content tex2jax_ignore" id="hk-proof-34"><article class="hiddenproof"><ol class="decimal">
+<li id="li-182"><div class="displaymath">
+\begin{align*}
+{\bf u}\cdot{\bf v}&amp;=u_1v_1+u_2v_2+\cdots u_nv_n\\
+&amp;=v_1u_1+v_2u_2+\cdots+v_nu_n\\
+&amp;={\bf v}\cdot{\bf u}
+\end{align*}
+</div></li>
+<li id="li-183"><div class="displaymath">
+\begin{align*}
+\lambda{\bf u}+\mu{\bf v})\cdot{\bf w}&amp;=(\lambda u_1+\mu v_1,\ldots,\lambda u_n+\mu v_n)\cdot(w_1,\ldots,w_n)\\
+&amp;=(\lambda u_1+\mu v_1)w_1+\cdots+(\lambda u_n+\mu v_n)w_n\\
+&amp;=\lambda(u_1w_1+\cdots+u_nw_n)+\mu(v_1w_1+\cdots+v_nw_n) \\
+&amp;=\lambda({\bf u}\cdot{\bf w})+\mu({\bf v}\cdot{\bf w})
+\end{align*}
+</div></li>
+</ol></article></div>
+<article class="lemma theorem-like" id="lemma-coding-orth"><h6 class="heading">
+<span class="type">Lemma</span><span class="space"> </span><span class="codenumber">9.6.2</span><span class="period">.</span>
+</h6>Suppose \(C\) is a linear \([n,k]\)-code with generator matrix \(G\text{.}\) Then \({\bf v}\in C^\perp\) if and only if \({\bf v}G^T={\bf 0}\text{,}\) i.e. \({\bf v}\) is in the dual of \(C\) if and only if \({\bf v}\) is orthogonal to every row of \(G\text{.}\)</article><article class="hiddenproof" id="proof-35"><a data-knowl="" class="id-ref original" data-refid="hk-proof-35"><h6 class="heading"><span class="type">Proof<span class="period">.</span></span></h6></a></article><div class="hidden-content tex2jax_ignore" id="hk-proof-35"><article class="hiddenproof"><p id="p-565">Note that the rows of \(G\) are codewords. Now, if \({\bf v}\in C^\perp\text{,}\) then \({\bf v}\cdot{\bf u}=0\) for all \({\bf u}\in C\text{;}\) hence \({\bf v}\cdot{\bf r}=0\) for all rows \({\bf r}\) of \(G\text{.}\)</p>
+<p id="p-566">Conversely, let \(G\) have rows \({\bf r}_1,{\bf r}_2,\ldots,{\bf r}_k\) and suppose that \({\bf v}\cdot{\bf r}_i=0\) for \(i=1,2,\ldots,k\text{.}\) We must show that \({\bf v}\cdot{\bf u}=0\) for all \({\bf u}\in C\text{.}\) So let \({\bf u}\in C\text{.}\) Then \({\bf u}=\lambda_1{\bf r}_1+\cdots+\lambda_k{\bf r}_k\) for some \(\lambda_1,\ldots,\lambda_k\in \mathbf{F}_q\text{.}\) Now</p>
+<div class="displaymath">
+\begin{align*}
+{\bf v}\cdot{\bf u}&amp;={\bf v}\cdot(\lambda_1{\bf r}_1+\cdots+\lambda_k{\bf r}_k\\
+&amp;=\lambda_1({\bf v}\cdot{\bf r}_1)+\cdots+\lambda_k({\bf v}\cdot{\bf r}_k) \text{ by }\knowl{./knowl/lemma-coding-dotprop.html}{\text{Lemma 9.6.1}}\\
+&amp;=\lambda_10+\cdots+\lambda_k0 \\
+&amp;=0.
+\end{align*}
+</div></article></div>
+<article class="theorem theorem-like" id="theorem-coding-linear-dual"><h6 class="heading">
+<span class="type">Theorem</span><span class="space"> </span><span class="codenumber">9.6.3</span><span class="period">.</span>
+</h6>If \(C\) is a linear \([n,k]\)-code over \(\mathbf{F}_q\text{,}\) then \(C^\perp\) is a linear \([n,n-k]\)-code over \(\mathbf{F}_q\text{.}\)</article><article class="hiddenproof" id="proof-36"><a data-knowl="" class="id-ref original" data-refid="hk-proof-36"><h6 class="heading"><span class="type">Proof<span class="period">.</span></span></h6></a></article><div class="hidden-content tex2jax_ignore" id="hk-proof-36"><article class="hiddenproof"><p id="p-567">Let \(C\) be a linear \([n,k]\) code over \(\mathbf{F}_q\text{.}\) We first show that \(C^\perp\) is a linear code. Suppose \({\bf v}_1,{\bf v}_2\in C^\perp\) and \(\lambda,\mu\in \mathbf{F}_q\text{.}\) Then, for all \({\bf u}\in C\)</p>
+<div class="displaymath">
+\begin{align*}
+\lambda{\bf v}_1+\mu{\bf v}_2)\cdot{\bf u}&amp;= \lambda({\bf v}_1\cdot{\bf u})+\mu({\bf v}_2\cdot{\bf u})\text{ by }\knowl{./knowl/lemma-coding-orth.html}{\text{Lemma 9.6.2}}\\
+&amp;=\lambda0+\mu0\\
+&amp;=0
+\end{align*}
+</div>
+<p data-braille="continuation">Hence \(\lambda{\bf v_1}+\mu{\bf v}_2\in C^\perp\) for all \({\bf v}_1,{\bf v}_2\in C^\perp\) and \(\lambda.\mu\in \mathbf{F}_q\text{.}\) It follows that \(C^\perp\) is linear.</p>
+<p id="p-568">We now show that \(C^\perp\) has dimension \(n-k\text{.}\) If \(C_1\) and \(C_2\) are equivalent codes, then \(C_1^\perp\) and \(C_2^\perp\) are also equivalent. We may therefore assume that \(C\) has a standard form matrix</p>
+<div class="displaymath">
+\begin{equation*}
+G=\begin{bmatrix}
+1 &amp; \cdots &amp; 0 &amp; a_{11} &amp; \cdots &amp; a_{1,n-k}\\
+\ddots &amp; \vdots &amp; \vdots &amp; &amp; \vdots \\
+0 &amp; \cdots &amp; 1 &amp; a_{k1} &amp; \cdots &amp; a_{k,n-k}
+\end{bmatrix}.
+\end{equation*}
+</div>
+<p data-braille="continuation">Then the elements of \(C^\perp\) <a class="xref" data-knowl="./knowl/lemma-coding-orth.html" title="Lemma 9.6.2">Lemma 9.6.2</a> are precisely the vectors \({\bf v}=v_1v_2\cdots v_n\) satisfying</p>
+<div class="displaymath">
+\begin{equation*}
+G=\begin{matrix}
+v_1 &amp; = &amp; -a_{11}v_{k+1}-\cdots-a_{1,n-k}v_n \\
+\vdots &amp; &amp; \vdots\hspace{3cm}\vdots \\
+v_k &amp; = &amp; -a_{k1}v_{k+1}-\cdots-a_{k,n-k}v_n
+\end{matrix}.
+\end{equation*}
+</div>
+<p data-braille="continuation">There are \(q^{n-k}\) such vectors; hence \(|C^\perp|=q^{n-k}\) and therefore \(\dim(C^\perp)=n-k\text{.}\)</p></article></div>
+<article class="theorem theorem-like" id="theorem-coding-ddual"><h6 class="heading">
+<span class="type">Theorem</span><span class="space"> </span><span class="codenumber">9.6.4</span><span class="period">.</span>
+</h6>For any \([n,k]\)-code \(C\)<div class="displaymath">
+\begin{equation*}
+(C^\perp)^\perp=C.
+\end{equation*}
+</div></article><article class="hiddenproof" id="proof-37"><a data-knowl="" class="id-ref original" data-refid="hk-proof-37"><h6 class="heading"><span class="type">Proof<span class="period">.</span></span></h6></a></article><div class="hidden-content tex2jax_ignore" id="hk-proof-37"><article class="hiddenproof">Suppose \({\bf x}\in C\text{.}\) For any \({\bf v}\in C^\perp\text{,}\) \({\bf v}\cdot{\bf u}=0\) for all \({\bf u}\in C\text{;}\) hence \({\bf v}\cdot{\bf x}=0\text{.}\) Therefore \({\bf x}\in(C^\perp)^\perp\text{.}\) So \(C\subseteq(C^\perp)^\perp\text{.}\) But<div class="displaymath">
+\begin{equation*}
+\dim\left((C^\perp)^\perp\right)=n-(n-k)=k=\dim(C)\text{.}
+\end{equation*}
+</div>It follows that \(C=(C^\perp)^\perp\text{.}\)</article></div>
+<p id="p-569">A <dfn class="terminology">parity-check matrix</dfn> \(H\) for a \([n,k]\)-code \(C\) is a generator matrix of \(C^\perp\text{.}\)</p>
+<p id="p-570">Thus a parity-check matrix \(H\) for a code \(C\) with generator matrix \(G\) is an \((n-k)\times n\) matrix satisfying \(GH^T={\bf 0}\text{.}\) It follows from <a class="xref" data-knowl="./knowl/lemma-coding-orth.html" title="Lemma 9.6.2">Lemma 9.6.2</a> and <a class="xref" data-knowl="./knowl/theorem-coding-ddual.html" title="Theorem 9.6.4">Theorem 9.6.4</a> that if \(H\) is a parity-check matrix of \(C\text{,}\)  then \(C=\{{\bf x}\in V(n,q)|{\bf x}H^T={\bf 0}\}\text{.}\)</p>
+<p id="p-571">In this way any linear code is completely specified by a parity-check matrix.</p>
+<article class="example example-like" id="example-coding-dual"><h6 class="heading">
+<span class="type">Example</span><span class="space"> </span><span class="codenumber">9.6.5</span><span class="period">.</span><span class="space"> </span><span class="title">Relationship between a code and its dual.</span>
+</h6>Consider the binary code \(C=\{000,110,011,101\}\text{.}\) Find the dual of \(C\) and show that \(C\) can be determined from the parity check matrix.<div class="solutions">
+<a data-knowl="" class="id-ref original" data-refid="hk-solution-48" id="solution-48"><span class="type">Solution</span></a><div class="hidden-content tex2jax_ignore" id="hk-solution-48"><div class="solution solution-like">
+<p id="p-572">\(C\) is a binary \([3,2]\)-code with generator matrix</p>
+<div class="displaymath">
+\begin{equation*}
+G=\begin{bmatrix}
+1&amp;1&amp;0\\
+0&amp;1&amp;1
+\end{bmatrix}.
+\end{equation*}
+</div>
+<p id="p-573">By <a class="xref" data-knowl="./knowl/lemma-coding-orth.html" title="Lemma 9.6.2">Lemma 9.6.2</a> \(v_1v_2v_3\in C^\perp\iff[v_1v_2v_3]G^T={\bf 0}\text{,}\) i.e.</p>
+<div class="displaymath">
+\begin{equation*}
+[{\bf v_1}\ {\bf v_2} \ {\bf v_3}] \begin{bmatrix}
+1&amp;0\\
+1&amp;1\\
+0&amp;1
+\end{bmatrix}=[0\ 0],
+\end{equation*}
+</div>
+<p data-braille="continuation">that is, \(v_1+v_2=0\) and \(v_2+v_3=0\text{.}\)</p>
+<p id="p-574">It is now clear that \(C^\perp=\{000,111\}\) and \(C^\perp\) is a binary \([3,1]\)-code with generator matrix \(H=[1\ 1\ 1]\text{.}\)</p>
+<p id="p-575">Then \(H=[1\ 1\ 1]\) is a parity-check matrix of \(C\text{.}\) Note that \(GH^T={\bf 0}\text{.}\) Let's now see how \(C\) is specified by \(H\text{.}\)  Well, \(C\) consists of all those vectors \(x_1x_2x_3\) such that</p>
+<div class="displaymath">
+\begin{equation*}
+[{\bf x_1}\ {\bf x_2} \ {\bf x_3}] \begin{bmatrix}
+1\\
+1\\
+1
+\end{bmatrix}=0,
+\end{equation*}
+</div>
+<p data-braille="continuation">i.e. such that \(x_1+x_2+x_3=0\text{.}\) So, \(C\) consists of all the even-weight vectors of \(V(3,2)\text{,}\) that is \(C=\{000,110,011,101\}\text{.}\)</p>
+</div></div>
+</div></article><p id="p-576">The rows of a parity-check matrix \(H\) are <dfn class="terminology">parity checks</dfn> on the codewords. The equations \((x_1x_2\cdots x_n)H^T={\bf 0}\) are called the <dfn class="terminology">parity-check equations</dfn>.</p>
+<p id="p-577">In the example above, there is just one parity check \(111\) and one parity check equation \(x_1+x_2+x_3=0\text{.}\)</p>
+<p id="p-578">The next theorem gives an easy way of constructing a parity-check matrix for a linear code with given generator matrix if vice versa.</p>
+<article class="theorem theorem-like" id="theorem-coding-paritycheck"><h6 class="heading">
+<span class="type">Theorem</span><span class="space"> </span><span class="codenumber">9.6.6</span><span class="period">.</span>
+</h6>If \(G=[I_k|A]\) is the standard form generator matrix of an \([n,k]\)-code \(C\text{,}\) then a parity-check matrix for \(C\) is \(H=[-A^T|I_{n-k}]\text{.}\)</article><article class="hiddenproof" id="proof-38"><a data-knowl="" class="id-ref original" data-refid="hk-proof-38"><h6 class="heading"><span class="type">Proof<span class="period">.</span></span></h6></a></article><div class="hidden-content tex2jax_ignore" id="hk-proof-38"><article class="hiddenproof"><p id="p-579">Suppose</p>
+<div class="displaymath">
+\begin{equation*}
+G=\begin{bmatrix}
+1 &amp; \cdots &amp; 0 &amp; a_{11} &amp; \cdots &amp; a_{1,n-k} \\
+\vdots &amp; \ddots &amp; \vdots &amp; \vdots &amp; &amp; \vdots \\
+0 &amp; \cdots &amp; 1 &amp; a_{k1} &amp; \cdots &amp; a_{k,n-k}
+\end{bmatrix}
+\end{equation*}
+</div>
+<p data-braille="continuation">and let</p>
+<div class="displaymath">
+\begin{equation*}
+H=\begin{bmatrix}
+-a_{11} &amp; \cdots &amp; -a_{k1} &amp; 1 &amp; \cdots &amp; 0 \\
+\vdots &amp; &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+-a_{1,n-k} &amp; \cdots &amp; -a_{k,n-k} &amp; 0 &amp; \cdots &amp; 1
+\end{bmatrix}.
+\end{equation*}
+</div>
+<p id="p-580">Then \(H\) has the size required of a parity-check matrix and its rows are linearly independent. Furthermore, since the inner product of the \(i\)th row of \(G\) with the \(j\)th row of \(H\) is</p>
+<div class="displaymath">
+\begin{equation*}
+0+\cdots+0+(-a_{ij})+0+\cdots+0+a_{ij}+0+\cdots+0=0,
+\end{equation*}
+</div>
+<p data-braille="continuation">it folows that \(GH^T=0\text{.}\)</p></article></div>
+<p id="p-581">A parity-check matrix \(H\) is in <dfn class="terminology">standard form</dfn> if \(H=[B|I_{n-k}]\text{.}\)</p>
+<p id="p-582">If \(C\) is specified by a parity-check matrix in standard form \(H=[B|I_{n-k}]\text{,}\) then a generator matrix for \(C\) is \(G=[I_k|-B^T]\text{.}\)</p></section></div></main>
+</div>
+<div class="login-link"><span id="loginlogout" class="login">login</span></div>
+<script src="https://pretextbook.org/js/0.13/login.js"></script>
+</body>
+</html>

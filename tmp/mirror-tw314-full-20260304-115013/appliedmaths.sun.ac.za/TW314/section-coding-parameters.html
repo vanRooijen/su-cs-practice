@@ -1,0 +1,266 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<!--**************************************-->
+<!--*    Generated from PreTeXt source   *-->
+<!--*    on 2020-05-14T23:13:52+02:00    *-->
+<!--*                                    *-->
+<!--*      https://pretextbook.org       *-->
+<!--*                                    *-->
+<!--**************************************-->
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AM314 Optimising the parameters \(n\text{,}\) \(M\) and \(d\)</title>
+<meta name="Keywords" content="Authored in PreTeXt">
+<meta name="viewport" content="width=device-width,  initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [['\\(','\\)']]
+    },
+    asciimath2jax: {
+        ignoreClass: ".*",
+        processClass: "has_am"
+    },
+    jax: ["input/AsciiMath"],
+    extensions: ["asciimath2jax.js"],
+    TeX: {
+        extensions: ["extpfeil.js", "autobold.js", "https://pretextbook.org/js/lib/mathjaxknowl.js", ],
+        // scrolling to fragment identifiers is controlled by other Javascript
+        positionToHash: false,
+        equationNumbers: { autoNumber: "none", useLabelIds: true, },
+        TagSide: "right",
+        TagIndent: ".8em",
+    },
+    // HTML-CSS output Jax to be dropped for MathJax 3.0
+    "HTML-CSS": {
+        scale: 88,
+        mtextFontInherit: true,
+    },
+    CommonHTML: {
+        scale: 88,
+        mtextFontInherit: true,
+    },
+});
+</script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_CHTML-full"></script><script src="https://pretextbook.org/js/lib/jquery.min.js"></script><script src="https://pretextbook.org/js/lib/jquery.sticky.js"></script><script src="https://pretextbook.org/js/lib/jquery.espy.min.js"></script><script src="https://pretextbook.org/js/0.13/pretext.js"></script><script src="https://pretextbook.org/js/0.13/pretext_add_on.js"></script><script src="https://pretextbook.org/js/lib/knowl.js"></script><link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,600,600italic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700&amp;subset=latin,latin-ext" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/pretext.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/pretext_add_on.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/banner_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/toc_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/knowls_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/style_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/colors_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/setcolors.css" rel="stylesheet" type="text/css">
+<!-- 2019-10-12: Temporary - CSS file for experiments with styling --><link href="https://appliedmaths.sun.ac.za/TW314/developer.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/features.css" rel="stylesheet" type="text/css">
+<script>var logged_in = false;
+var role = 'student';
+var guest_access = true;
+var login_required = false;
+var js_version = 0.13;
+</script>
+</head>
+<body class="mathbook-book has-toc has-sidebar-left">
+<a class="assistive" href="section-coding-parameters.html#content">Skip to main content</a><div class="hidden-content" style="display:none">\(\newcommand{\identity}{\mathrm{id}}
+\newcommand{\notdivide}{{\not{\mid}}}
+\newcommand{\notsubset}{\not\subset}
+\newcommand{\lcm}{\operatorname{lcm}}
+\newcommand{\gf}{\operatorname{GF}}
+\newcommand{\inn}{\operatorname{Inn}}
+\newcommand{\aut}{\operatorname{Aut}}
+\newcommand{\Hom}{\operatorname{Hom}}
+\newcommand{\cis}{\operatorname{cis}}
+\newcommand{\chr}{\operatorname{char}}
+\newcommand{\Null}{\operatorname{Null}}
+\newcommand{\lt}{&lt;}
+\newcommand{\gt}{&gt;}
+\newcommand{\amp}{&amp;}
+\)</div>
+<header id="masthead" class="smallbuttons"><div class="banner"><div class="container">
+<a id="logo-link" href="section-coding-parameters.html"></a><div class="title-container">
+<h1 class="heading"><a href="discrete-book.html"><span class="title">Applied Mathematics 314:</span> <span class="subtitle">An introduction to Applied Discrete Mathematics</span></a></h1>
+<p class="byline">Riana Roux</p>
+</div>
+</div></div>
+<nav id="primary-navbar" class="navbar"><div class="container">
+<div class="navbar-top-buttons">
+<button class="sidebar-left-toggle-button button active" aria-label="Show or hide table of contents sidebar">Contents</button><div class="tree-nav toolbar toolbar-divisor-3"><span class="threebuttons"><a id="previousbutton" class="previous-button toolbar-item button" href="section-coding-equiv.html" title="Previous">Prev</a><a id="upbutton" class="up-button button toolbar-item" href="coding_error.html" title="Up">Up</a><a id="nextbutton" class="next-button button toolbar-item" href="section-coding-hammingbound.html" title="Next">Next</a></span></div>
+</div>
+<div class="navbar-bottom-buttons toolbar toolbar-divisor-4">
+<button class="sidebar-left-toggle-button button toolbar-item active">Contents</button><a class="previous-button toolbar-item button" href="section-coding-equiv.html" title="Previous">Prev</a><a class="up-button button toolbar-item" href="coding_error.html" title="Up">Up</a><a class="next-button button toolbar-item" href="section-coding-hammingbound.html" title="Next">Next</a>
+</div>
+</div></nav></header><div class="page">
+<div id="sidebar-left" class="sidebar" role="navigation"><div class="sidebar-content">
+<nav id="toc"><ul>
+<li class="link">
+<a href="frontmatter.html" data-scroll="frontmatter"><span class="title">Front Matter</span></a><ul><li><a href="preface.html" data-scroll="preface">Preface</a></li></ul>
+</li>
+<li class="link part"><a href="part-graph.html" data-scroll="part-graph"><span class="codenumber">I</span> <span class="title">Graph Theory</span></a></li>
+<li class="link">
+<a href="graphs.html" data-scroll="graphs"><span class="codenumber">1</span> <span class="title">An introduction to graphs</span></a><ul>
+<li><a href="section-notation.html" data-scroll="section-notation">Basic notation</a></li>
+<li><a href="section-first-theorem.html" data-scroll="section-first-theorem">The first theorem of graph theory</a></li>
+<li><a href="section-subgraph.html" data-scroll="section-subgraph">Subgraphs</a></li>
+<li><a href="section-connectedness.html" data-scroll="section-connectedness">Paths and connectivity</a></li>
+<li><a href="section-isomorphism.html" data-scroll="section-isomorphism">Equality and isomorphism</a></li>
+<li><a href="section-graphical.html" data-scroll="section-graphical">Graphical sequences</a></li>
+<li><a href="section-special-graphs.html" data-scroll="section-special-graphs">Special graphs and some constructs</a></li>
+<li><a href="section-trees.html" data-scroll="section-trees">Trees</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="planar.html" data-scroll="planar"><span class="codenumber">2</span> <span class="title">Planar graphs</span></a><ul>
+<li><a href="section-embeddings.html" data-scroll="section-embeddings">Embeddings and plane graphs</a></li>
+<li><a href="section-euler.html" data-scroll="section-euler">Euler's theorem</a></li>
+<li><a href="section-maximal-planar.html" data-scroll="section-maximal-planar">Maximal planar graphs</a></li>
+<li><a href="section-polyhedra.html" data-scroll="section-polyhedra">Polyhedra</a></li>
+<li><a href="section-maximal.html" data-scroll="section-maximal">A characterization of planar graphs</a></li>
+<li><a href="section-algorithm.html" data-scroll="section-algorithm">A planarity algorithm</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="colour.html" data-scroll="colour"><span class="codenumber">3</span> <span class="title">Graph colourings</span></a><ul>
+<li><a href="section-chromatic.html" data-scroll="section-chromatic">Chromatic numbers</a></li>
+<li><a href="section-bounds.html" data-scroll="section-bounds">Bounds on the chromatic number</a></li>
+<li><a href="section-4colour.html" data-scroll="section-4colour">The four-colour problem</a></li>
+</ul>
+</li>
+<li class="link part"><a href="part-crypto.html" data-scroll="part-crypto"><span class="codenumber">II</span> <span class="title">Cryptography</span></a></li>
+<li class="link">
+<a href="crypto.html" data-scroll="crypto"><span class="codenumber">4</span> <span class="title">An introduction to cryptography</span></a><ul>
+<li><a href="section-crypto-notation.html" data-scroll="section-crypto-notation">What is cryptography?</a></li>
+<li><a href="section-crypto-symmetric.html" data-scroll="section-crypto-symmetric">Symmetric-key primitives</a></li>
+<li><a href="section-crypto-public.html" data-scroll="section-crypto-public">Public-key primitives</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="crypto_algebra.html" data-scroll="crypto_algebra"><span class="codenumber">5</span> <span class="title">Important algebraic concepts</span></a><ul>
+<li><a href="section-crypto-mod.html" data-scroll="section-crypto-mod">Modular arithmetic</a></li>
+<li><a href="section-crypto-group.html" data-scroll="section-crypto-group">Groups</a></li>
+<li><a href="section-crypto-rings.html" data-scroll="section-crypto-rings">Rings</a></li>
+<li><a href="section-crypto-field.html" data-scroll="section-crypto-field">Fields</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="crypto_key.html" data-scroll="crypto_key"><span class="codenumber">6</span> <span class="title">Key establishment</span></a><ul>
+<li><a href="section-exponent.html" data-scroll="section-exponent">Exponentiation</a></li>
+<li><a href="section-crypto-DH.html" data-scroll="section-crypto-DH">Diffie-Hellman</a></li>
+<li><a href="section-crypto-inverse.html" data-scroll="section-crypto-inverse">Inverses in finite groups</a></li>
+<li><a href="section-crypto-log-alg.html" data-scroll="section-crypto-log-alg">An algorithm for computing discrete logartihms</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="crypto_rsa.html" data-scroll="crypto_rsa"><span class="codenumber">7</span> <span class="title">RSA encryption</span></a><ul>
+<li><a href="section-crypto-number.html" data-scroll="section-crypto-number">Number theory</a></li>
+<li><a href="section-crypto-rsa.html" data-scroll="section-crypto-rsa">The RSA system</a></li>
+</ul>
+</li>
+<li class="link part"><a href="part-coding.html" data-scroll="part-coding"><span class="codenumber">III</span> <span class="title">Coding theory</span></a></li>
+<li class="link">
+<a href="coding_error.html" data-scroll="coding_error"><span class="codenumber">8</span> <span class="title">Error-correcting codes</span></a><ul>
+<li><a href="section-coding-intro.html" data-scroll="section-coding-intro">Introduction</a></li>
+<li><a href="section-coding-channel.html" data-scroll="section-coding-channel">A digital communication system</a></li>
+<li><a href="section-coding-block.html" data-scroll="section-coding-block">Block codes</a></li>
+<li><a href="section-coding-hamming.html" data-scroll="section-coding-hamming">Hamming distances</a></li>
+<li><a href="section-coding-neighbour.html" data-scroll="section-coding-neighbour">Nearest neighbour decoding</a></li>
+<li><a href="section-coding-minimum.html" data-scroll="section-coding-minimum">Minimum distance</a></li>
+<li><a href="section-coding-equiv.html" data-scroll="section-coding-equiv">Equivalent codes</a></li>
+<li><a href="section-coding-parameters.html" data-scroll="section-coding-parameters" class="active">Optimising the parameters \(n\text{,}\) \(M\) and \(d\)</a></li>
+<li><a href="section-coding-hammingbound.html" data-scroll="section-coding-hammingbound">The Hamming bound</a></li>
+<li><a href="section-coding-perfect.html" data-scroll="section-coding-perfect">Perfect codes</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="coding_linear.html" data-scroll="coding_linear"><span class="codenumber">9</span> <span class="title">Linear codes</span></a><ul>
+<li><a href="section-coding-vector.html" data-scroll="section-coding-vector">Vectorspaces</a></li>
+<li><a href="section-coding-linear.html" data-scroll="section-coding-linear">Introduction to linear codes</a></li>
+<li><a href="section-coding-encode-linear.html" data-scroll="section-coding-encode-linear">Encoding with a linear code</a></li>
+<li><a href="section-coding-cosets.html" data-scroll="section-coding-cosets">Cosets</a></li>
+<li><a href="section-coding-decode.html" data-scroll="section-coding-decode">Decoding with a linear code</a></li>
+<li><a href="section-coding-dual.html" data-scroll="section-coding-dual">Dual codes</a></li>
+<li><a href="section-coding-syndrome.html" data-scroll="section-coding-syndrome">Syndrome decoding</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="coding_hamming.html" data-scroll="coding_hamming"><span class="codenumber">10</span> <span class="title">Hamming codes</span></a><ul>
+<li><a href="section-coding-ham-intro.html" data-scroll="section-coding-ham-intro">Introduction</a></li>
+<li><a href="section-coding-ham-decode.html" data-scroll="section-coding-ham-decode">Decoding with a binary Hamming code</a></li>
+<li><a href="section-coding-ham-extend.html" data-scroll="section-coding-ham-extend">The extended binary Hamming code</a></li>
+<li><a href="section-coding-fund.html" data-scroll="section-coding-fund">A fundamental theorem</a></li>
+<li><a href="section-coding-qham.html" data-scroll="section-coding-qham">\(q\)-ary Hamming codes</a></li>
+<li><a href="section-coding-qham-decode.html" data-scroll="section-coding-qham-decode">Decoding with a \(q\)-ary Hamming code</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="coding_cyclic.html" data-scroll="coding_cyclic"><span class="codenumber">11</span> <span class="title">Cyclic codes</span></a><ul>
+<li><a href="section-coding-ham-intro.html" data-scroll="section-coding-ham-intro">Introduction</a></li>
+<li><a href="section-coding-ring.html" data-scroll="section-coding-ring">The ring of polynomials modulo \(f(x)\)</a></li>
+<li><a href="section-coding-cyclic-check.html" data-scroll="section-coding-cyclic-check">The check polynomial and the parity-check matrix of a cyclic code</a></li>
+</ul>
+</li>
+</ul></nav><div class="extras"><nav><a class="mathbook-link" href="https://pretextbook.org">Authored in PreTeXt</a><a href="https://www.mathjax.org"><img title="Powered by MathJax" src="https://www.mathjax.org/badge/badge.gif" alt="Powered by MathJax"></a></nav></div>
+</div></div>
+<main class="main"><div id="content" class="pretext-content"><section class="section" id="section-coding-parameters"><h2 class="heading hide-type">
+<span class="type">Section</span> <span class="codenumber">8.8</span> <span class="title">Optimising the parameters \(n\text{,}\) \(M\) and \(d\)</span>
+</h2>
+<a href="section-coding-parameters.html" class="permalink">¶</a><p id="p-505">A good \((n,M,d)\)-code has small \(n\) (for fast transmission of messages), large \(M\) (to enable transmission of a wide variety of messages) and large \(d\) (to correct many errors). These are, however, conflicting aims. We opt to optimize one of the parameters \(n\text{,}\) \(M\text{,}\) \(d\) for given values of the other two.</p>
+<p id="p-506">One problem is to find the largest code for a given length and minimum distance. We denote the largest value of \(M\) such that there exist a \(q\)-ary \((n,M,d)\)-code by \(A_q(n,d)\text{.}\) Solving this problem for \(d=1\) and \(d=n\) is relatively easy.</p>
+<article class="theorem theorem-like" id="theorem-coding-largest-code"><h6 class="heading">
+<span class="type">Theorem</span><span class="space"> </span><span class="codenumber">8.8.1</span><span class="period">.</span>
+</h6>For a \(q\)-ary code with codewords of length \(n\)<ol class="decimal">
+<li id="li-155">\(A_q(n,1)=q^n\text{,}\) and</li>
+<li id="li-156">\(A_q(n,n)=q\text{.}\)</li>
+</ol></article><article class="hiddenproof" id="proof-21"><a data-knowl="" class="id-ref original" data-refid="hk-proof-21"><h6 class="heading"><span class="type">Proof<span class="period">.</span></span></h6></a></article><div class="hidden-content tex2jax_ignore" id="hk-proof-21"><article class="hiddenproof"><ol class="decimal">
+<li id="li-157">Since the number of codewords in a code is always less that the number of possible vectors in \(\mathbf{F}_q^n\text{,}\) \(A_q(n,1)\leq q^n\text{.}\) Since the whole of \(\mathbf{F}_q^n\) is a \(q\)-ary \((n,q^n,1)\)-code it follows that \(A_q(n,1)= q^n\text{.}\)</li>
+<li id="li-158">Suppose that \(C\) is a \(q\)-ary \((n,M,n)\)-code. Then any two distinct codewords of \(C\) differ in all \(n\) positions. That is, the first position of every codeword must be distinct. Therefore \(C\) can have at most \(q\) codewords and \(A_q(n,n)\leq q\text{.}\) Since a repetition code is an \((n,q,n)\)-code \(A_q(n,n)=q\text{.}\)</li>
+</ol></article></div>
+<p id="p-507">For different values of \(d\) it is not always as easey.</p>
+<article class="example example-like" id="example-coding-findA"><h6 class="heading">
+<span class="type">Example</span><span class="space"> </span><span class="codenumber">8.8.2</span><span class="period">.</span><span class="space"> </span><span class="title">Optimising \(M\).</span>
+</h6>Show that \(A_2(5,3)=4\text{.}\) That is, the  binary \((5,M,3)\)-code must have \(M\leq 4\text{.}\)<div class="solutions">
+<a data-knowl="" class="id-ref original" data-refid="hk-solution-42" id="solution-42"><span class="type">Solution</span></a><div class="hidden-content tex2jax_ignore" id="hk-solution-42"><div class="solution solution-like">
+<p id="p-508">Let \(C\) be a \((5,M,3)\)-code. By <a class="xref" data-knowl="./knowl/lemma-coding-zero.html" title="Lemma 8.7.3">Lemma 8.7.3</a>  we may assume that \(C\) contains the zero vector \(\mathbf{0}\text{.}\) Since \(\mathbf{0}\in C\text{,}\) \(C\) contains no vectors of weight 1 or 2. Furthermore, if \(C\) contains more than one codeword of weight 4 or 5, say \(\mathbf{x}\) and \(\mathbf{y}\text{,}\) then \(\mathbf{x}\) and \(\mathbf{y}\) have at least three 1's in common. That is \(d(\mathbf{x},\mathbf{y})\leq 2\text{,}\) but this contradicts the fact that \(d(C)=3\) and therefore \(C\) has at most one codeword of weight 4 or 5.</p>
+<p id="p-509">Now assume that \(C\) has at least three codewords, \(\mathbf{x}, \mathbf{y}\) and \(\mathbf{z}\text{,}\) of weight 3. We may assume that \(\mathbf{x}=(1,1,1,0,0)\text{.}\) Since \(d(C)=3\text{,}\) \(\mathbf{y}\) and \(\mathbf{z}\) can have at most one 1 inthe first three positions. But then \(d(\mathbf{x},\mathbf{x})\leq 2\text{,}\) a contradiction. Therefore \(C\) contains at most two codewords of weight 3. It follows that \(A_2(5,3)\leq 4\text{.}\) Since</p>
+<div class="displaymath">
+\begin{equation*}
+C^*=\{(0,0,0,0,0),(1,1,1,0,0),(0,0,1,1,1),(1,1,0,1,1)\}
+\end{equation*}
+</div>
+<p data-braille="continuation">is a \((5,4,3)\)-code, \(A_2(5,3)=4\text{.}\)</p>
+</div></div>
+</div></article><p id="p-510">To show that we only have to consider odd values of \(d\) to evaluate \(A_2(n,d)\text{,}\) we first need to prove the following lemmas.</p>
+<p id="p-511">The <dfn class="terminology">weight</dfn> of a vector \(\mathbf{x}\in \mathbf{F}_q^n\text{,}\) is the number of non-zero entries of \(\mathbf{x}\text{.}\)</p>
+<article class="lemma theorem-like" id="lemma-coding-dw1"><h6 class="heading">
+<span class="type">Lemma</span><span class="space"> </span><span class="codenumber">8.8.3</span><span class="period">.</span>
+</h6>If \(\mathbf{x},\mathbf{y}\in \mathbf{F}_2\text{,}\) then \(d(\mathbf{x},\mathbf{y})=w(\mathbf{x}+\mathbf{y})\text{.}\)</article><article class="hiddenproof" id="proof-22"><a data-knowl="" class="id-ref original" data-refid="hk-proof-22"><h6 class="heading"><span class="type">Proof<span class="period">.</span></span></h6></a></article><div class="hidden-content tex2jax_ignore" id="hk-proof-22"><article class="hiddenproof">The sum \(\mathbf{x}+\mathbf{y}\) has a 1 where \(\mathbf{x}\) and \(\mathbf{y}\) differ and a 0 where they agree.</article></div>
+<article class="lemma theorem-like" id="lemma-coding-dw2"><h6 class="heading">
+<span class="type">Lemma</span><span class="space"> </span><span class="codenumber">8.8.4</span><span class="period">.</span>
+</h6>If \(\mathbf{x},\mathbf{y}\in \mathbf{F}_2\text{,}\) then \(d(\mathbf{x},\mathbf{y})=w(\mathbf{x})+w(\mathbf{y})-2w(\mathbf{x}\cap\mathbf{y})\text{,}\) where \(\mathbf{x}\cap\mathbf{y}=(x_1y_1,\dots,x_ny_n)\text{.}\)</article><article class="hiddenproof" id="proof-23"><a data-knowl="" class="id-ref original" data-refid="hk-proof-23"><h6 class="heading"><span class="type">Proof<span class="period">.</span></span></h6></a></article><div class="hidden-content tex2jax_ignore" id="hk-proof-23"><article class="hiddenproof"><div class="displaymath">
+\begin{align*}
+d(\mathbf{x},\mathbf{y})&amp; =w(\mathbf{x}+\mathbf{y})\\
+&amp;=(\text{number of ones in }\mathbf{x})+(\text{number of ones in }\mathbf{y})\\
+&amp;-2(\text{number of positions where }\mathbf{x} \text{ and } \mathbf{y} \text{ equals 1})\\
+&amp; =w(\mathbf{x})+w(\mathbf{y})-2w(\mathbf{x}\cap\mathbf{y}).
+\end{align*}
+</div></article></div>
+<article class="theorem theorem-like" id="theorem-coding-oddD"><h6 class="heading">
+<span class="type">Theorem</span><span class="space"> </span><span class="codenumber">8.8.5</span><span class="period">.</span>
+</h6>Suppose \(d\) is odd. Then a binary \((n,M,d)\)-code exists if and only if a binary \((n+1,M, d+1)\)-code exists.</article><article class="hiddenproof" id="proof-24"><a data-knowl="" class="id-ref original" data-refid="hk-proof-24"><h6 class="heading"><span class="type">Proof<span class="period">.</span></span></h6></a></article><div class="hidden-content tex2jax_ignore" id="hk-proof-24"><article class="hiddenproof"><p id="p-512">Let \(C\) be an \((n,M,d)\)-code and let \(\hat{C}\) be the code of length \(n+1\) by extending \(C\) as follows:</p>
+<p id="p-513">For \(\mathbf{x}=(x_1,\dots,x_n)\in C\) define</p>
+<div class="displaymath">
+\begin{equation*}
+\hat{\mathbf{x}}=\begin{cases} (x_1,\dots,x_n,0) \text{ if } w(x) \text{ is even, and}\\(x_1,\dots,x_n,1) \text{ if } w(x) \text{ is odd.}\end{cases}
+\end{equation*}
+</div>
+<p id="p-514">In other words, add an overall parity check to each codeword of \(C\text{.}\)</p>
+<p id="p-515">Then \(w(\hat{\mathbf{x}})\) is even for every \(\hat{\mathbf{x}}\in \hat{C}\) and from <a class="xref" data-knowl="./knowl/lemma-coding-dw2.html" title="Lemma 8.8.4">Lemma 8.8.4</a> \(d(\mathbf{x},\mathbf{y})\) is even for every \(\mathbf{x},\mathbf{y}\in \hat{C}\text{.}\) It follows that \(d(C)\) is even.</p>
+<p id="p-516">Since we have only added one element which may differ in two different codewords, \(d\leq d(\hat{C})\leq d+1\text{.}\) Since \(d\) is odd, it follows that \(d(\hat{C})=d+1\) and \(\hat{C}\) is an \((n+1,M,d+1)\)-code.</p>
+<p id="p-517">Now consider the \((n+1,M,d+1)\)-code \(C\) with \(d\) odd. Choose codewords \(\mathbf{x},\mathbf{y}\in C\) such that \(d(\mathbf{x},\mathbf{y})=d+1\text{.}\) Now choose a position in which \(\mathbf{x}\) and \(\mathbf{y}\) differ and delete this position from every codeword. The result is an \((n,M,d)\)-code.</p></article></div>
+<article class="corollary theorem-like" id="corollary-coding-oddD"><h6 class="heading">
+<span class="type">Corollary</span><span class="space"> </span><span class="codenumber">8.8.6</span><span class="period">.</span>
+</h6>If \(d\) is odd, then \(A_2(n+1,d+1)=A_2(n,d)\text{.}\) Equivalently, if \(d\) is even, then \(A_2(n,d)=A_2(n-1,d-1)\text{.}\)</article></section></div></main>
+</div>
+<div class="login-link"><span id="loginlogout" class="login">login</span></div>
+<script src="https://pretextbook.org/js/0.13/login.js"></script>
+</body>
+</html>

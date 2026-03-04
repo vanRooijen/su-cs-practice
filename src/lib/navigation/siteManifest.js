@@ -81,6 +81,28 @@ export const APP_DEFINITIONS = {
     isContentBacked: true,
     resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
   },
+  math: {
+    id: 'math',
+    title: 'Math',
+    defaultSubroute: '',
+    hasSidebar: true,
+    mobileSidebarDefaultOpen: false,
+    enableWindowHistoryNavigation: true,
+    validateSubroute: validateContentBackedSubroute,
+    isContentBacked: true,
+    resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
+  },
+  docs: {
+    id: 'docs',
+    title: 'Docs',
+    defaultSubroute: '',
+    hasSidebar: true,
+    mobileSidebarDefaultOpen: false,
+    enableWindowHistoryNavigation: true,
+    validateSubroute: validateContentBackedSubroute,
+    isContentBacked: true,
+    resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
+  },
   reader: {
     id: 'reader',
     title: 'Reader',
@@ -135,6 +157,8 @@ export const TOPBAR_LINKS = [
   { label: 'research', path: '/research' },
   { label: 'people', path: '/people' },
   { label: 'about', path: '/about' },
+  { label: 'math', path: '/math' },
+  { label: 'docs', path: '/docs' },
 ];
 
 export const DESKTOP_SHORTCUTS = [
@@ -142,6 +166,8 @@ export const DESKTOP_SHORTCUTS = [
   { label: 'Programs', path: '/programs' },
   { label: 'Research', path: '/research' },
   { label: 'About', path: '/about' },
+  { label: 'Math Demo', path: '/math' },
+  { label: 'PDF Docs', path: '/docs' },
   { label: 'People Staff', path: '/people/staff' },
   { label: 'People Students', path: '/people/students' },
   { label: 'Reader Hackathon', path: '/reader/articles/hackathon-2026' },
@@ -181,5 +207,18 @@ export const APP_NAV_LINKS = {
     { label: 'Department', href: '/about/department' },
     { label: 'Contact', href: '/about/contact' },
     { label: 'Visit Campus', href: '/about/visit' },
+  ],
+  math: [
+    { label: 'Overview', href: '/math' },
+    { label: 'Linear Algebra', href: '/math/linear-algebra' },
+    { label: 'Calculus', href: '/math/calculus' },
+    { label: 'Probability', href: '/math/probability' },
+  ],
+  docs: [
+    { label: 'Overview', href: '/docs' },
+    { label: 'Honours Intro PDF', href: '/docs/rw797-intro' },
+    { label: 'Semester 1 Timetable PDF', href: '/docs/honours-timetable-1' },
+    { label: 'Semester 2 Timetable PDF', href: '/docs/honours-timetable-2' },
+    { label: 'Data Science Project PDF', href: '/docs/data-science-project' },
   ],
 };

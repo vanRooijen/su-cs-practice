@@ -110,6 +110,35 @@ describe('historyRouter integration behavior', () => {
     expect(get(router.route).openMode).toBe('new-window');
   });
 
+  it('does not intercept same-origin non-app asset links', async () => {
+    const router = await loadRouterModule();
+    stopRouter = router.initHistoryRouter();
+
+    const pdfLink = document.createElement('a');
+    pdfLink.href = '/cs-assets/pdfs/rw797-intro.pdf';
+    pdfLink.textContent = 'PDF';
+    document.body.appendChild(pdfLink);
+
+    let preventedByRouter = null;
+    const observer = (event) => {
+      if (event.target !== pdfLink) {
+        return;
+      }
+
+      preventedByRouter = event.defaultPrevented;
+      event.preventDefault();
+    };
+
+    document.addEventListener('click', observer);
+    const click = new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 });
+    const wasCancelled = !pdfLink.dispatchEvent(click);
+    document.removeEventListener('click', observer);
+
+    expect(wasCancelled).toBe(true);
+    expect(preventedByRouter).toBe(false);
+    expect(get(router.route).path).toBe('/home');
+  });
+
   it('updates route state on popstate events', async () => {
     const router = await loadRouterModule();
     stopRouter = router.initHistoryRouter();

@@ -1,0 +1,323 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<!--**************************************-->
+<!--*    Generated from PreTeXt source   *-->
+<!--*    on 2020-04-17T14:07:44+02:00    *-->
+<!--*                                    *-->
+<!--*      https://pretextbook.org       *-->
+<!--*                                    *-->
+<!--**************************************-->
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AM314 Diffie-Hellman</title>
+<meta name="Keywords" content="Authored in PreTeXt">
+<meta name="viewport" content="width=device-width,  initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [['\\(','\\)']]
+    },
+    asciimath2jax: {
+        ignoreClass: ".*",
+        processClass: "has_am"
+    },
+    jax: ["input/AsciiMath"],
+    extensions: ["asciimath2jax.js"],
+    TeX: {
+        extensions: ["extpfeil.js", "autobold.js", "https://pretextbook.org/js/lib/mathjaxknowl.js", ],
+        // scrolling to fragment identifiers is controlled by other Javascript
+        positionToHash: false,
+        equationNumbers: { autoNumber: "none", useLabelIds: true, },
+        TagSide: "right",
+        TagIndent: ".8em",
+    },
+    // HTML-CSS output Jax to be dropped for MathJax 3.0
+    "HTML-CSS": {
+        scale: 88,
+        mtextFontInherit: true,
+    },
+    CommonHTML: {
+        scale: 88,
+        mtextFontInherit: true,
+    },
+});
+</script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_CHTML-full"></script><script src="https://pretextbook.org/js/lib/jquery.min.js"></script><script src="https://pretextbook.org/js/lib/jquery.sticky.js"></script><script src="https://pretextbook.org/js/lib/jquery.espy.min.js"></script><script src="https://pretextbook.org/js/0.13/pretext.js"></script><script src="https://pretextbook.org/js/0.13/pretext_add_on.js"></script><script src="https://pretextbook.org/js/lib/knowl.js"></script><link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,600,600italic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700&amp;subset=latin,latin-ext" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/pretext.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/pretext_add_on.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/banner_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/toc_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/knowls_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/style_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/colors_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/setcolors.css" rel="stylesheet" type="text/css">
+<!-- 2019-10-12: Temporary - CSS file for experiments with styling --><link href="https://appliedmaths.sun.ac.za/TW314/developer.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/features.css" rel="stylesheet" type="text/css">
+<script>var logged_in = false;
+var role = 'student';
+var guest_access = true;
+var login_required = false;
+var js_version = 0.13;
+</script>
+</head>
+<body class="mathbook-book has-toc has-sidebar-left">
+<a class="assistive" href="section-crypto-DH.html#content">Skip to main content</a><div class="hidden-content" style="display:none">\(\newcommand{\identity}{\mathrm{id}}
+\newcommand{\notdivide}{{\not{\mid}}}
+\newcommand{\notsubset}{\not\subset}
+\newcommand{\lcm}{\operatorname{lcm}}
+\newcommand{\gf}{\operatorname{GF}}
+\newcommand{\inn}{\operatorname{Inn}}
+\newcommand{\aut}{\operatorname{Aut}}
+\newcommand{\Hom}{\operatorname{Hom}}
+\newcommand{\cis}{\operatorname{cis}}
+\newcommand{\chr}{\operatorname{char}}
+\newcommand{\Null}{\operatorname{Null}}
+\newcommand{\lt}{&lt;}
+\newcommand{\gt}{&gt;}
+\newcommand{\amp}{&amp;}
+\)</div>
+<header id="masthead" class="smallbuttons"><div class="banner"><div class="container">
+<a id="logo-link" href="section-crypto-DH.html"></a><div class="title-container">
+<h1 class="heading"><a href="discrete-book.html"><span class="title">Applied Mathematics 314:</span> <span class="subtitle">An introduction to Applied Discrete Mathematics</span></a></h1>
+<p class="byline">Riana Roux</p>
+</div>
+</div></div>
+<nav id="primary-navbar" class="navbar"><div class="container">
+<div class="navbar-top-buttons">
+<button class="sidebar-left-toggle-button button active" aria-label="Show or hide table of contents sidebar">Contents</button><div class="tree-nav toolbar toolbar-divisor-3"><span class="threebuttons"><a id="previousbutton" class="previous-button toolbar-item button" href="section-exponent.html" title="Previous">Prev</a><a id="upbutton" class="up-button button toolbar-item" href="crypto_key.html" title="Up">Up</a><a id="nextbutton" class="next-button button toolbar-item" href="section-crypto-inverse.html" title="Next">Next</a></span></div>
+</div>
+<div class="navbar-bottom-buttons toolbar toolbar-divisor-4">
+<button class="sidebar-left-toggle-button button toolbar-item active">Contents</button><a class="previous-button toolbar-item button" href="section-exponent.html" title="Previous">Prev</a><a class="up-button button toolbar-item" href="crypto_key.html" title="Up">Up</a><a class="next-button button toolbar-item" href="section-crypto-inverse.html" title="Next">Next</a>
+</div>
+</div></nav></header><div class="page">
+<div id="sidebar-left" class="sidebar" role="navigation"><div class="sidebar-content">
+<nav id="toc"><ul>
+<li class="link">
+<a href="frontmatter.html" data-scroll="frontmatter"><span class="title">Front Matter</span></a><ul><li><a href="preface.html" data-scroll="preface">Preface</a></li></ul>
+</li>
+<li class="link part"><a href="part-graph.html" data-scroll="part-graph"><span class="codenumber">I</span> <span class="title">Graph Theory</span></a></li>
+<li class="link">
+<a href="graphs.html" data-scroll="graphs"><span class="codenumber">1</span> <span class="title">An introduction to graphs</span></a><ul>
+<li><a href="section-notation.html" data-scroll="section-notation">Basic notation</a></li>
+<li><a href="section-first-theorem.html" data-scroll="section-first-theorem">The first theorem of graph theory</a></li>
+<li><a href="section-subgraph.html" data-scroll="section-subgraph">Subgraphs</a></li>
+<li><a href="section-connectedness.html" data-scroll="section-connectedness">Paths and connectivity</a></li>
+<li><a href="section-isomorphism.html" data-scroll="section-isomorphism">Equality and isomorphism</a></li>
+<li><a href="section-graphical.html" data-scroll="section-graphical">Graphical sequences</a></li>
+<li><a href="section-special-graphs.html" data-scroll="section-special-graphs">Special graphs and some constructs</a></li>
+<li><a href="section-trees.html" data-scroll="section-trees">Trees</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="planar.html" data-scroll="planar"><span class="codenumber">2</span> <span class="title">Planar graphs</span></a><ul>
+<li><a href="section-embeddings.html" data-scroll="section-embeddings">Embeddings and plane graphs</a></li>
+<li><a href="section-euler.html" data-scroll="section-euler">Euler's theorem</a></li>
+<li><a href="section-maximal-planar.html" data-scroll="section-maximal-planar">Maximal planar graphs</a></li>
+<li><a href="section-polyhedra.html" data-scroll="section-polyhedra">Polyhedra</a></li>
+<li><a href="section-maximal.html" data-scroll="section-maximal">A characterization of planar graphs</a></li>
+<li><a href="section-algorithm.html" data-scroll="section-algorithm">A planarity algorithm</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="colour.html" data-scroll="colour"><span class="codenumber">3</span> <span class="title">Graph colourings</span></a><ul>
+<li><a href="section-chromatic.html" data-scroll="section-chromatic">Chromatic numbers</a></li>
+<li><a href="section-bounds.html" data-scroll="section-bounds">Bounds on the chromatic number</a></li>
+<li><a href="section-4colour.html" data-scroll="section-4colour">The four-colour problem</a></li>
+</ul>
+</li>
+<li class="link part"><a href="part-crypto.html" data-scroll="part-crypto"><span class="codenumber">II</span> <span class="title">Cryptography</span></a></li>
+<li class="link">
+<a href="crypto.html" data-scroll="crypto"><span class="codenumber">4</span> <span class="title">An introduction to cryptography</span></a><ul>
+<li><a href="section-crypto-notation.html" data-scroll="section-crypto-notation">What is cryptography?</a></li>
+<li><a href="section-crypto-symmetric.html" data-scroll="section-crypto-symmetric">Symmetric-key primitives</a></li>
+<li><a href="section-crypto-public.html" data-scroll="section-crypto-public">Public-key primitives</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="crypto_algebra.html" data-scroll="crypto_algebra"><span class="codenumber">5</span> <span class="title">Important algebraic concepts</span></a><ul>
+<li><a href="section-crypto-mod.html" data-scroll="section-crypto-mod">Modular arithmetic</a></li>
+<li><a href="section-crypto-group.html" data-scroll="section-crypto-group">Groups</a></li>
+<li><a href="section-crypto-rings.html" data-scroll="section-crypto-rings">Rings</a></li>
+<li><a href="section-crypto-field.html" data-scroll="section-crypto-field">Fields</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="crypto_key.html" data-scroll="crypto_key"><span class="codenumber">6</span> <span class="title">Key establishment</span></a><ul>
+<li><a href="section-exponent.html" data-scroll="section-exponent">Exponentiation</a></li>
+<li><a href="section-crypto-DH.html" data-scroll="section-crypto-DH" class="active">Diffie-Hellman</a></li>
+<li><a href="section-crypto-inverse.html" data-scroll="section-crypto-inverse">Inverses in finite groups</a></li>
+<li><a href="section-crypto-log-alg.html" data-scroll="section-crypto-log-alg">An algorithm for computing discrete logartihms</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="crypto_rsa.html" data-scroll="crypto_rsa"><span class="codenumber">7</span> <span class="title">RSA encryption</span></a><ul>
+<li><a href="section-crypto-number.html" data-scroll="section-crypto-number">Number theory</a></li>
+<li><a href="section-crypto-rsa.html" data-scroll="section-crypto-rsa">The RSA system</a></li>
+</ul>
+</li>
+<li class="link part"><a href="part-coding.html" data-scroll="part-coding"><span class="codenumber">III</span> <span class="title">Coding theory</span></a></li>
+<li class="link">
+<a href="coding_error.html" data-scroll="coding_error"><span class="codenumber">8</span> <span class="title">Error-correcting codes</span></a><ul>
+<li><a href="section-coding-intro.html" data-scroll="section-coding-intro">Introduction</a></li>
+<li><a href="section-coding-channel.html" data-scroll="section-coding-channel">A digital communication system</a></li>
+<li><a href="section-coding-block.html" data-scroll="section-coding-block">Block codes</a></li>
+<li><a href="section-coding-hamming.html" data-scroll="section-coding-hamming">Hamming distances</a></li>
+<li><a href="section-coding-neighbour.html" data-scroll="section-coding-neighbour">Nearest neighbour decoding</a></li>
+<li><a href="section-coding-minimum.html" data-scroll="section-coding-minimum">Minimum distance</a></li>
+<li><a href="section-coding-equiv.html" data-scroll="section-coding-equiv">Equivalent codes</a></li>
+<li><a href="section-coding-parameters.html" data-scroll="section-coding-parameters">Optimising the parameters \(n\text{,}\) \(M\) and \(d\)</a></li>
+<li><a href="section-coding-hammingbound.html" data-scroll="section-coding-hammingbound">The Hamming bound</a></li>
+<li><a href="section-coding-perfect.html" data-scroll="section-coding-perfect">Perfect codes</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="coding_linear.html" data-scroll="coding_linear"><span class="codenumber">9</span> <span class="title">Linear codes</span></a><ul>
+<li><a href="section-coding-vector.html" data-scroll="section-coding-vector">Vectorspaces</a></li>
+<li><a href="section-coding-linear.html" data-scroll="section-coding-linear">Introduction to linear codes</a></li>
+<li><a href="section-coding-encode-linear.html" data-scroll="section-coding-encode-linear">Encoding with a linear code</a></li>
+<li><a href="section-coding-cosets.html" data-scroll="section-coding-cosets">Cosets</a></li>
+<li><a href="section-coding-decode.html" data-scroll="section-coding-decode">Decoding with a linear code</a></li>
+<li><a href="section-coding-dual.html" data-scroll="section-coding-dual">Dual codes</a></li>
+<li><a href="section-coding-syndrome.html" data-scroll="section-coding-syndrome">Syndrome decoding</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="coding_hamming.html" data-scroll="coding_hamming"><span class="codenumber">10</span> <span class="title">Hamming codes</span></a><ul>
+<li><a href="section-coding-ham-intro.html" data-scroll="section-coding-ham-intro">Introduction</a></li>
+<li><a href="section-coding-ham-decode.html" data-scroll="section-coding-ham-decode">Decoding with a binary Hamming code</a></li>
+<li><a href="section-coding-ham-extend.html" data-scroll="section-coding-ham-extend">The extended binary Hamming code</a></li>
+<li><a href="section-coding-fund.html" data-scroll="section-coding-fund">A fundamental theorem</a></li>
+<li><a href="section-coding-qham.html" data-scroll="section-coding-qham">\(q\)-ary Hamming codes</a></li>
+<li><a href="section-coding-qham-decode.html" data-scroll="section-coding-qham-decode">Decoding with a \(q\)-ary Hamming code</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="coding_cyclic.html" data-scroll="coding_cyclic"><span class="codenumber">11</span> <span class="title">Cyclic codes</span></a><ul>
+<li><a href="section-coding-ham-intro.html" data-scroll="section-coding-ham-intro">Introduction</a></li>
+<li><a href="section-coding-ring.html" data-scroll="section-coding-ring">The ring of polynomials modulo \(f(x)\)</a></li>
+<li><a href="section-coding-cyclic-check.html" data-scroll="section-coding-cyclic-check">The check polynomial and the parity-check matrix of a cyclic code</a></li>
+</ul>
+</li>
+</ul></nav><div class="extras"><nav><a class="mathbook-link" href="https://pretextbook.org">Authored in PreTeXt</a><a href="https://www.mathjax.org"><img title="Powered by MathJax" src="https://www.mathjax.org/badge/badge.gif" alt="Powered by MathJax"></a></nav></div>
+</div></div>
+<main class="main"><div id="content" class="pretext-content"><section class="section" id="section-crypto-DH"><h2 class="heading hide-type">
+<span class="type">Section</span> <span class="codenumber">6.2</span> <span class="title">Diffie-Hellman</span>
+</h2>
+<a href="section-crypto-DH.html" class="permalink">¶</a><p id="p-370">Alice and Bob want to share a secret key for use in a symmetric cipher, but their only means of communication is insecure. If every piece of information that they exchange is observed by their adversary Eve, how can they exchange a secret key?</p>
+<p id="p-371">The <dfn class="terminology">Diffie-Hellman key exchange</dfn> (DH) was invented in 1976 and is a widely-deployed scheme used to compute a secret session key by exchanging public values.</p>
+<p id="p-372"><em class="alert">Setup</em>:</p>
+<p id="p-373">A large prime \(p\) and a generator \(g\) of \(\mathbf{F}^*_p\) is fixed and made public. That is \(\langle g\rangle=\mathbf{F}_p^*\text{.}\)</p>
+<p id="p-374"><em class="alert">Operation</em>:</p>
+<ol class="decimal">
+<li id="li-89">Alice randomly selects \(1\leq a&lt;\text{ord}(g)\) and send \(A=g^a \pmod p\) to Bob.</li>
+<li id="li-90">Bob randomly selects \(1\leq b&lt;\text{ord}(g)\) and send \(B=g^b \pmod p\) to Alice.</li>
+<li id="li-91">Alice computes \(B^a \pmod p\text{.}\)</li>
+<li id="li-92">Bob computes \(A^b \pmod p\text{.}\)</li>
+</ol>
+<p id="p-375">The session key is \(S=B^a=(g^b)^a=(g^a)^b=A^b \pmod p\text{.}\)</p>
+<article class="example example-like" id="example-crypto-DH"><h6 class="heading">
+<span class="type">Example</span><span class="space"> </span><span class="codenumber">6.2.1</span><span class="period">.</span><span class="space"> </span><span class="title">Diffie-Hellman.</span>
+</h6>Consider a Diffie-Hellman key exchange in the group \(\mathbf{F}_{53}^*\) with generator \(g=2\text{.}\) If Alice's secret exponent is \(a = 19\) and Bob's secret exponent is \(b=17\text{,}\) compute the messages that Alice and Bob sends to each other as well as the shared secret session key.<div class="solutions">
+<a data-knowl="" class="id-ref original" data-refid="hk-solution-29" id="solution-29"><span class="type">Solution</span></a><div class="hidden-content tex2jax_ignore" id="hk-solution-29"><div class="solution solution-like">
+<p id="p-376">Alice sends the message \(A=g^a=2^{19}\equiv 12\pmod{53}\text{.}\)</p>
+<p id="p-377">Bob sends the message \(B=g^b=2^{17}\equiv 3\pmod{53}\text{.}\)</p>
+<p id="p-378">The shared secret session key can be determined in three ways:</p>
+<div class="displaymath">
+\begin{equation*}
+S=g^{ab}=2^{17\times 19}=2^{323}=2^{6\times 52+11}=2^{11}\equiv 34 \pmod{53}.
+\end{equation*}
+</div>
+<p id="p-379">OR</p>
+<div class="displaymath">
+\begin{equation*}
+S=A^b=12^{17}\equiv 34 \pmod{53}.
+\end{equation*}
+</div>
+<p id="p-380">OR</p>
+<div class="displaymath">
+\begin{equation*}
+S=B^a=3^{19}\equiv 34 \pmod{53}.
+\end{equation*}
+</div>
+</div></div>
+</div></article><p id="p-381">To calculate the session key, an attacker needs to recover one of:</p>
+<ol class="decimal">
+<li id="li-93">\(a\) given \(A\) or \(b\) given \(B\text{.}\)</li>
+<li id="li-94">\(g^{ab}\) given \(A\) and \(B\text{.}\)</li>
+</ol>
+<p id="p-382">DH can be used in any group where exponentiation is efficient and the discrete logarithm problem is hard.</p>
+<article class="example example-like" id="example-crypto-DH2"><h6 class="heading">
+<span class="type">Example</span><span class="space"> </span><span class="codenumber">6.2.2</span><span class="period">.</span><span class="space"> </span><span class="title">Diffie-Hellman secret.</span>
+</h6>Consider a Diffie-Hellman key exchange in the group \(\mathbf{F}_{53}^*\) with generator \(g=2\text{.}\) If Alice sends Bob the message \(A=15\text{,}\) what is her secret exponent?<div class="solutions">
+<a data-knowl="" class="id-ref original" data-refid="hk-solution-30" id="solution-30"><span class="type">Solution</span></a><div class="hidden-content tex2jax_ignore" id="hk-solution-30"><div class="solution solution-like">
+<p id="p-383">To find Alice's secret exponent we have to find \(a\) such that \(g^a=A\text{,}\) that is \(2^a=15 \pmod{53}\text{.}\)</p>
+<div class="sidebyside"><div class="sbsrow" style="margin-left:0%;margin-right:0%;"><div class="sbspanel fixed-width" style="width:100%;justify-content:flex-start;"><table>
+<tr>
+<td class="c m b1 r0 l0 t0 lines">\(i\)</td>
+<td class="c m b1 r0 l0 t0 lines" data-braille="last-cell">\(2^i\pmod{53}\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(1\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(2\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(2\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(4\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(3\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(8\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(4\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(16\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(5\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(32\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(6\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(11\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(7\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(22\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(8\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(44\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(9\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(35\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(10\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(17\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(11\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(34\)</td>
+</tr>
+<tr>
+<td class="c m b0 r0 l0 t0 lines">\(12\)</td>
+<td class="c m b0 r0 l0 t0 lines" data-braille="last-cell">\(15\)</td>
+</tr>
+</table></div></div></div>
+<p id="p-384">Hence Alice's secret exponent is \(a=12\text{.}\)</p>
+</div></div>
+</div></article><p id="p-385"><em class="alert">Attack strategies</em>: Man-in-the-middle attacks</p>
+<p id="p-386">Alice wants to agree on a key with Bob.</p>
+<ol class="decimal">
+<li id="li-95">Alice sends \(A=g^a\text{.}\)</li>
+<li id="li-96">Mallory intercepts it and sends \(X=g^x\) to Bob.</li>
+<li id="li-97">Bob sends \(B=g^b\text{.}\)</li>
+<li id="li-98">Mallory intercepts it and sends \(Y=g^y\) to Alice.</li>
+</ol>
+<p id="p-387">Alice and Bob don't share a key with each other but with a man-in-the-middle Mallory.</p></section></div></main>
+</div>
+<div class="login-link"><span id="loginlogout" class="login">login</span></div>
+<script src="https://pretextbook.org/js/0.13/login.js"></script>
+</body>
+</html>

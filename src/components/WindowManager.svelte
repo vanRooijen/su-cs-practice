@@ -2,7 +2,13 @@
   import { onMount, tick } from 'svelte';
   import { APP_REGISTRY } from '../lib/window/appRegistry.js';
   import { DESKTOP_SHORTCUTS, TOPBAR_LINKS } from '../lib/navigation/siteManifest.js';
-  import { navigateTo, navigateToDesktop, openInNewWindow, route } from '../lib/navigation/historyRouter.js';
+  import {
+    navigateTo,
+    navigateToDesktop,
+    openInNewWindow,
+    parsePath,
+    route,
+  } from '../lib/navigation/historyRouter.js';
   import { windowManager } from '../lib/window/windowManagerStore.js';
   import suLogoMark from '../assets/branding/su-corporate-horizontal-no-slogan.svg';
   import iconMail from '../assets/icons/lucide/mail.svg?raw';
@@ -40,6 +46,10 @@
     y: 0,
     linkPath: null,
   };
+  $: contextMenuCanOpenInNewAppWindow =
+    typeof contextMenu.linkPath === 'string' && contextMenu.linkPath
+      ? parsePath(contextMenu.linkPath).isValid
+      : false;
 
   function setsEqual(left, right) {
     if (left.size !== right.size) {
@@ -463,7 +473,7 @@
   }
 
   function openContextLinkInNewWindow() {
-    if (!contextMenu.linkPath) {
+    if (!contextMenu.linkPath || !contextMenuCanOpenInNewAppWindow) {
       return;
     }
 
@@ -1027,9 +1037,11 @@
       style={`left:${contextMenu.x}px;top:${contextMenu.y}px;`}
     >
       {#if contextMenu.linkPath}
-        <button type="button" role="menuitem" on:click={openContextLinkInNewWindow}>
-          Open in New App Window
-        </button>
+        {#if contextMenuCanOpenInNewAppWindow}
+          <button type="button" role="menuitem" on:click={openContextLinkInNewWindow}>
+            Open in New App Window
+          </button>
+        {/if}
         <button type="button" role="menuitem" on:click={openContextLinkInNewTab}>Open in New Browser Tab</button>
         <hr />
       {/if}

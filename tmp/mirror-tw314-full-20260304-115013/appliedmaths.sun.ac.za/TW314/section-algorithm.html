@@ -1,0 +1,489 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<!--**************************************-->
+<!--*    Generated from PreTeXt source   *-->
+<!--*    on 2022-02-09T15:15:16+02:00    *-->
+<!--*                                    *-->
+<!--*      https://pretextbook.org       *-->
+<!--*                                    *-->
+<!--**************************************-->
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AM314 A planarity algorithm</title>
+<meta name="Keywords" content="Authored in PreTeXt">
+<meta name="viewport" content="width=device-width,  initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [['\\(','\\)']]
+    },
+    asciimath2jax: {
+        ignoreClass: ".*",
+        processClass: "has_am"
+    },
+    jax: ["input/AsciiMath"],
+    extensions: ["asciimath2jax.js"],
+    TeX: {
+        extensions: ["extpfeil.js", "autobold.js", "https://pretextbook.org/js/lib/mathjaxknowl.js", ],
+        // scrolling to fragment identifiers is controlled by other Javascript
+        positionToHash: false,
+        equationNumbers: { autoNumber: "none", useLabelIds: true, },
+        TagSide: "right",
+        TagIndent: ".8em",
+    },
+    // HTML-CSS output Jax to be dropped for MathJax 3.0
+    "HTML-CSS": {
+        scale: 88,
+        mtextFontInherit: true,
+    },
+    CommonHTML: {
+        scale: 88,
+        mtextFontInherit: true,
+    },
+});
+</script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_CHTML-full"></script><script src="https://pretextbook.org/js/lib/jquery.min.js"></script><script src="https://pretextbook.org/js/lib/jquery.sticky.js"></script><script src="https://pretextbook.org/js/lib/jquery.espy.min.js"></script><script src="https://pretextbook.org/js/0.13/pretext.js"></script><script src="https://pretextbook.org/js/0.13/pretext_add_on.js"></script><script src="https://pretextbook.org/js/lib/knowl.js"></script><link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,600,600italic" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700&amp;subset=latin,latin-ext" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/pretext.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/pretext_add_on.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/banner_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/toc_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/knowls_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/style_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/colors_default.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/setcolors.css" rel="stylesheet" type="text/css">
+<!-- 2019-10-12: Temporary - CSS file for experiments with styling --><link href="https://appliedmaths.sun.ac.za/TW314/developer.css" rel="stylesheet" type="text/css">
+<link href="https://pretextbook.org/css/0.31/features.css" rel="stylesheet" type="text/css">
+<script>var logged_in = false;
+var role = 'student';
+var guest_access = true;
+var login_required = false;
+var js_version = 0.13;
+</script>
+</head>
+<body class="mathbook-book has-toc has-sidebar-left">
+<a class="assistive" href="section-algorithm.html#content">Skip to main content</a><div class="hidden-content" style="display:none">\(\newcommand{\identity}{\mathrm{id}}
+\newcommand{\notdivide}{{\not{\mid}}}
+\newcommand{\notsubset}{\not\subset}
+\newcommand{\lcm}{\operatorname{lcm}}
+\newcommand{\gf}{\operatorname{GF}}
+\newcommand{\inn}{\operatorname{Inn}}
+\newcommand{\aut}{\operatorname{Aut}}
+\newcommand{\Hom}{\operatorname{Hom}}
+\newcommand{\cis}{\operatorname{cis}}
+\newcommand{\chr}{\operatorname{char}}
+\newcommand{\Null}{\operatorname{Null}}
+\newcommand{\lt}{&lt;}
+\newcommand{\gt}{&gt;}
+\newcommand{\amp}{&amp;}
+\)</div>
+<header id="masthead" class="smallbuttons"><div class="banner"><div class="container">
+<a id="logo-link" href="section-algorithm.html"></a><div class="title-container">
+<h1 class="heading"><a href="discrete-book.html"><span class="title">Applied Mathematics 314:</span> <span class="subtitle">An introduction to Applied Discrete Mathematics</span></a></h1>
+<p class="byline">Riana Roux</p>
+</div>
+</div></div>
+<nav id="primary-navbar" class="navbar"><div class="container">
+<div class="navbar-top-buttons">
+<button class="sidebar-left-toggle-button button active" aria-label="Show or hide table of contents sidebar">Contents</button><div class="tree-nav toolbar toolbar-divisor-3"><span class="threebuttons"><a id="previousbutton" class="previous-button toolbar-item button" href="section-maximal.html" title="Previous">Prev</a><a id="upbutton" class="up-button button toolbar-item" href="planar.html" title="Up">Up</a><a id="nextbutton" class="next-button button toolbar-item" href="colour.html" title="Next">Next</a></span></div>
+</div>
+<div class="navbar-bottom-buttons toolbar toolbar-divisor-4">
+<button class="sidebar-left-toggle-button button toolbar-item active">Contents</button><a class="previous-button toolbar-item button" href="section-maximal.html" title="Previous">Prev</a><a class="up-button button toolbar-item" href="planar.html" title="Up">Up</a><a class="next-button button toolbar-item" href="colour.html" title="Next">Next</a>
+</div>
+</div></nav></header><div class="page">
+<div id="sidebar-left" class="sidebar" role="navigation"><div class="sidebar-content">
+<nav id="toc"><ul>
+<li class="link">
+<a href="frontmatter.html" data-scroll="frontmatter"><span class="title">Front Matter</span></a><ul><li><a href="preface.html" data-scroll="preface">Preface</a></li></ul>
+</li>
+<li class="link part"><a href="part-graph.html" data-scroll="part-graph"><span class="codenumber">I</span> <span class="title">Graph Theory</span></a></li>
+<li class="link">
+<a href="graphs.html" data-scroll="graphs"><span class="codenumber">1</span> <span class="title">An introduction to graphs</span></a><ul>
+<li><a href="section-notation.html" data-scroll="section-notation">Basic notation</a></li>
+<li><a href="section-first-theorem.html" data-scroll="section-first-theorem">The first theorem of graph theory</a></li>
+<li><a href="section-subgraph.html" data-scroll="section-subgraph">Subgraphs</a></li>
+<li><a href="section-connectedness.html" data-scroll="section-connectedness">Paths and connectivity</a></li>
+<li><a href="section-isomorphism.html" data-scroll="section-isomorphism">Equality and isomorphism</a></li>
+<li><a href="section-graphical.html" data-scroll="section-graphical">Graphical sequences</a></li>
+<li><a href="section-special-graphs.html" data-scroll="section-special-graphs">Special graphs and some constructs</a></li>
+<li><a href="section-trees.html" data-scroll="section-trees">Trees</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="planar.html" data-scroll="planar"><span class="codenumber">2</span> <span class="title">Planar graphs</span></a><ul>
+<li><a href="section-embeddings.html" data-scroll="section-embeddings">Embeddings and plane graphs</a></li>
+<li><a href="section-euler.html" data-scroll="section-euler">Euler's theorem</a></li>
+<li><a href="section-maximal-planar.html" data-scroll="section-maximal-planar">Maximal planar graphs</a></li>
+<li><a href="section-polyhedra.html" data-scroll="section-polyhedra">Polyhedra</a></li>
+<li><a href="section-maximal.html" data-scroll="section-maximal">A characterization of planar graphs</a></li>
+<li><a href="section-algorithm.html" data-scroll="section-algorithm" class="active">A planarity algorithm</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="colour.html" data-scroll="colour"><span class="codenumber">3</span> <span class="title">Graph colourings</span></a><ul>
+<li><a href="section-chromatic.html" data-scroll="section-chromatic">Chromatic numbers</a></li>
+<li><a href="section-bounds.html" data-scroll="section-bounds">Bounds on the chromatic number</a></li>
+<li><a href="section-4colour.html" data-scroll="section-4colour">The four-colour problem</a></li>
+</ul>
+</li>
+<li class="link part"><a href="part-crypto.html" data-scroll="part-crypto"><span class="codenumber">II</span> <span class="title">Cryptography</span></a></li>
+<li class="link">
+<a href="crypto.html" data-scroll="crypto"><span class="codenumber">4</span> <span class="title">An introduction to cryptography</span></a><ul>
+<li><a href="section-crypto-notation.html" data-scroll="section-crypto-notation">What is cryptography?</a></li>
+<li><a href="section-crypto-symmetric.html" data-scroll="section-crypto-symmetric">Symmetric-key primitives</a></li>
+<li><a href="section-crypto-public.html" data-scroll="section-crypto-public">Public-key primitives</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="crypto_algebra.html" data-scroll="crypto_algebra"><span class="codenumber">5</span> <span class="title">Important algebraic concepts</span></a><ul>
+<li><a href="section-crypto-mod.html" data-scroll="section-crypto-mod">Modular arithmetic</a></li>
+<li><a href="section-crypto-group.html" data-scroll="section-crypto-group">Groups</a></li>
+<li><a href="section-crypto-rings.html" data-scroll="section-crypto-rings">Rings</a></li>
+<li><a href="section-crypto-field.html" data-scroll="section-crypto-field">Fields</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="crypto_key.html" data-scroll="crypto_key"><span class="codenumber">6</span> <span class="title">Key establishment</span></a><ul>
+<li><a href="section-exponent.html" data-scroll="section-exponent">Exponentiation</a></li>
+<li><a href="section-crypto-DH.html" data-scroll="section-crypto-DH">Diffie-Hellman</a></li>
+<li><a href="section-crypto-inverse.html" data-scroll="section-crypto-inverse">Inverses in finite groups</a></li>
+<li><a href="section-crypto-log-alg.html" data-scroll="section-crypto-log-alg">An algorithm for computing discrete logartihms</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="crypto_rsa.html" data-scroll="crypto_rsa"><span class="codenumber">7</span> <span class="title">RSA encryption</span></a><ul>
+<li><a href="section-crypto-number.html" data-scroll="section-crypto-number">Number theory</a></li>
+<li><a href="section-crypto-rsa.html" data-scroll="section-crypto-rsa">The RSA system</a></li>
+</ul>
+</li>
+<li class="link part"><a href="part-coding.html" data-scroll="part-coding"><span class="codenumber">III</span> <span class="title">Coding theory</span></a></li>
+<li class="link">
+<a href="coding_error.html" data-scroll="coding_error"><span class="codenumber">8</span> <span class="title">Error-correcting codes</span></a><ul>
+<li><a href="section-coding-intro.html" data-scroll="section-coding-intro">Introduction</a></li>
+<li><a href="section-coding-channel.html" data-scroll="section-coding-channel">A digital communication system</a></li>
+<li><a href="section-coding-block.html" data-scroll="section-coding-block">Block codes</a></li>
+<li><a href="section-coding-hamming.html" data-scroll="section-coding-hamming">Hamming distances</a></li>
+<li><a href="section-coding-neighbour.html" data-scroll="section-coding-neighbour">Nearest neighbour decoding</a></li>
+<li><a href="section-coding-minimum.html" data-scroll="section-coding-minimum">Minimum distance</a></li>
+<li><a href="section-coding-equiv.html" data-scroll="section-coding-equiv">Equivalent codes</a></li>
+<li><a href="section-coding-parameters.html" data-scroll="section-coding-parameters">Optimising the parameters \(n\text{,}\) \(M\) and \(d\)</a></li>
+<li><a href="section-coding-hammingbound.html" data-scroll="section-coding-hammingbound">The Hamming bound</a></li>
+<li><a href="section-coding-perfect.html" data-scroll="section-coding-perfect">Perfect codes</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="coding_linear.html" data-scroll="coding_linear"><span class="codenumber">9</span> <span class="title">Linear codes</span></a><ul>
+<li><a href="section-coding-vector.html" data-scroll="section-coding-vector">Vectorspaces</a></li>
+<li><a href="section-coding-linear.html" data-scroll="section-coding-linear">Introduction to linear codes</a></li>
+<li><a href="section-coding-encode-linear.html" data-scroll="section-coding-encode-linear">Encoding with a linear code</a></li>
+<li><a href="section-coding-cosets.html" data-scroll="section-coding-cosets">Cosets</a></li>
+<li><a href="section-coding-decode.html" data-scroll="section-coding-decode">Decoding with a linear code</a></li>
+<li><a href="section-coding-dual.html" data-scroll="section-coding-dual">Dual codes</a></li>
+<li><a href="section-coding-syndrome.html" data-scroll="section-coding-syndrome">Syndrome decoding</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="coding_hamming.html" data-scroll="coding_hamming"><span class="codenumber">10</span> <span class="title">Hamming codes</span></a><ul>
+<li><a href="section-coding-ham-intro.html" data-scroll="section-coding-ham-intro">Introduction</a></li>
+<li><a href="section-coding-ham-decode.html" data-scroll="section-coding-ham-decode">Decoding with a binary Hamming code</a></li>
+<li><a href="section-coding-ham-extend.html" data-scroll="section-coding-ham-extend">The extended binary Hamming code</a></li>
+<li><a href="section-coding-fund.html" data-scroll="section-coding-fund">A fundamental theorem</a></li>
+<li><a href="section-coding-qham.html" data-scroll="section-coding-qham">\(q\)-ary Hamming codes</a></li>
+<li><a href="section-coding-qham-decode.html" data-scroll="section-coding-qham-decode">Decoding with a \(q\)-ary Hamming code</a></li>
+</ul>
+</li>
+<li class="link">
+<a href="coding_cyclic.html" data-scroll="coding_cyclic"><span class="codenumber">11</span> <span class="title">Cyclic codes</span></a><ul>
+<li><a href="section-coding-cyclic-intro.html" data-scroll="section-coding-cyclic-intro">Introduction</a></li>
+<li><a href="section-coding-ring.html" data-scroll="section-coding-ring">The ring of polynomials modulo \(f(x)\)</a></li>
+<li><a href="section-coding-cyclic-check.html" data-scroll="section-coding-cyclic-check">The check polynomial and the parity-check matrix of a cyclic code</a></li>
+</ul>
+</li>
+</ul></nav><div class="extras"><nav><a class="mathbook-link" href="https://pretextbook.org">Authored in PreTeXt</a><a href="https://www.mathjax.org"><img title="Powered by MathJax" src="https://www.mathjax.org/badge/badge.gif" alt="Powered by MathJax"></a></nav></div>
+</div></div>
+<main class="main"><div id="content" class="pretext-content"><section class="section" id="section-algorithm"><h2 class="heading hide-type">
+<span class="type">Section</span> <span class="codenumber">2.6</span> <span class="title">A planarity algorithm</span>
+</h2>
+<a href="section-algorithm.html" class="permalink">¶</a><p id="p-100">Let \(H\) be a given subgraph of \(G\text{.}\) Let \(B\subseteq E(G)\backslash E(H)\) such that \(e_1,e_2\in B\) if and only if there exist a walk \(W\) beginning with \(e_1\) and ending with \(e_2\) such that no internal vertex of \(W\) is a vertex of \(H\text{.}\) Then \(B\) is a <dfn class="terminology">bridge of \(H\) in \(G\)</dfn>.</p>
+<p id="p-101">The <dfn class="terminology">vertices of attachment of \(B\) to \(H\)</dfn> is the vertices of \(B\) that is also on \(H\text{,}\) \(V(B)\cap V(H)=V(B,H)\text{.}\)</p>
+<p id="p-102">A bridge \(B\) of \(H\) is <dfn class="terminology">drawable</dfn> in a face \(f\) of an embedding \(H'\) of \(H\) if the vertices of attachment of \(B\) to \(H\) are contained in the boundary of \(f\text{.}\)</p>
+<p id="p-103">The set of faces of an embedding \(H'\) of \(H\) in which \(B\) is drawable is denoted by \(F(B,H')\text{.}\)</p>
+<figure class="figure figure-like" id="figure-graph-bridges"><div class="image-box" style="width: 50%; margin-left: 25%; margin-right: 25%;"><img src="images/figure_planar_alg.jpg" style="width: 100%; height: auto;" alt=""></div>
+<figcaption><span class="type">Figure</span><span class="space"> </span><span class="codenumber">2.6.1<span class="period">.</span></span><span class="space"> </span>Find the bridges of \(C=(1,2,3,4,5,6,7,8,1)\) in \(G\text{.}\)</figcaption></figure><article class="example example-like" id="example-graph-bridges"><h6 class="heading">
+<span class="type">Example</span><span class="space"> </span><span class="codenumber">2.6.2</span><span class="period">.</span>
+</h6>Determine the bridges of \(C\) in the graph \(G_1\) in <a class="xref" data-knowl="./knowl/figure-graph-bridges.html" title="Figure 2.6.1">Figure 2.6.1</a>.<div class="solutions">
+<a data-knowl="" class="id-ref original" data-refid="hk-solution-9" id="solution-9"><span class="type">Solution</span></a><div class="hidden-content tex2jax_ignore" id="hk-solution-9"><div class="solution solution-like">
+<p id="p-104">There are bridges of \(C\) in the graph \(G_1\text{:}\)</p>
+<div class="displaymath">
+\begin{align*}
+B_1 &amp; = {{5,7}} \\
+B_2 &amp; = {{3,9},{4,9},{5,9}} \\
+B_3 &amp; = {{7,15},{15,16},{15,17}} \\
+B_4 &amp; = E(G)\backslash (E(C)\cup B_1\cup B_2 \cup B_3) 
+\end{align*}
+</div>
+</div></div>
+</div></article><article class="algorithm theorem-like" id="algorithm-1"><h6 class="heading">
+<span class="type">Algorithm</span><span class="space"> </span><span class="codenumber">2.6.3</span><span class="period">.</span><span class="space"> </span><span class="title">A planarity algorithm.</span>
+</h6>
+<dl id="p-105" class="description-list">
+<dt id="li-8">STEP 1</dt>
+<dd>
+<p id="p-106">Let \(G_1\) be a cycle of \(G\text{.}\)</p>
+<p id="p-107">Let \(G_1'\) be an embedding of \(G_1\text{.}\)</p>
+<p id="p-108">Set \(i=1\text{.}\)</p>
+</dd>
+<dt id="li-9">STEP 2</dt>
+<dd>
+<p id="p-109">IF \(E(G)\backslash E(G_i)=\varnothing\text{,}\) \(G\) is planar STOP.</p>
+<p id="p-110">ELSE Determine all the bridges of \(G_i\) in \(G\) and find \(F(B,G_i')\) for each bridge.</p>
+</dd>
+<dt id="li-10">STEP 3</dt>
+<dd>
+<p id="p-111">IF there exist a bridge \(B\) such that \(F(B,G_i')=\varnothing\text{,}\) \(G\) is non-planar, STOP.</p>
+<p id="p-112">ELSEIF there exist a bridge \(B\) such that \(|F(B,G_i')|=1\text{,}\) let \(f=F(B,G_i')\text{,}\)</p>
+<p id="p-113">ELSE let \(B\) be any bridge and \(f\in F(B,G_i')\text{.}\)</p>
+</dd>
+<dt id="li-11">STEP 4</dt>
+<dd>
+<p id="p-114">Choose a path \(P_i\subseteq B\) connecting two vertices of attachement of \(B\) to \(G_i\text{.}\)</p>
+<p id="p-115">Let \(G_{i+1}\) be the graph \(G_i\) together with \(P_i\text{.}\)</p>
+<p id="p-116">Obtain a planar embedding of \(G_{i+1}'\) of \(G_{i+1}\text{,}\) by drawing \(P_i\) in the face \(f\) of \(G_i'\text{.}\)</p>
+</dd>
+<dt id="li-12">STEP 5</dt>
+<dd><p id="p-117">Set \(i=i+1\) and go to STEP 2.</p></dd>
+</dl></article><figure class="figure figure-like" id="figure-graph-planar1"><div class="image-box" style="width: 70%; margin-left: 15%; margin-right: 15%;"><img src="images/figure_planar_alg2.jpg" style="width: 100%; height: auto;" alt=""></div>
+<figcaption><span class="type">Figure</span><span class="space"> </span><span class="codenumber">2.6.4<span class="period">.</span></span><span class="space"> </span>The graphs \(G\) and \(H\text{.}\)</figcaption></figure><article class="example example-like" id="example-graph-planar2"><h6 class="heading">
+<span class="type">Example</span><span class="space"> </span><span class="codenumber">2.6.5</span><span class="period">.</span>
+</h6>Make use of the planarity algorithm to determine whether graphs \(G\) and \(H\) in <a class="xref" data-knowl="./knowl/figure-graph-planar1.html" title="Figure 2.6.4">Figure 2.6.4</a> are planar.<div class="solutions">
+<a data-knowl="" class="id-ref original" data-refid="hk-solution-10" id="solution-10"><span class="type">Solution</span></a><div class="hidden-content tex2jax_ignore" id="hk-solution-10"><div class="solution solution-like">
+<em class="alert">For the graph \(G\text{:}\)</em><p id="p-118"><em class="alert">Initialisation</em>: Choose the cycle \(G_1=(1,2,3,5,6,1)\) and embed it in the plane as \(G_1'\text{.}\) Set \(i=1\text{.}\)</p>
+<div class="image-box" style="width: 30%; margin-left: 35%; margin-right: 35%;"><img src="images/figure_planar_G1.jpg" style="width: 100%; height: auto;" alt=""></div>
+<p id="p-119">\(i=1:\)</p>
+<dl id="p-120" class="description-list">
+<dt id="li-13">STEP 2</dt>
+<dd>
+<p id="p-121">\(E(G)\backslash E(G_1)\neq\varnothing\text{.}\)</p>
+<p id="p-122">There are 5 bridges of \(G_1'\) in the graph \(G\text{:}\)</p>
+<div class="displaymath" id="p-123">
+\begin{align*}
+&amp;B_1 = \{13\}; F(B_1,G_1')=\{f_1,f_2\}  \\
+&amp;B_2 = \{26\};  F(B_2,G_1')=\{f_1,f_2\}\\
+&amp;B_3 = \{25\};  F(B_3,G_1')=\{f_1,f_2\}\\
+&amp;B_4 = \{36\};  F(B_4,G_1')=\{f_1,f_2\}\\
+&amp;B_5 = \{14,24,34\};  F(B_5,G_1')=\{f_1,f_2\}
+\end{align*}
+</div>
+</dd>
+<dt id="li-14">STEP 3</dt>
+<dd><p id="p-124">Choose \(B_1\) and let \(f=f_2\text{.}\)</p></dd>
+<dt id="li-15">STEP 4</dt>
+<dd>
+<p id="p-125">Let \(P_1=(1,3)\text{.}\)</p>
+<p id="p-126">Draw \(G_2'\text{.}\)</p>
+<div class="image-box" style="width: 40%; margin-left: 30%; margin-right: 30%;"><img src="images/figure_planar_G2.jpg" style="width: 100%; height: auto;" alt=""></div>
+</dd>
+<dt id="li-16">STEP 5</dt>
+<dd><p id="p-127">Set \(i=2\) and go to STEP 2.</p></dd>
+</dl>
+<p id="p-128">\(i=2:\)</p>
+<dl id="p-129" class="description-list">
+<dt id="li-17">STEP 2</dt>
+<dd>
+<p id="p-130">\(E(G)\backslash E(G_2)\neq\varnothing\text{.}\)</p>
+<p id="p-131">There are 4 bridges of \(G_2'\) in the graph \(G\text{:}\)</p>
+<div class="displaymath" id="p-132">
+\begin{align*}
+&amp;B_2 = \{26\};  F(B_2,G_2')=\{f_1\}\\
+&amp;B_3 = \{25\};  F(B_3,G_2')=\{f_1\}\\
+&amp;B_4 = \{36\};  F(B_4,G_2')=\{f_1,f_3\}\\
+&amp;B_5 = \{14,24,34\};  F(B_5,G_2')=\{f_1,f_2\}
+\end{align*}
+</div>
+</dd>
+<dt id="li-18">STEP 3</dt>
+<dd><p id="p-133">Choose \(B_2\) and let \(f=f_1\text{.}\)</p></dd>
+<dt id="li-19">STEP 4</dt>
+<dd>
+<p id="p-134">Let \(P_1=(2,6)\text{.}\)</p>
+<p id="p-135">Draw \(G_3'\text{.}\)</p>
+<div class="image-box" style="width: 40%; margin-left: 30%; margin-right: 30%;"><img src="images/figure_planar_G3.jpg" style="width: 100%; height: auto;" alt=""></div>
+</dd>
+<dt id="li-20">STEP 5</dt>
+<dd><p id="p-136">Set \(i=3\) and go to STEP 2.</p></dd>
+</dl>
+<p id="p-137">\(i=3:\)</p>
+<dl id="p-138" class="description-list">
+<dt id="li-21">STEP 2</dt>
+<dd>
+<p id="p-139">\(E(G)\backslash E(G_3)\neq\varnothing\text{.}\)</p>
+<p id="p-140">There are 3 bridges of \(G_3'\) in the graph \(G\text{:}\)</p>
+<div class="displaymath" id="p-141">
+\begin{align*}
+&amp;B_3 = \{25\};  F(B_3,G_3')=\{f_1\}\\
+&amp;B_4 = \{36\};  F(B_4,G_3')=\{f_1,f_3\}\\
+&amp;B_5 = \{14,24,34\};  F(B_5,G_3')=\{f_2\}
+\end{align*}
+</div>
+</dd>
+<dt id="li-22">STEP 3</dt>
+<dd><p id="p-142">Choose \(B_3\) and let \(f=f_1\text{.}\)</p></dd>
+<dt id="li-23">STEP 4</dt>
+<dd>
+<p id="p-143">Let \(P_1=(2,5)\text{.}\)</p>
+<p id="p-144">Draw \(G_4'\text{.}\)</p>
+<div class="image-box" style="width: 40%; margin-left: 30%; margin-right: 30%;"><img src="images/figure_planar_G4.jpg" style="width: 100%; height: auto;" alt=""></div>
+</dd>
+<dt id="li-24">STEP 5</dt>
+<dd><p id="p-145">Set \(i=4\) and go to STEP 2.</p></dd>
+</dl>
+<p id="p-146">\(i=4:\)</p>
+<dl id="p-147" class="description-list">
+<dt id="li-25">STEP 2</dt>
+<dd>
+<p id="p-148">\(E(G)\backslash E(G_4)\neq\varnothing\text{.}\)</p>
+<p id="p-149">There are 2 bridges of \(G_4'\) in the graph \(G\text{:}\)</p>
+<div class="displaymath" id="p-150">
+\begin{align*}
+&amp;B_4 = \{36\};  F(B_4,G_4')=\{f_3\}\\
+&amp;B_5 = \{14,24,34\};  F(B_5,G_4')=\{f_2\}
+\end{align*}
+</div>
+</dd>
+<dt id="li-26">STEP 3</dt>
+<dd><p id="p-151">Choose \(B_4\) and let \(f=f_3\text{.}\)</p></dd>
+<dt id="li-27">STEP 4</dt>
+<dd>
+<p id="p-152">Let \(P_1=(3,6)\text{.}\)</p>
+<p id="p-153">Draw \(G_5'\text{.}\)</p>
+<div class="image-box" style="width: 40%; margin-left: 30%; margin-right: 30%;"><img src="images/figure_planar_G5.jpg" style="width: 100%; height: auto;" alt=""></div>
+</dd>
+<dt id="li-28">STEP 5</dt>
+<dd><p id="p-154">Set \(i=5\) and go to STEP 2.</p></dd>
+</dl>
+<p id="p-155">\(i=5:\)</p>
+<dl id="p-156" class="description-list">
+<dt id="li-29">STEP 2</dt>
+<dd>
+<p id="p-157">\(E(G)\backslash E(G_5)\neq\varnothing\text{.}\)</p>
+<p id="p-158">There is 1 bridges of \(G_5'\) in the graph \(G\text{:}\)</p>
+<div class="displaymath" id="p-159">
+\begin{align*}
+&amp;B_5 = \{14,24,34\};  F(B_5,G_5')=\{f_2\}
+\end{align*}
+</div>
+</dd>
+<dt id="li-30">STEP 3</dt>
+<dd><p id="p-160">Choose \(B_5\) and let \(f=f_2\text{.}\)</p></dd>
+<dt id="li-31">STEP 4</dt>
+<dd>
+<p id="p-161">Let \(P_1=(1,4,2)\text{.}\)</p>
+<p id="p-162">Draw \(G_6'\text{.}\)</p>
+<div class="image-box" style="width: 40%; margin-left: 30%; margin-right: 30%;"><img src="images/figure_planar_G6.jpg" style="width: 100%; height: auto;" alt=""></div>
+</dd>
+<dt id="li-32">STEP 5</dt>
+<dd><p id="p-163">Set \(i=6\) and go to STEP 2.</p></dd>
+</dl>
+<p id="p-164">\(i=6:\)</p>
+<dl id="p-165" class="description-list">
+<dt id="li-33">STEP 2</dt>
+<dd>
+<p id="p-166">\(E(G)\backslash E(G_6)\neq\varnothing\text{.}\)</p>
+<p id="p-167">There is 1 bridges of \(G_6'\) in the graph \(G\text{:}\)</p>
+<div class="displaymath" id="p-168">
+\begin{align*}
+&amp;B_6 = \{34\};  F(B_6,G_6')=\{f_2\}
+\end{align*}
+</div>
+</dd>
+<dt id="li-34">STEP 3</dt>
+<dd><p id="p-169">Choose \(B_6\) and let \(f=f_2\text{.}\)</p></dd>
+<dt id="li-35">STEP 4</dt>
+<dd>
+<p id="p-170">Let \(P_1=(3,4)\text{.}\)</p>
+<p id="p-171">Draw \(G_7'\text{.}\)</p>
+<div class="image-box" style="width: 40%; margin-left: 30%; margin-right: 30%;"><img src="images/figure_planar_G7.jpg" style="width: 100%; height: auto;" alt=""></div>
+</dd>
+<dt id="li-36">STEP 5</dt>
+<dd><p id="p-172">Set \(i=7\) and go to STEP 2.</p></dd>
+</dl>
+<p id="p-173">\(i=7:\)</p>
+<dl id="p-174" class="description-list">
+<dt id="li-37">STEP 2</dt>
+<dd><p id="p-175">\(E(G)\backslash E(G_7)=\varnothing\text{,}\) hence \(G\) is planar.</p></dd>
+</dl>
+<em class="alert">For the graph \(H\text{:}\)</em><p id="p-176"><em class="alert">Initialisation</em>: Choose the cycle \(G_1=(1,2,3,4,5,1)\) and embed it in the plane as \(H_1'\text{.}\) Set \(i=1\text{.}\)</p>
+<div class="image-box" style="width: 30%; margin-left: 35%; margin-right: 35%;"><img src="images/figure_planar_H1.jpg" style="width: 100%; height: auto;" alt=""></div>
+<p id="p-177">\(i=1:\)</p>
+<dl id="p-178" class="description-list">
+<dt id="li-38">STEP 2</dt>
+<dd>
+<p id="p-179">\(E(H)\backslash E(H_1)\neq\varnothing\text{.}\)</p>
+<p id="p-180">There are 4 bridges of \(H_1'\) in the graph \(H\text{:}\)</p>
+<div class="displaymath" id="p-181">
+\begin{align*}
+&amp;B_1 = \{14\}; F(B_1,H_1')=\{f_1,f_2\}  \\
+&amp;B_2 = \{35\};  F(B_2,H_1')=\{f_1,f_2\}\\
+&amp;B_3 = \{36,46,56\};  F(B_3,H_1')=\{f_1,f_2\}\\
+&amp;B_4 = \{17,27,37,47,57\};  F(B_4,H_1')=\{f_1,f_2\}
+\end{align*}
+</div>
+</dd>
+<dt id="li-39">STEP 3</dt>
+<dd><p id="p-182">Choose \(B_1\) and let \(f=f_1\text{.}\)</p></dd>
+<dt id="li-40">STEP 4</dt>
+<dd>
+<p id="p-183">Let \(P_1=(1,4)\text{.}\)</p>
+<p id="p-184">Draw \(H_2'\text{.}\)</p>
+<div class="image-box" style="width: 40%; margin-left: 30%; margin-right: 30%;"><img src="images/figure_planar_H2.jpg" style="width: 100%; height: auto;" alt=""></div>
+</dd>
+<dt id="li-41">STEP 5</dt>
+<dd><p id="p-185">Set \(i=2\) and go to STEP 2.</p></dd>
+</dl>
+<p id="p-186">\(i=2:\)</p>
+<dl id="p-187" class="description-list">
+<dt id="li-42">STEP 2</dt>
+<dd>
+<p id="p-188">\(E(H)\backslash E(H_2)\neq\varnothing\text{.}\)</p>
+<p id="p-189">There are 3 bridges of \(H_2'\) in the graph \(H\text{:}\)</p>
+<div class="displaymath" id="p-190">
+\begin{align*}
+&amp;B_2 = \{35\};  F(B_2,H_2')=\{f_1\}\\
+&amp;B_3 = \{36,46,56\};  F(B_3,H_2')=\{f_1\}\\
+&amp;B_4 = \{17,27,37,47,57\};  F(B_4,H_2')=\{f_1\}
+\end{align*}
+</div>
+</dd>
+<dt id="li-43">STEP 3</dt>
+<dd><p id="p-191">Choose \(B_2\) and let \(f=f_1\text{.}\)</p></dd>
+<dt id="li-44">STEP 4</dt>
+<dd>
+<p id="p-192">Let \(P_1=(3,5)\text{.}\)</p>
+<p id="p-193">Draw \(H_3'\text{.}\)</p>
+<div class="image-box" style="width: 40%; margin-left: 30%; margin-right: 30%;"><img src="images/figure_planar_H3.jpg" style="width: 100%; height: auto;" alt=""></div>
+</dd>
+<dt id="li-45">STEP 5</dt>
+<dd><p id="p-194">Set \(i=3\) and go to STEP 2.</p></dd>
+</dl>
+<p id="p-195">\(i=3:\)</p>
+<dl id="p-196" class="description-list">
+<dt id="li-46">STEP 2</dt>
+<dd>
+<p id="p-197">\(E(H)\backslash E(H_3)\neq\varnothing\text{.}\)</p>
+<p id="p-198">There are 2 bridges of \(H_3'\) in the graph \(H\text{:}\)</p>
+<div class="displaymath" id="p-199">
+\begin{align*}
+&amp;B_3 = \{36,46,56\};  F(B_3,H_3')=\{f_4\}\\
+&amp;B_4 = \{17,27,37,47,57\};  F(B_4,H_3')=\varnothing
+\end{align*}
+</div>
+</dd>
+<dt id="li-47">STEP 3</dt>
+<dd><p id="p-200">Since \(F(B_4,H_3')=\varnothing\text{,}\) \(H\) is not planar.</p></dd>
+</dl>
+</div></div>
+</div></article></section></div></main>
+</div>
+<div class="login-link"><span id="loginlogout" class="login">login</span></div>
+<script src="https://pretextbook.org/js/0.13/login.js"></script>
+</body>
+</html>
