@@ -6,6 +6,7 @@
   import HomeLandingShell from './content-shells/HomeLandingShell.svelte';
   import PdfViewerShell from './content-shells/PdfViewerShell.svelte';
   import ReaderArticlesShell from './content-shells/ReaderArticlesShell.svelte';
+  import Tw314NativeShell from './content-shells/Tw314NativeShell.svelte';
 
   export let artifact;
   export let cacheLimit = 10;
@@ -16,6 +17,7 @@
     'home-landing': HomeLandingShell,
     'pdf-viewer': PdfViewerShell,
     'reader-articles': ReaderArticlesShell,
+    'tw314-native': Tw314NativeShell,
   };
 
   function trimCache(entries, limit, scrollByKey) {

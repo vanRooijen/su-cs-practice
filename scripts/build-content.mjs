@@ -11,6 +11,7 @@ const contentRoot = path.join(projectRoot, 'content');
 const outputPath = path.join(projectRoot, 'src', 'generated', 'content-artifacts.js');
 const SECTION_CONTAINER_SUFFIX = '.sections';
 const SECTION_FILE_PATTERN = /^(?<order>\d+)-(?<slot>[a-z0-9][a-z0-9-]*)$/i;
+const INLINE_SLOT_DIRECTIVE_PATTERN = /<!--\s*slot\s*:\s*(?<slot>[a-z0-9-]+)\s*-->/gi;
 
 marked.setOptions({
   gfm: true,
@@ -28,6 +29,19 @@ marked.use(
 
 function trim(value) {
   return value.replace(/^\/+|\/+$/g, '');
+}
+
+function normalizeSlotName(value, fallback = 'main') {
+  const candidate = trim(String(value ?? '').toLowerCase());
+  if (candidate === 'end') {
+    return 'main';
+  }
+
+  if (!candidate) {
+    return fallback;
+  }
+
+  return /^[a-z0-9][a-z0-9-]*$/i.test(candidate) ? candidate : fallback;
 }
 
 function toUnixPath(value) {
@@ -153,6 +167,40 @@ function toRouteMetadata(metadata) {
   return routeMetadata;
 }
 
+function splitInlineSlotSections(markdownBody) {
+  const body = String(markdownBody ?? '').replace(/\r\n/g, '\n');
+  const sections = [];
+  let currentSlot = 'main';
+  let cursor = 0;
+  let match = null;
+
+  INLINE_SLOT_DIRECTIVE_PATTERN.lastIndex = 0;
+
+  while ((match = INLINE_SLOT_DIRECTIVE_PATTERN.exec(body))) {
+    const chunk = body.slice(cursor, match.index);
+    if (chunk.trim()) {
+      sections.push({
+        slot: currentSlot,
+        body: chunk,
+      });
+    }
+
+    currentSlot = normalizeSlotName(match.groups?.slot ?? 'main');
+    cursor = INLINE_SLOT_DIRECTIVE_PATTERN.lastIndex;
+  }
+
+  const tail = body.slice(cursor);
+  if (tail.trim()) {
+    sections.push({
+      slot: currentSlot,
+      body: tail,
+    });
+  }
+
+  INLINE_SLOT_DIRECTIVE_PATTERN.lastIndex = 0;
+  return sections;
+}
+
 async function collectMarkdownFiles(dirPath) {
   const directoryEntries = await readdir(dirPath, { withFileTypes: true });
   const discovered = [];
@@ -220,13 +268,16 @@ async function buildArtifacts() {
     const routeMeta = toRouteMetadata(metadata);
 
     const sections = [];
-    if (body.trim()) {
+    const inlineSections = splitInlineSlotSections(body);
+    inlineSections.forEach((inlineSection, index) => {
+      const orderPrefix = String(index).padStart(3, '0');
+      const slot = normalizeSlotName(inlineSection.slot, 'main');
       sections.push({
-        key: '000-main',
-        slot: 'main',
-        html: marked.parse(body),
+        key: `${orderPrefix}-${slot}-inline-${index + 1}`,
+        slot,
+        html: marked.parse(inlineSection.body),
       });
-    }
+    });
 
     const sortedSectionSources = [...sectionSources].sort((left, right) => {
       if (left.order !== right.order) {
@@ -250,11 +301,11 @@ async function buildArtifacts() {
         typeof sectionMetadata.slot === 'string' && sectionMetadata.slot.trim()
           ? sectionMetadata.slot
           : sectionSource.slot;
-      const slot = trim(String(slotCandidate).toLowerCase()) || 'main';
-      const orderPrefix = String(sectionSource.order).padStart(3, '0');
+      const slot = normalizeSlotName(slotCandidate, 'main');
+      const orderPrefix = String(500 + sectionSource.order).padStart(3, '0');
 
       sections.push({
-        key: `${orderPrefix}-${slot}-${sections.length + 1}`,
+        key: `${orderPrefix}-${slot}-section-${sectionSource.relativePath}`,
         slot,
         html: marked.parse(sectionBody),
       });

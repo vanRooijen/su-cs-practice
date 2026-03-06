@@ -8,6 +8,7 @@ import PeopleApp from '../../apps/PeopleApp.svelte';
 import ProgramsApp from '../../apps/ProgramsApp.svelte';
 import ResearchApp from '../../apps/ResearchApp.svelte';
 import ReaderApp from '../../apps/ReaderApp.svelte';
+import Tw314App from '../../apps/Tw314App.svelte';
 import { APP_DEFINITIONS } from '../navigation/siteManifest.js';
 
 const APP_COMPONENTS = {
@@ -22,6 +23,7 @@ const APP_COMPONENTS = {
   relay: DemoApp,
   research: ResearchApp,
   reader: ReaderApp,
+  tw314: Tw314App,
 };
 
 export const APP_REGISTRY = Object.fromEntries(

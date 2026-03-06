@@ -103,6 +103,17 @@ export const APP_DEFINITIONS = {
     isContentBacked: true,
     resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
   },
+  tw314: {
+    id: 'tw314',
+    title: 'TW314',
+    defaultSubroute: '',
+    hasSidebar: true,
+    mobileSidebarDefaultOpen: false,
+    enableWindowHistoryNavigation: true,
+    validateSubroute: validateContentBackedSubroute,
+    isContentBacked: true,
+    resolveNavigationWindowId: reuseFocusedOrTopMostWindow,
+  },
   reader: {
     id: 'reader',
     title: 'Reader',
@@ -159,6 +170,7 @@ export const TOPBAR_LINKS = [
   { label: 'about', path: '/about' },
   { label: 'math', path: '/math' },
   { label: 'docs', path: '/docs' },
+  { label: 'tw314', path: '/tw314' },
 ];
 
 export const DESKTOP_SHORTCUTS = [
@@ -168,6 +180,7 @@ export const DESKTOP_SHORTCUTS = [
   { label: 'About', path: '/about' },
   { label: 'Math Demo', path: '/math' },
   { label: 'PDF Docs', path: '/docs' },
+  { label: 'TW314', path: '/tw314' },
   { label: 'People Staff', path: '/people/staff' },
   { label: 'People Students', path: '/people/students' },
   { label: 'Reader Hackathon', path: '/reader/articles/hackathon-2026' },

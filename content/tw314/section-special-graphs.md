@@ -1,0 +1,26 @@
+---
+title: "Special graphs and some constructs"
+shell: tw314-native
+sort_order: 11
+---
+
+<div class="tw314-native-document" data-tw314-slug="section-special-graphs">
+<div id="content" class="pretext-content"><section class="section" id="section-special-graphs"><h2 class="heading hide-type">
+<span class="type">Section</span> <span class="codenumber">1.7</span> <span class="title">Special graphs and some constructs</span>
+</h2>
+<p id="p-45">A graph \(G\) is <dfn class="terminology">regular</dfn> of degree \(r\) if \(deg(v) = r\) for every vertex \(v\) of \(G\text{.}\) Such graphs are called <dfn class="terminology">r-regular graphs</dfn>. A graph is <dfn class="terminology">complete</dfn> if every two of its vertices are adjacent. A complete graph of order \(n\) and size \(m\) is therefore a regular graph of degree \(n - 1\) with \(m = \left(^n_2 \right)\text{.}\) We denote this graph by \(K_n\text{.}\) A 3-regular graph is also called a <dfn class="terminology">cubic</dfn> graph.</p>
+<p id="p-46">Note: with the complete graph \(K_n\) of order \(n\) we really mean the class of all such graphs, no matter the labels of their vertices. We represent this equivalence class graphically by an <dfn class="terminology">unlabeled graph</dfn>.</p>
+<figure class="figure figure-like" id="figure-graph-complete"><div class="image-box" style="width: 50%; margin-left: 25%; margin-right: 25%;"><img src="/tw314-assets/images/figure_complete.JPG" style="width: 100%; height: auto;" alt=""></div>
+<figcaption><span class="type">Figure</span><span class="space"> </span><span class="codenumber">1.7.1<span class="period">.</span></span><span class="space"> </span>Complete graphs</figcaption></figure><p id="p-47">There is a special cubic graph we will often meet and that is the <dfn class="terminology">Petersen graph</dfn> \(P\) in <span class="xref">Figure 1.7.2</span>. Again, \(P\) is an unlabeled graph and represents the class of all isomorphic graphs with the structure of \(P\text{.}\)</p>
+<figure class="figure figure-like" id="figure-graph-petersen"><div class="image-box" style="width: 50%; margin-left: 25%; margin-right: 25%;"><img src="/tw314-assets/images/figure_petersen.JPG" style="width: 100%; height: auto;" alt=""></div>
+<figcaption><span class="type">Figure</span><span class="space"> </span><span class="codenumber">1.7.2<span class="period">.</span></span><span class="space"> </span>The Petersen graph</figcaption></figure><p id="p-48">The <dfn class="terminology">complement</dfn> \(\bar G\) of a graph \(G\) is that graph with vertex set \(V(G)\) such that two vertices are adjacent in \(\bar G\) if and only if these vertices are not adjacent in \(G\text{.}\) A graph is <dfn class="terminology">self-complementary</dfn> if \(G \simeq \bar G\text{.}\)</p>
+<article class="example example-like" id="example-graph-complement"><h6 class="heading">
+<span class="type">Example</span><span class="space"> </span><span class="codenumber">1.7.3</span><span class="period">.</span><span class="space"> </span><span class="title">Graph complements.</span>
+</h6>Show that the graph \(H\) in <span class="xref">Figure 1.7.4</span> is self-complementary by providing a suitable isomorphism.<div class="solutions">
+<span class="id-ref original"><span class="type">Solution</span></span><div class="hidden-content tex2jax_ignore" id="hk-solution-3"><div class="solution solution-like">The isomorphism \(\phi: H \rightarrow \bar H\text{,}\) given by \(\phi(1) = 1, \phi(2) = 3, \phi(3) = 5, \phi(4) = 2, \phi(5) = 4\text{,}\) shows that \(H\) is self-complementary.</div></div>
+</div></article><figure class="figure figure-like" id="figure-graph-complement"><div class="image-box" style="width: 50%; margin-left: 25%; margin-right: 25%;"><img src="/tw314-assets/images/figure_complement.JPG" style="width: 100%; height: auto;" alt=""></div>
+<figcaption><span class="type">Figure</span><span class="space"> </span><span class="codenumber">1.7.4<span class="period">.</span></span><span class="space"> </span>Complements of graphs</figcaption></figure><p id="p-49">A graph \(G\) is <dfn class="terminology">bipartite</dfn> if it is possible to partition \(V(G)\) into two subsets \(V_1, V_2\) (called the <dfn class="terminology">partite sets</dfn>) such that each edge of \(E(G)\) joins a vertex of \(V_1\) to a vertex of \(V_2\text{.}\)</p>
+<p id="p-50">A <dfn class="terminology">complete bipartite</dfn> graph \(G\) is bipartite with the additional property that, for every \(v_1 \in V_1\) and \(v_2 \in V_2\text{,}\) \(v_1v_2 \in E(G)\text{,}\) i.e. all vertices of \(V_1\) are joined to all vertices of \(V_2\text{.}\) If \(|V_1| = r\) and \(|V_2| = s\text{,}\) then we denote this graph by \(K_{r,s}\text{.}\) The graph \(K_{1,s}\) is called a <dfn class="terminology">star</dfn>.</p>
+<figure class="figure figure-like" id="figure-graph-bipartite"><div class="image-box" style="width: 50%; margin-left: 25%; margin-right: 25%;"><img src="/tw314-assets/images/figure_bipartite.JPG" style="width: 100%; height: auto;" alt=""></div>
+<figcaption><span class="type">Figure</span><span class="space"> </span><span class="codenumber">1.7.5<span class="period">.</span></span><span class="space"> </span>Complete bipartite graphs</figcaption></figure></section></div>
+</div>
