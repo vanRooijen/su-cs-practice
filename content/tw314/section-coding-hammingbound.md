@@ -26,7 +26,7 @@ sort_order: 52
 <span class="type">Theorem</span><span class="space"> </span><span class="codenumber">8.9.2</span><span class="period">.</span>
 </h6>A \(q\)-ary \((n,M,d)\)-code satisfies<div class="displaymath">
 \begin{equation}
-M\left\{{ n \choose 0}+{ n \choose 1}(q-1)+\cdots+{ n \choose t}(q-1)^t\right\}\leq q^n, \label{equation-coding-hamming}\tag{8.9.1}
+M\left\{{ n \choose 0}+{ n \choose 1}(q-1)+\cdots+{ n \choose t}(q-1)^t\right\}\leq q^n, \tag{8.9.1}
 \end{equation}
 </div> where \(t=\lfloor\frac{d-1}{2}\rfloor\).
 

@@ -12,6 +12,30 @@ const outputPath = path.join(projectRoot, 'src', 'generated', 'content-artifacts
 const SECTION_CONTAINER_SUFFIX = '.sections';
 const SECTION_FILE_PATTERN = /^(?<order>\d+)-(?<slot>[a-z0-9][a-z0-9-]*)$/i;
 const INLINE_SLOT_DIRECTIVE_PATTERN = /<!--\s*slot\s*:\s*(?<slot>[a-z0-9-]+)\s*-->/gi;
+const BLOCK_OPEN_DIRECTIVE_PATTERN = /^\s*<!--\s*block:(?<type>[a-z0-9-]+)(?<attrs>.*?)\s*-->\s*$/i;
+const BLOCK_CLOSE_DIRECTIVE_PATTERN = /^\s*<!--\s*end:block\s*-->\s*$/i;
+const BLOCK_TYPES = new Set([
+  'definition',
+  'theorem',
+  'proof',
+  'example',
+  'exercise',
+  'intuition',
+  'warning',
+  'summary',
+  'note',
+]);
+const BLOCK_DEFAULT_TITLES = {
+  definition: 'Definition',
+  theorem: 'Theorem',
+  proof: 'Proof',
+  example: 'Example',
+  exercise: 'Exercise',
+  intuition: 'Intuition',
+  warning: 'Warning',
+  summary: 'Summary',
+  note: 'Note',
+};
 
 marked.setOptions({
   gfm: true,
@@ -42,6 +66,39 @@ function normalizeSlotName(value, fallback = 'main') {
   }
 
   return /^[a-z0-9][a-z0-9-]*$/i.test(candidate) ? candidate : fallback;
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function normalizeBlockType(value) {
+  const candidate = trim(String(value ?? '').toLowerCase());
+  if (!candidate) {
+    return 'note';
+  }
+
+  return BLOCK_TYPES.has(candidate) ? candidate : 'note';
+}
+
+function parseDirectiveAttributes(rawAttributes = '') {
+  const attributes = {};
+  const text = String(rawAttributes ?? '');
+  const attributePattern = /([a-zA-Z][a-zA-Z0-9_-]*)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"']+))/g;
+  let match = null;
+
+  while ((match = attributePattern.exec(text))) {
+    const key = match[1].toLowerCase();
+    const value = match[2] ?? match[3] ?? match[4] ?? '';
+    attributes[key] = value;
+  }
+
+  return attributes;
 }
 
 function toUnixPath(value) {
@@ -201,6 +258,115 @@ function splitInlineSlotSections(markdownBody) {
   return sections;
 }
 
+function parseSemanticBlockNodes(markdownBody) {
+  const lines = String(markdownBody ?? '').replace(/\r\n/g, '\n').split('\n');
+  const root = { type: 'root', children: [] };
+  const stack = [root];
+
+  function appendMarkdownLine(line) {
+    const current = stack.at(-1);
+    const lastNode = current.children.at(-1);
+
+    if (lastNode?.type === 'markdown') {
+      lastNode.body += `${line}\n`;
+      return;
+    }
+
+    current.children.push({
+      type: 'markdown',
+      body: `${line}\n`,
+    });
+  }
+
+  for (const line of lines) {
+    const openMatch = line.match(BLOCK_OPEN_DIRECTIVE_PATTERN);
+    if (openMatch) {
+      const attributes = parseDirectiveAttributes(openMatch.groups?.attrs ?? '');
+      const type = normalizeBlockType(openMatch.groups?.type ?? 'note');
+      const explicitCollapsible = Object.hasOwn(attributes, 'collapsible')
+        ? attributes.collapsible
+        : Object.hasOwn(attributes, 'collapse')
+          ? attributes.collapse
+          : '';
+
+      const isCollapsible =
+        typeof explicitCollapsible === 'string' &&
+        ['1', 'true', 'yes'].includes(explicitCollapsible.trim().toLowerCase());
+
+      const blockNode = {
+        type: 'block',
+        blockType: type,
+        title: typeof attributes.title === 'string' ? attributes.title.trim() : '',
+        collapsible: isCollapsible,
+        children: [],
+      };
+
+      stack.at(-1).children.push(blockNode);
+      stack.push(blockNode);
+      continue;
+    }
+
+    if (BLOCK_CLOSE_DIRECTIVE_PATTERN.test(line)) {
+      if (stack.length > 1) {
+        stack.pop();
+      } else {
+        appendMarkdownLine(line);
+      }
+      continue;
+    }
+
+    appendMarkdownLine(line);
+  }
+
+  return root.children;
+}
+
+function renderSemanticBlockNodes(nodes) {
+  let output = '';
+
+  for (const node of nodes) {
+    if (node.type === 'markdown') {
+      if (node.body.trim()) {
+        output += marked.parse(node.body);
+      }
+      continue;
+    }
+
+    if (node.type !== 'block') {
+      continue;
+    }
+
+    const blockType = normalizeBlockType(node.blockType);
+    const title = node.title || BLOCK_DEFAULT_TITLES[blockType] || 'Note';
+    const titleHtml = escapeHtml(title);
+    const bodyHtml = renderSemanticBlockNodes(node.children ?? []);
+
+    if (node.collapsible) {
+      output += [
+        `<details class="content-block content-block--${blockType}" data-block-type="${blockType}">`,
+        `<summary class="content-block__summary"><span class="content-block__title">${titleHtml}</span></summary>`,
+        `<div class="content-block__body">${bodyHtml}</div>`,
+        '</details>',
+      ].join('');
+      continue;
+    }
+
+    output += [
+      `<section class="content-block content-block--${blockType}" data-block-type="${blockType}">`,
+      `<header class="content-block__header"><h4 class="content-block__title">${titleHtml}</h4></header>`,
+      `<div class="content-block__body">${bodyHtml}</div>`,
+      '</section>',
+    ].join('');
+  }
+
+  return output;
+}
+
+function renderMarkdownWithDirectives(markdownBody) {
+  const semanticNodes = parseSemanticBlockNodes(markdownBody);
+  return renderSemanticBlockNodes(semanticNodes);
+}
+
 async function collectMarkdownFiles(dirPath) {
   const directoryEntries = await readdir(dirPath, { withFileTypes: true });
   const discovered = [];
@@ -275,7 +441,7 @@ async function buildArtifacts() {
       sections.push({
         key: `${orderPrefix}-${slot}-inline-${index + 1}`,
         slot,
-        html: marked.parse(inlineSection.body),
+        html: renderMarkdownWithDirectives(inlineSection.body),
       });
     });
 
@@ -307,7 +473,7 @@ async function buildArtifacts() {
       sections.push({
         key: `${orderPrefix}-${slot}-section-${sectionSource.relativePath}`,
         slot,
-        html: marked.parse(sectionBody),
+        html: renderMarkdownWithDirectives(sectionBody),
       });
     }
 

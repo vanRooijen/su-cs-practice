@@ -46,6 +46,8 @@ function rewriteMainHtml(mainHtml) {
 
   output = output.replace(/<script[\s\S]*?<\/script>/gi, '');
   output = output.replace(/<a\s+href="[^"]+"\s+class="permalink"[^>]*>¶<\/a>/gi, '');
+  // Keep verifier logic aligned with importer sanitization for KaTeX compatibility.
+  output = output.replace(/\\label\{[^}]*\}/g, '');
 
   output = output.replace(/<a([^>]*?)\sdata-knowl="[^"]*"([^>]*)>([\s\S]*?)<\/a>/gi, (_m, before, after, inner) => {
     const classMatch = `${before} ${after}`.match(/class="([^"]*)"/i);

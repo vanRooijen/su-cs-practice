@@ -146,7 +146,7 @@
 
   .tw314-document {
     color: color-mix(in srgb, var(--su-ink, #2c2a29) 92%, black 8%);
-    line-height: 1.56;
+    line-height: 1.62;
     font-size: 0.95rem;
     overflow-wrap: anywhere;
     word-break: break-word;
@@ -206,7 +206,7 @@
   }
 
   .tw314-document :global(p) {
-    margin: 0.35rem 0;
+    margin: 0.46rem 0;
   }
 
   .tw314-document :global(ul),
@@ -237,16 +237,112 @@
     background: rgba(255, 255, 255, 0.9);
   }
 
-  .tw314-document :global(.displaymath),
-  .tw314-document :global(.katex-display) {
-    margin: 0.64rem 0;
+  .tw314-document :global(.displaymath) {
+    margin: 0.86rem 0;
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 0.08rem 0.06rem 0.18rem;
+    padding: 0.08rem 0 0.16rem;
+  }
+
+  .tw314-document :global(.katex-display) {
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow-x: auto;
+    overflow-y: hidden;
   }
 
   .tw314-document :global(.katex) {
     font-size: 1.02em;
+  }
+
+  .tw314-document :global(.content-block) {
+    margin: 0.86rem 0;
+    padding: 0.62rem 0.74rem 0.68rem;
+    border-radius: 0.44rem;
+    border-left: 4px solid rgba(44, 42, 41, 0.28);
+    background: color-mix(in srgb, var(--su-surface-subtle, #f8f4ed) 74%, white 26%);
+    box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.1);
+  }
+
+  .tw314-document :global(.content-block > .content-block__header) {
+    margin: 0 0 0.34rem;
+  }
+
+  .tw314-document :global(.content-block .content-block__title) {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.25;
+    letter-spacing: 0.01em;
+    color: color-mix(in srgb, var(--su-maroon, #61223b) 86%, black 14%);
+  }
+
+  .tw314-document :global(.content-block .content-block__body > :first-child) {
+    margin-top: 0;
+  }
+
+  .tw314-document :global(.content-block .content-block__body > :last-child) {
+    margin-bottom: 0;
+  }
+
+  .tw314-document :global(details.content-block > summary.content-block__summary) {
+    cursor: pointer;
+    list-style: none;
+    margin: -0.1rem 0 0;
+    padding: 0.08rem 0 0.2rem;
+  }
+
+  .tw314-document :global(details.content-block > summary.content-block__summary::-webkit-details-marker) {
+    display: none;
+  }
+
+  .tw314-document :global(details.content-block > summary.content-block__summary::before) {
+    content: '▸';
+    display: inline-block;
+    margin-right: 0.34rem;
+    color: color-mix(in srgb, var(--su-muted, #686d71) 78%, black 22%);
+    transition: transform 120ms ease;
+  }
+
+  .tw314-document :global(details.content-block[open] > summary.content-block__summary::before) {
+    transform: rotate(90deg);
+  }
+
+  .tw314-document :global(.content-block--definition) {
+    border-left-color: rgba(97, 34, 59, 0.65);
+  }
+
+  .tw314-document :global(.content-block--theorem) {
+    border-left-color: rgba(166, 10, 61, 0.76);
+  }
+
+  .tw314-document :global(.content-block--proof) {
+    border-left-color: rgba(100, 51, 53, 0.74);
+    background: color-mix(in srgb, var(--su-surface-subtle, #f8f4ed) 68%, white 32%);
+  }
+
+  .tw314-document :global(.content-block--example) {
+    border-left-color: rgba(202, 162, 88, 0.9);
+  }
+
+  .tw314-document :global(.content-block--exercise) {
+    border-left-color: rgba(220, 68, 5, 0.76);
+  }
+
+  .tw314-document :global(.content-block--intuition) {
+    border-left-color: rgba(130, 204, 174, 0.88);
+  }
+
+  .tw314-document :global(.content-block--warning) {
+    border-left-color: rgba(220, 68, 5, 0.88);
+    background: color-mix(in srgb, #fff7ef 82%, white 18%);
+  }
+
+  .tw314-document :global(.content-block--summary) {
+    border-left-color: rgba(77, 83, 86, 0.72);
+    background: color-mix(in srgb, #f5f6f7 82%, white 18%);
   }
 
   .tw314-document :global(.example),
@@ -258,6 +354,30 @@
     border-radius: 0.34rem;
     background: color-mix(in srgb, var(--su-surface-subtle, #f8f4ed) 76%, white 24%);
     box-shadow: inset 0 0 0 1px rgba(44, 42, 41, 0.1);
+  }
+
+  .tw314-document :global(.theorem > .heading),
+  .tw314-document :global(.proposition > .heading),
+  .tw314-document :global(.lemma > .heading),
+  .tw314-document :global(.example > .heading),
+  .tw314-document :global(.corollary > .heading),
+  .tw314-document :global(.proof > .heading),
+  .tw314-document :global(.hiddenproof > .heading),
+  .tw314-document :global(.solution > .heading) {
+    margin: 0 0 0.34rem;
+    font-size: 1.01rem;
+    line-height: 1.32;
+    font-weight: 650;
+    color: color-mix(in srgb, var(--su-maroon, #61223b) 86%, black 14%);
+  }
+
+  .tw314-document :global(.theorem > .heading .codenumber),
+  .tw314-document :global(.proposition > .heading .codenumber),
+  .tw314-document :global(.lemma > .heading .codenumber),
+  .tw314-document :global(.example > .heading .codenumber),
+  .tw314-document :global(.corollary > .heading .codenumber) {
+    color: color-mix(in srgb, var(--su-muted, #686d71) 84%, black 16%);
+    font-weight: 600;
   }
 
   .tw314-document :global(.solution .type),
